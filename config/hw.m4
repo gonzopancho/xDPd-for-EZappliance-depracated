@@ -15,6 +15,9 @@ AC_ARG_ENABLE(bcm,
 AC_ARG_ENABLE(octeon,
 	AS_HELP_STRING([--enable-octeon], [compile OCTEON 5650 hardware support [default=no]])
 			, , enable_octeon="no")
+AC_ARG_ENABLE(ezappliance,
+	AS_HELP_STRING([--enable-ezappliance], [compile EZappliance hardware support [default=no]])
+			, , enable_ezappliance="no")
 AC_ARG_ENABLE(example,
 	AS_HELP_STRING([--enable-example], [compile the Forwarding Module example code [default=no]])
 			, , enable_example="no")
@@ -27,6 +30,7 @@ if ( test "$enable_gnu_linux_dpdk" = "no" ) &&
    ( test "$enable_gnu_linux" = "no" ) &&
    ( test "$enable_bcm" = "no" ) &&
    ( test "$enable_octeon" = "no" ) &&
+   ( test "$enable_ezappliance" = "no" ) &&
    ( test "$enable_example" = "no" ); then
    
    enable_gnu_linux="yes"
@@ -58,12 +62,19 @@ if( test "$enable_octeon" = "yes" );then
 	PLATFORM=octeon5650
 	AC_CONFIG_SUBDIRS([src/xdpd/fwd-modules/octeon5650])
 fi
+if( test "$enable_ezappliance" = "yes" );then
+	msg="$msg EZappliance platform"
+	AC_DEFINE(ENABLE_EZAPPLIANCE)
+	PLATFORM=ezappliance
+	AC_CONFIG_SUBDIRS([src/xdpd/fwd-modules/ezappliance])
+fi
 if( test "$enable_example" = "yes" );then
 	msg="$msg Example platform"
 	AC_DEFINE(ENABLE_EXAMPLE)
 	PLATFORM=example
 	AC_CONFIG_SUBDIRS([src/xdpd/fwd-modules/example])
 fi
+
 #[+]Add your platform here...
 
 
