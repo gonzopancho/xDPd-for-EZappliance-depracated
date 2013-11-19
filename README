@@ -9,6 +9,9 @@ The content of this folder is the implementation of the EZappliance (AFA-complia
 
 ## Usage
 
+<pre>
 cd build
 ../configure -enable-ezappliance
 make
+</pre>
+
