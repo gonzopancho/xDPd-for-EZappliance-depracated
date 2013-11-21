@@ -84,7 +84,7 @@ class TcpServer(Thread):
                 i += 1
             s.close()
         except:
-            logger.error("error", exc_info=True)
+            logger.error("Generic error", exc_info=True)
             
     def handle_data(self, data, conn):
         logger.debug("Data received: %s", data)

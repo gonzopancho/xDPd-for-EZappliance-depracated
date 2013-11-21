@@ -83,7 +83,7 @@ class TcpClient(Thread):
                 if err.errno != errno.ECONNREFUSED:
                     logger.error("%d: Generic error", i, exc_info=True)
                     break
-                logger.error("%d: Server not online", i, exc_info=True)
+                logger.error("%d: Server not online", i)
                 time.sleep(10)
                 i += 1
             
