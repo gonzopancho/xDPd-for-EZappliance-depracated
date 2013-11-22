@@ -73,7 +73,12 @@ rofl_result_t iomanager::add_port(ioport* port){
 	grp_id = curr_group_sched_pointer;
 	curr_group_sched_pointer = (curr_group_sched_pointer+1) % num_of_groups;
 	pthread_mutex_unlock(&mutex);
-	
+    
+    if(!port) {
+        ROFL_ERR("Cannot add port %d to iomanager, at portgroup %u\n", port, grp_id); 
+        return ROFL_SUCCESS;
+    }
+    
 	ROFL_DEBUG("Adding port %s to iomanager, at portgroup %u\n", port->of_port_state->name, grp_id); 
 	 	
 	return add_port_to_group(grp_id, port);	

@@ -359,10 +359,13 @@ void lsi_scope::post_validate(libconfig::Setting& setting, bool dry_run){
 		std::vector<std::string>::iterator port;
 		for(port = ports.begin(); port != ports.end(); ++port){
 			try{
+                ROFL_ERR("attach_port_to_switch\n");
 				//Attach
 				port_manager::attach_port_to_switch(dpid, *port, &port_num);
+                ROFL_ERR("enable_port\n");
 				//Bring up
 				port_manager::enable_port(*port);
+                ROFL_ERR("enable_port - ends\n");
 			}catch(...){	
 				ROFL_ERR("%s: unable to attach port '%s'. Unknown error.\n", setting.getPath().c_str(), (*port).c_str());
 				throw;

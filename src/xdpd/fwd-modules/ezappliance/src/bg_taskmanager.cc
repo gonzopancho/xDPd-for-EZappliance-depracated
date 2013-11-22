@@ -14,6 +14,8 @@
 #include <sys/epoll.h>
 #include <sys/time.h>
 #include <sys/types.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -74,6 +76,58 @@ int prepare_event_socket()
 	}
 
 	return sock;
+}
+
+
+/**
+ * @name connect_to_ezproxy_packet_interface
+ * @brief creates TCP connection for packet-in and packet-out operations between NP-3 and xdpd
+ */
+int connect_to_ezproxy_packet_interface()
+{
+    int sockfd;
+    struct sockaddr_in dest_addr;
+    //char buffer[4096];
+
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    if (sockfd < 0) 
+    {
+        ROFL_ERR("Couldn't open SOCK_STREAM socket, errno(%d): %s\n", errno, strerror(errno));
+        return -1;
+    }
+    
+    dest_addr.sin_family = AF_INET; // host byte order
+    dest_addr.sin_port = htons(8080); // destination port
+    dest_addr.sin_addr.s_addr = inet_addr("127.0.0.1"); // destination address
+    memset(&(dest_addr.sin_zero), '\0', 8); 
+   
+     /* Now connect to the server */
+    if (connect(sockfd,(struct sockaddr*) & dest_addr, sizeof(struct sockaddr)) < 0) 
+    {
+        ROFL_ERR("Couldn't connect to %s:%d, errno(%d): %s\n", "127.0.0.1", 8080, errno, strerror(errno));
+        return -1;
+    }   
+    ROFL_INFO("Connected to %s:%d\n", "127.0.0.1", 8080);
+    
+    char msg[] = "Damian was here!";
+    int len, n;
+    len = strlen(msg);
+
+    n = write(sockfd, msg, len); //returns bytes send
+    if (n < 0) 
+    {
+         ROFL_ERR("ERROR writing to socket");
+         
+    } 
+    /* Now read server response */ /*
+    bzero(buffer,4096);
+    n = read(sockfd, buffer, 4096); //returns bytes read
+    if (n < 0) 
+    {
+         ROFL_ERR("ERROR reading from socket");
+    }
+    ROFL_INFO("%s\n",buffer); */
+    return sockfd;
 }
 
 /*
@@ -258,6 +312,8 @@ void* x86_background_tasks_routine(void* param)
 		exit(ROFL_FAILURE);
 	}
 	
+	connect_to_ezproxy_packet_interface();
+	
 	efd = epoll_create1(0);
 
 	if(efd == -1){
@@ -268,7 +324,7 @@ void* x86_background_tasks_routine(void* param)
 	//Add netlink	
 	epe_port.data.fd = events_socket;
 	epe_port.events = EPOLLIN; //| EPOLLET;
-	
+    
 	if(epoll_ctl(efd,EPOLL_CTL_ADD,events_socket,&epe_port)==-1){
 		ROFL_ERR("Error in epoll_ctl, errno(%d): %s\n", errno, strerror(errno));
 		return NULL;
@@ -279,6 +335,7 @@ void* x86_background_tasks_routine(void* param)
 
 	epe_port.data.fd = get_packet_in_read_fd();
 	epe_port.events = EPOLLIN | EPOLLET;
+   
 	
 	if(epoll_ctl(efd,EPOLL_CTL_ADD, epe_port.data.fd, &epe_port)==-1){
 		ROFL_ERR("Error in epoll_ctl, errno(%d): %s\n", errno, strerror(errno));
@@ -287,10 +344,11 @@ void* x86_background_tasks_routine(void* param)
 	
 	while(bg_continue_execution){
 		
+        ROFL_INFO("3\n");
 		//Throttle
 		nfds = epoll_wait(efd, event_list, MAX_EPOLL_EVENTS, LSW_TIMER_SLOT_MS/*timeout needs TBD somewhere else*/);
 
-
+        ROFL_INFO("4\n");
 		if(nfds==-1){
 			//ROFL_DEBUG("Epoll Failed\n");
 			continue;
@@ -315,10 +373,15 @@ void* x86_background_tasks_routine(void* param)
 				}
 			}
 		}
+		ROFL_INFO("5\n");
 		
 		//check timers expiration 
 		process_timeouts();
+        
+        ROFL_INFO("6\n");
 	}
+	
+	ROFL_INFO("7\n");
 
 	//Cleanup packet-in
 	destroy_packetin_pipe();

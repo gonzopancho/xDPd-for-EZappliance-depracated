@@ -48,7 +48,8 @@ using namespace xdpd::gnu_linux;
 */
 afa_result_t fwd_module_init(){
 
-	ROFL_INFO("Initializing GNU/Linux forwarding module...\n");
+    ROFL_DEBUG("[AFA] fwd_module_init\n");
+	ROFL_INFO("Initializing EZappliance forwarding module...\n");
 	
 	//Init the ROFL-PIPELINE phyisical switch
 	if(physical_switch_init() != ROFL_SUCCESS)
@@ -68,7 +69,6 @@ afa_result_t fwd_module_init(){
 	if(launch_background_tasks_manager() != ROFL_SUCCESS){
 		return AFA_FAILURE;
 	}
-	
 	return AFA_SUCCESS; 
 }
 
@@ -78,6 +78,8 @@ afa_result_t fwd_module_init(){
 * @ingroup fwd_module_management
 */
 afa_result_t fwd_module_destroy(){
+    
+    ROFL_DEBUG("[AFA] fwd_module_destroy\n");
 
 	//Initialize the iomanager
 	iomanager::destroy();
@@ -94,7 +96,7 @@ afa_result_t fwd_module_destroy(){
 	// destroy bufferpool
 	bufferpool::destroy();
 	
-	ROFL_INFO("GNU/Linux forwarding module destroyed.\n");
+	ROFL_INFO("EZappliance forwarding module destroyed.\n");
 	
 	return AFA_SUCCESS; 
 }
@@ -111,18 +113,20 @@ afa_result_t fwd_module_destroy(){
 */
 of_switch_t* fwd_module_create_switch(char* name, uint64_t dpid, of_version_t of_version, unsigned int num_of_tables, int* ma_list){
 	
+    ROFL_DEBUG("[AFA] fwd_module_create_switch (name: %s, dpid: %d, tables: %d)\n", name, dpid, num_of_tables);
 	of_switch_t* sw;
 	
 	sw = (of_switch_t*)of1x_init_switch(name, of_version, dpid, num_of_tables, (enum of1x_matching_algorithm_available*) ma_list);
 
 	//Launch switch processing threads
+    /*
 	if(start_ls_workers_wrapper(sw) != ROFL_SUCCESS){
 		
 		ROFL_ERR("<%s:%d> error initializing workers from processing manager. Destroying switch...\n",__func__,__LINE__);
 		of_destroy_switch(sw);
 		return NULL;
 	}
-	
+	*/
 	//Add switch to the bank	
 	physical_switch_add_logical_switch(sw);
 	
@@ -137,6 +141,7 @@ of_switch_t* fwd_module_create_switch(char* name, uint64_t dpid, of_version_t of
 */
 of_switch_t* fwd_module_get_switch_by_dpid(uint64_t dpid){
 	
+    ROFL_DEBUG("[AFA] fwd_module_init (dpid: %d)\n", dpid);
 	//Call directly the bank
 	return physical_switch_get_logical_switch_by_dpid(dpid); 
 }
@@ -148,6 +153,7 @@ of_switch_t* fwd_module_get_switch_by_dpid(uint64_t dpid){
 */
 afa_result_t fwd_module_destroy_switch_by_dpid(const uint64_t dpid){
 
+    ROFL_DEBUG("[AFA] fwd_module_destroy_switch_by_dpid (dpid: %d)\n", dpid);
 	unsigned int i;
 	
 	//Try to retrieve the switch
@@ -196,6 +202,7 @@ afa_result_t fwd_module_destroy_switch_by_dpid(const uint64_t dpid){
 */
 switch_port_t* fwd_module_list_platform_ports(){
 	/* TODO FIXME */
+    ROFL_DEBUG("[AFA] fwd_module_list_platform_ports\n");
 	return NULL;
 }
 
@@ -205,6 +212,7 @@ switch_port_t* fwd_module_list_platform_ports(){
  * @ingroup port_management
  */
 switch_port_t* fwd_module_get_port_by_name(const char *name){
+    ROFL_DEBUG("[AFA] fwd_module_get_port_by_name (name: %s)\n", name);
 	return physical_switch_get_port_by_name(name);
 }
 
@@ -215,6 +223,7 @@ switch_port_t* fwd_module_get_port_by_name(const char *name){
 * @retval  Pointer to the first port. 
 */
 switch_port_t** fwd_module_get_physical_ports(unsigned int* num_of_ports){
+    ROFL_DEBUG("[AFA] fwd_module_get_physical_ports\n");
 	return physical_switch_get_physical_ports(num_of_ports);
 }
 
@@ -225,6 +234,7 @@ switch_port_t** fwd_module_get_physical_ports(unsigned int* num_of_ports){
 * @retval  Pointer to the first port. 
 */
 switch_port_t** fwd_module_get_virtual_ports(unsigned int* num_of_ports){
+    ROFL_DEBUG("[AFA] fwd_module_get_virtual_ports\n");
 	return physical_switch_get_virtual_ports(num_of_ports);
 }
 
@@ -235,6 +245,7 @@ switch_port_t** fwd_module_get_virtual_ports(unsigned int* num_of_ports){
 * @retval  Pointer to the first port. 
 */
 switch_port_t** fwd_module_get_tunnel_ports(unsigned int* num_of_ports){
+    ROFL_DEBUG("[AFA] fwd_module_get_tunnel_ports\n");
 	return physical_switch_get_tunnel_ports(num_of_ports);
 }
 /*
@@ -248,6 +259,8 @@ switch_port_t** fwd_module_get_tunnel_ports(unsigned int* num_of_ports){
 */
 afa_result_t fwd_module_attach_port_to_switch(uint64_t dpid, const char* name, unsigned int* of_port_num){
 
+    ROFL_DEBUG("[AFA] fwd_module_attach_port_to_switch (dpid: %d, name: %s)\n", dpid, name);
+    
 	switch_port_t* port;
 	of_switch_t* lsw;
 
@@ -276,7 +289,6 @@ afa_result_t fwd_module_attach_port_to_switch(uint64_t dpid, const char* name, u
 			return AFA_FAILURE;
 		}
 	}
-	
 	//Add it to the iomanager
 	if(iomanager::add_port((ioport*)port->platform_port_state) != ROFL_SUCCESS){
 		return AFA_FAILURE;	
@@ -300,6 +312,7 @@ afa_result_t fwd_module_attach_port_to_switch(uint64_t dpid, const char* name, u
 */
 afa_result_t fwd_module_connect_switches(uint64_t dpid_lsi1, switch_port_t** port1, uint64_t dpid_lsi2, switch_port_t** port2){
 
+    ROFL_DEBUG("[AFA] fwd_module_connect_switches (dpid_1: %d, dpid_2: %d)\n", dpid_lsi1, dpid_lsi2);
 	of_switch_t *lsw1, *lsw2;
 	ioport *vport1, *vport2;
 	unsigned int port_num = 0; //We don't care about of the port
@@ -355,6 +368,7 @@ afa_result_t fwd_module_connect_switches(uint64_t dpid_lsi1, switch_port_t** por
 */
 afa_result_t fwd_module_detach_port_from_switch(uint64_t dpid, const char* name){
 
+    ROFL_DEBUG("[AFA] fwd_module_detach_port_from_switch (dpid: %d, name: %s)\n", dpid, name);
 	of_switch_t* lsw;
 	switch_port_t* port;
 	
@@ -447,6 +461,7 @@ afa_result_t fwd_module_detach_port_from_switch(uint64_t dpid, const char* name)
 */
 afa_result_t fwd_module_detach_port_from_switch_at_port_num(uint64_t dpid, const unsigned int of_port_num){
 
+    ROFL_DEBUG("[AFA] fwd_module_detach_port_from_switch_at_port_num (dpid: %d, port: %d)\n", dpid, of_port_num);
 	of_switch_t* lsw;
 	
 	lsw = physical_switch_get_logical_switch_by_dpid(dpid);
@@ -475,25 +490,30 @@ afa_result_t fwd_module_detach_port_from_switch_at_port_num(uint64_t dpid, const
 * @param name Port system name 
 */
 afa_result_t fwd_module_enable_port(const char* name){
+    
+    ROFL_DEBUG("[AFA] fwd_module_enable_port (name: %s)\n", name);
 
 	switch_port_t* port;
 
 	//Check if the port does exist
 	port = physical_switch_get_port_by_name(name);
 
-	if(!port || !port->platform_port_state)
+	if(!port)// || !port->platform_port_state)
 		return AFA_FAILURE;
 
 	//Bring it up
+    /*
 	if(port->attached_sw){
 		//Port is attached and belonging to a port group. Instruct I/O manager to start the port
+		ROFL_INFO("fwd_module_enable_port 2.1\n");
 		if(iomanager::bring_port_up((ioport*)port->platform_port_state)!=ROFL_SUCCESS)
 			return AFA_FAILURE;
 	}else{
+        ROFL_INFO("fwd_module_enable_port 2.2\n");
 		//The port is not attached. Only bring it up (ifconfig up)
 		if(enable_port(port->platform_port_state)!=ROFL_SUCCESS)
 			return AFA_FAILURE;
-	}
+	}*/
 
 	if(cmm_notify_port_status_changed(port)!=AFA_SUCCESS)
 		return AFA_FAILURE;
@@ -510,6 +530,7 @@ afa_result_t fwd_module_enable_port(const char* name){
 */
 afa_result_t fwd_module_disable_port(const char* name){
 
+    ROFL_DEBUG("[AFA] fwd_module_disable_port (name: %s)\n", name);
 	switch_port_t* port;
 	
 	//Check if the port does exist
@@ -544,6 +565,7 @@ afa_result_t fwd_module_disable_port(const char* name){
 */
 afa_result_t fwd_module_enable_port_by_num(uint64_t dpid, unsigned int port_num){
 
+    ROFL_DEBUG("[AFA] fwd_module_enable_port_by_num (dpid: %d, port: %d\n", dpid, port_num);
 	of_switch_t* lsw;
 	
 	lsw = physical_switch_get_logical_switch_by_dpid(dpid);
@@ -574,6 +596,7 @@ afa_result_t fwd_module_enable_port_by_num(uint64_t dpid, unsigned int port_num)
 */
 afa_result_t fwd_module_disable_port_by_num(uint64_t dpid, unsigned int port_num){
 
+    ROFL_DEBUG("[AFA] fwd_module_disable_port_by_num (dpid: %d, port: %d\n", dpid, port_num);
 	of_switch_t* lsw;
 	
 	lsw = physical_switch_get_logical_switch_by_dpid(dpid);
@@ -604,5 +627,6 @@ afa_result_t fwd_module_disable_port_by_num(uint64_t dpid, unsigned int port_num
  * @return
  */
 afa_result_t fwd_module_list_matching_algorithms(of_version_t of_version, const char * const** name_list, int *count){
+    ROFL_DEBUG("[AFA] fwd_module_list_matching_algorithms\n");
 	return (afa_result_t)of_get_switch_matching_algorithms(of_version, name_list, count);
 }
