@@ -21,6 +21,8 @@
 #include "iomanager.h"
 
 #include "ports/ioport.h" 
+#include "ports/mockup/ioport_mockup.h"
+#include "ports/ez_packet_channel/ioport_ez_packet_channel.h"
 #include "ports/mmap/ioport_mmap.h" 
 #include "ports/mmap/ioport_mmapv2.h" 
 #include "ports/vlink/ioport_vlink.h" 
@@ -123,6 +125,19 @@ static switch_port_t* fill_port(char* name){
     
       for(int j=0;j<6;j++)
         port->hwaddr[j] = 0x00; //FIXME: get MAC from EZ-port
+        
+    //port->platform_port_state = NULL;
+    
+    //Initialize MMAP-based port
+    //Change this line to use another ioport...
+    //ioport* io_port = new ioport_mmapv2(port);
+    //iport* io_port = new ioport_mmap(port);
+    ioport* io_port = new ioport_ez_packet_channel(port);
+
+    port->platform_port_state = (platform_port_state_t*)io_port;
+    
+    //Fill port queues
+    fill_port_queues(port, (ioport*)port->platform_port_state);
 
     //TODO: set rest of switch port attributes; See: rofl-core\src\rofl\datapath\pipeline\switch_port.h
     return port;

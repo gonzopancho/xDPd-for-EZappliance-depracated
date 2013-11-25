@@ -247,7 +247,7 @@ void* epoll_ioscheduler::process_io(void* grp){
 	epfd = -1;
 	init_or_update_fds(pg, ports, &epfd, &ev, &events, &current_num_of_ports, &current_hash );
 
-	ROFL_DEBUG_VERBOSE("[epoll_ioscheduler] Initialization of epoll completed in thread:%d\n",pthread_self());
+	ROFL_DEBUG("[epoll_ioscheduler] Initialization of epoll completed in thread:%d\n",pthread_self());
 	
 	/*
 	* Infinite loop unless group is stopped. e.g. all ports detached
@@ -260,7 +260,7 @@ void* epoll_ioscheduler::process_io(void* grp){
 		if(unlikely(res == -1)){
 #ifdef DEBUG
 			if (errno != EINTR){
-				ROFL_DEBUG("[epoll_ioscheduler] epoll returned -1 (%s) Continuing...\n",strerror(errno));
+				ROFL_DEBUG_VERBOSE("[epoll_ioscheduler] epoll returned -1 (%s) Continuing...\n",strerror(errno));
 				assert(0);
 			}
 #endif

@@ -22,7 +22,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 import sys, os, logging, time
-import socket
+import socket, errno
 from optparse import OptionParser
 from threading import Lock, Thread
 import thread
@@ -43,8 +43,11 @@ def sendFrame(conn, delay, frame):
         time.sleep(delay)
         conn.sendall(frame)
         logger.info("Frame %s sent", frame)
-    except:
-        logger.error("error", exc_info=True)
+    except socket.error as err:
+        if err.errno == errno.EBADF:
+            logger.error("Socket no longer exists")
+        else:
+            logger.error("Generic error", exc_info=True)
 
 ##############################################
 class TcpServer(Thread):
@@ -75,10 +78,17 @@ class TcpServer(Thread):
                 logger.info("%d: Connected by %s", i, addr)
                 while self.is_active:
                     logger.info('wait for data')
-                    data = conn.recv(4096)
-                    if not data:
-                        break
-                    self.handle_data(data, conn)
+                    try: 
+                        data = conn.recv(4096)
+                        if not data:
+                            break
+                        self.handle_data(data, conn)
+                    except socket.error as err:
+                        if err.errno == errno.ECONNRESET:
+                            logger.error("Client disconnected")
+                            break
+                        else:
+                            raise
                 conn.close()
                 logger.info("%d: Connection closed", i)
                 i += 1

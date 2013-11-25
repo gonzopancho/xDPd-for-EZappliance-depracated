@@ -44,6 +44,7 @@ AC_CONFIG_FILES([
 	src/io/ports/mmap/Makefile
 	src/io/ports/mockup/Makefile
 	src/io/ports/vlink/Makefile
+	src/io/ports/ez_packet_channel/Makefile
 	src/io/scheduler/Makefile
 	src/pipeline-imp/Makefile
 	src/processing/Makefile

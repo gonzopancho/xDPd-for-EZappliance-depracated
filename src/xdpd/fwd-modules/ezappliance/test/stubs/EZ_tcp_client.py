@@ -43,8 +43,11 @@ def sendFrame(conn, delay, frame):
         time.sleep(delay)
         conn.sendall(frame)
         logger.info("Frame %s sent", frame)
-    except:
-        logger.error("error", exc_info=True)
+    except socket.error as err:
+        if err.errno == errno.EBADF:
+            logger.error("Socket no longer exists")
+        else:
+            logger.error("Generic error", exc_info=True)
  
 ##############################################
     

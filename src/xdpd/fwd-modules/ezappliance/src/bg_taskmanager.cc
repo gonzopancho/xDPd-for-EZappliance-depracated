@@ -14,8 +14,6 @@
 #include <sys/epoll.h>
 #include <sys/time.h>
 #include <sys/types.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -47,250 +45,82 @@ static bool bg_continue_execution = true;
  */
 
 /**
- * @name prepare_event_socket
- * @brief creates socket and binds it to the NETLINK events
- */
-int prepare_event_socket()
-{
-	int sock;
-	struct sockaddr_nl addr;
-
-	if ((sock = socket(PF_NETLINK, SOCK_RAW, NETLINK_ROUTE)) == -1){
-		ROFL_ERR("Couldn't open NETLINK_ROUTE socket, errno(%d): %s\n", errno, strerror(errno));
-		return -1;
-	}
-
-	if(fcntl(sock, F_SETFL, fcntl(sock, F_GETFL) | O_NONBLOCK) < 0){
-		// handle error
-		ROFL_ERR("Error fcntl, errno(%d): %s\n", errno, strerror(errno));
-		return -1;
-	}
-
-	memset(&addr, 0, sizeof(addr));
-	addr.nl_family = AF_NETLINK;
-	addr.nl_groups = RTMGRP_LINK | RTMGRP_IPV4_IFADDR;
-
-	if (bind(sock, (struct sockaddr *)&addr, sizeof(addr)) == -1){
-		ROFL_ERR("couldn't bind, errno(%d): %s\n", errno, strerror(errno));
-		return -1;
-	}
-
-	return sock;
-}
-
-
-/**
- * @name connect_to_ezproxy_packet_interface
- * @brief creates TCP connection for packet-in and packet-out operations between NP-3 and xdpd
- */
-int connect_to_ezproxy_packet_interface()
-{
-    int sockfd;
-    struct sockaddr_in dest_addr;
-    //char buffer[4096];
-
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd < 0) 
-    {
-        ROFL_ERR("Couldn't open SOCK_STREAM socket, errno(%d): %s\n", errno, strerror(errno));
-        return -1;
-    }
-    
-    dest_addr.sin_family = AF_INET; // host byte order
-    dest_addr.sin_port = htons(8080); // destination port
-    dest_addr.sin_addr.s_addr = inet_addr("127.0.0.1"); // destination address
-    memset(&(dest_addr.sin_zero), '\0', 8); 
-   
-     /* Now connect to the server */
-    if (connect(sockfd,(struct sockaddr*) & dest_addr, sizeof(struct sockaddr)) < 0) 
-    {
-        ROFL_ERR("Couldn't connect to %s:%d, errno(%d): %s\n", "127.0.0.1", 8080, errno, strerror(errno));
-        return -1;
-    }   
-    ROFL_INFO("Connected to %s:%d\n", "127.0.0.1", 8080);
-    
-    char msg[] = "Damian was here!";
-    int len, n;
-    len = strlen(msg);
-
-    n = write(sockfd, msg, len); //returns bytes send
-    if (n < 0) 
-    {
-         ROFL_ERR("ERROR writing to socket");
-         
-    } 
-    /* Now read server response */ /*
-    bzero(buffer,4096);
-    n = read(sockfd, buffer, 4096); //returns bytes read
-    if (n < 0) 
-    {
-         ROFL_ERR("ERROR reading from socket");
-    }
-    ROFL_INFO("%s\n",buffer); */
-    return sockfd;
-}
-
-/*
-*  TODO: probably this belongs to iface_utils
-*/
-
-static int read_netlink_socket(int fd, char *buf, int seq_num, int pid){
-
-	struct nlmsghdr *nlh;
-	int read_len = 0, msg_len = 0;
-
-	do {
-		/* Recieve response from the kernel */
-		if ((read_len = recv(fd, buf, MAX_NL_MESSAGE_HEADER - msg_len, 0)) < 0) {
-		    return -1;
-		}
-
-		nlh = (struct nlmsghdr *) buf;
-
-		/* Check if the header is valid */
-		if ((NLMSG_OK(nlh, (unsigned int)read_len) == 0)
-		    || (nlh->nlmsg_type == NLMSG_ERROR)) {
-		    return -1;
-		}
-
-		/* Check if the its the last message */
-		if (nlh->nlmsg_type == NLMSG_DONE) {
-		    break;
-		} else {
-		/* Else move the pointer to buffer appropriately */
-		    buf += read_len;
-		    msg_len += read_len;
-		}
-
-		/* Check if its a multi part message */
-		if ((nlh->nlmsg_flags & NLM_F_MULTI) == 0) {
-		   /* return if its not */
-		    break;
-		}
-	} while ((nlh->nlmsg_seq != (unsigned int)seq_num) || (nlh->nlmsg_pid != (unsigned int)pid));
-	
-	return msg_len;
-}
-
-/**
- * @name read_netlink_message
- * @brief once we have received a NL message, this function reads the content and 
- * calls a function to update the port structure
- * @param fd file descriptor where the message has been received
- */
-static rofl_result_t read_netlink_message(int fd){
-	
-	int len;
-	struct nlmsghdr *nlh;
-	char recv_buffer[MAX_NL_MESSAGE_HEADER];
-	nlh = (struct nlmsghdr *)recv_buffer;
-	
-	struct ifinfomsg *ifi;
-	char name[IFNAMSIZ];
-
-	len = read_netlink_socket(fd,(char*)nlh, 0, getpid());
-	if(len <= 0)
-		return ROFL_FAILURE; 
-
-	for (; NLMSG_OK(nlh, (unsigned int)len); nlh = NLMSG_NEXT(nlh, len)) {
-
-	    if (nlh->nlmsg_type == RTM_NEWLINK){
-				ifi = (struct ifinfomsg *) NLMSG_DATA(nlh);
-				
-				if(!if_indextoname(ifi->ifi_index, name))
-					continue; //Unable to map interface
-				
-				ROFL_DEBUG_VERBOSE("--------> Interface changed status %s (%u)\n",name, ifi->ifi_index);
-				
-				// HERE change the status to the port structure
-				if(update_port_status(name)!=ROFL_SUCCESS)
-					return ROFL_FAILURE;
-	    }else{
-		//Likely triggered by an addition of a port
-		return update_physical_ports();
-	    }
-	}
-	
-	return ROFL_SUCCESS;
-}
-
-/**
  * @name process_timeouts
  * @brief checks if its time to process timeouts (flow entries and pool of buffers)
  * @param psw physical switch (where all the logical switches are)
  */
 int process_timeouts()
 {
-	datapacket_t* pkt;
-	unsigned int i, max_switches;
-	struct timeval now;
-	of_switch_t** logical_switches;
-	static struct timeval last_time_entries_checked={0,0}, last_time_pool_checked={0,0};
-	gettimeofday(&now,NULL);
+    datapacket_t* pkt;
+    unsigned int i, max_switches;
+    struct timeval now;
+    of_switch_t** logical_switches;
+    static struct timeval last_time_entries_checked={0,0}, last_time_pool_checked={0,0};
+    gettimeofday(&now,NULL);
 
-	//Retrieve the logical switches list
-	logical_switches = physical_switch_get_logical_switches(&max_switches);
-	
-	if(get_time_difference_ms(&now, &last_time_entries_checked)>=LSW_TIMER_SLOT_MS)
-	{
+    //Retrieve the logical switches list
+    logical_switches = physical_switch_get_logical_switches(&max_switches);
+    
+    if(get_time_difference_ms(&now, &last_time_entries_checked)>=LSW_TIMER_SLOT_MS)
+    {
 #ifdef DEBUG
-		static int dummy = 0;
+        static int dummy = 0;
 #endif
 
-		//TIMERS FLOW ENTRIES
-		for(i=0; i<max_switches; i++)
-		{
+        //TIMERS FLOW ENTRIES
+        for(i=0; i<max_switches; i++)
+        {
 
-			if(logical_switches[i] != NULL){
-				of_process_pipeline_tables_timeout_expirations(logical_switches[i]);
-				
+            if(logical_switches[i] != NULL){
+                of_process_pipeline_tables_timeout_expirations(logical_switches[i]);
+                
 #ifdef DEBUG
-				if(dummy%20 == 0)
-					of1x_full_dump_switch((of1x_switch_t*)logical_switches[i]);
+                if(dummy%20 == 0)
+                    of1x_full_dump_switch((of1x_switch_t*)logical_switches[i]);
 #endif
-			}
-		}
-			
+            }
+        }
+            
 #ifdef DEBUG
-		dummy++;
-		//ROFL_DEBUG_VERBOSE("Checking flow entries expirations %lu:%lu\n",now.tv_sec,now.tv_usec);
+        dummy++;
+        //ROFL_DEBUG_VERBOSE("Checking flow entries expirations %lu:%lu\n",now.tv_sec,now.tv_usec);
 #endif
-		last_time_entries_checked = now;
-	}
-	
-	if(get_time_difference_ms(&now, &last_time_pool_checked)>=LSW_TIMER_BUFFER_POOL_MS){
-		uint32_t buffer_id;
-		datapacket_storage* dps=NULL;
-		
-		for(i=0; i<max_switches; i++){
+        last_time_entries_checked = now;
+    }
+    
+    if(get_time_difference_ms(&now, &last_time_pool_checked)>=LSW_TIMER_BUFFER_POOL_MS){
+        uint32_t buffer_id;
+        datapacket_storage* dps=NULL;
+        
+        for(i=0; i<max_switches; i++){
 
-			if(logical_switches[i] != NULL){
+            if(logical_switches[i] != NULL){
 
-				//Recover storage pointer
-				dps =( (struct logical_switch_internals*) logical_switches[i]->platform_state)->storage;
-				//Loop until the oldest expired packet is taken out
-				while(dps->oldest_packet_needs_expiration(&buffer_id)){
+                //Recover storage pointer
+                dps =( (struct logical_switch_internals*) logical_switches[i]->platform_state)->storage;
+                //Loop until the oldest expired packet is taken out
+                while(dps->oldest_packet_needs_expiration(&buffer_id)){
 
-					ROFL_DEBUG_VERBOSE("Trying to erase a datapacket from storage: %u\n", buffer_id);
+                    ROFL_DEBUG_VERBOSE("Trying to erase a datapacket from storage: %u\n", buffer_id);
 
-					if( (pkt = dps->get_packet(buffer_id) ) == NULL ){
-						ROFL_DEBUG_VERBOSE("Error in get_packet_wrapper %u\n", buffer_id);
-					}else{
-						ROFL_DEBUG_VERBOSE("Datapacket expired correctly %u\n", buffer_id);
-						//Return buffer to bufferpool
-						bufferpool::release_buffer(pkt);
-					}
-				}
-			}
-		}
-		
+                    if( (pkt = dps->get_packet(buffer_id) ) == NULL ){
+                        ROFL_DEBUG_VERBOSE("Error in get_packet_wrapper %u\n", buffer_id);
+                    }else{
+                        ROFL_DEBUG_VERBOSE("Datapacket expired correctly %u\n", buffer_id);
+                        //Return buffer to bufferpool
+                        bufferpool::release_buffer(pkt);
+                    }
+                }
+            }
+        }
+        
 #ifdef DEBUG
-		//ROFL_ERR("Checking pool buffers expirations %lu:%lu\n",now.tv_sec,now.tv_usec);
+        //ROFL_ERR("Checking pool buffers expirations %lu:%lu\n",now.tv_sec,now.tv_usec);
 #endif
-		last_time_pool_checked = now;
-	}
-	
-	return ROFL_SUCCESS;
+        last_time_pool_checked = now;
+    }
+    
+    return ROFL_SUCCESS;
 }
 
 /**
@@ -299,101 +129,76 @@ int process_timeouts()
  */
 void* x86_background_tasks_routine(void* param)
 {
-	int i, efd, events_socket,nfds;
-	struct epoll_event event_list[MAX_EPOLL_EVENTS], epe_port;
+    int i, efd,nfds;
+    struct epoll_event event_list[MAX_EPOLL_EVENTS], epe_port;
 
-	// program an epoll that listents to the file descriptors of the ports with a
-	// timeout that makes us check 
-	
-	memset(event_list,0,sizeof(event_list));
-	memset(&epe_port,0,sizeof(epe_port));
-	
-	if((events_socket=prepare_event_socket())<0){
-		exit(ROFL_FAILURE);
-	}
-	
-	connect_to_ezproxy_packet_interface();
-	
-	efd = epoll_create1(0);
-
-	if(efd == -1){
-		ROFL_ERR("Error in epoll_create1, errno(%d): %s\n", errno, strerror(errno) );
-		return NULL;
-	}
-
-	//Add netlink	
-	epe_port.data.fd = events_socket;
-	epe_port.events = EPOLLIN; //| EPOLLET;
+    // program an epoll that listents to the file descriptors of the ports with a
+    // timeout that makes us check 
     
-	if(epoll_ctl(efd,EPOLL_CTL_ADD,events_socket,&epe_port)==-1){
-		ROFL_ERR("Error in epoll_ctl, errno(%d): %s\n", errno, strerror(errno));
-		return NULL;
-	}
+    memset(event_list,0,sizeof(event_list));
+    memset(&epe_port,0,sizeof(epe_port));
+    
+    efd = epoll_create1(0);
 
-	//Add PKT_IN
-	init_packetin_pipe();
+    if(efd == -1){
+        ROFL_ERR("Error in epoll_create1, errno(%d): %s\n", errno, strerror(errno) );
+        return NULL;
+    }
 
-	epe_port.data.fd = get_packet_in_read_fd();
-	epe_port.events = EPOLLIN | EPOLLET;
-   
-	
-	if(epoll_ctl(efd,EPOLL_CTL_ADD, epe_port.data.fd, &epe_port)==-1){
-		ROFL_ERR("Error in epoll_ctl, errno(%d): %s\n", errno, strerror(errno));
-		return NULL;
-	}
-	
-	while(bg_continue_execution){
-		
-        ROFL_INFO("3\n");
-		//Throttle
-		nfds = epoll_wait(efd, event_list, MAX_EPOLL_EVENTS, LSW_TIMER_SLOT_MS/*timeout needs TBD somewhere else*/);
+    //Add PKT_IN
+    init_packetin_pipe();
 
-        ROFL_INFO("4\n");
-		if(nfds==-1){
-			//ROFL_DEBUG("Epoll Failed\n");
-			continue;
-		}
-
-		//Check for events
-		for(i=0;i<nfds;i++){
-
-			if( (event_list[i].events & EPOLLERR) || (event_list[i].events & EPOLLHUP)/*||(event_list[i].events & EPOLLIN)*/){
-				//error on this fd
-				//ROFL_ERR("Error in file descriptor\n");
-				close(event_list[i].data.fd); //fd gets removed automatically from efd's
-				continue;
-			}else{
-				//Is netlink or packet-in subsystem
-				if(get_packet_in_read_fd() == event_list[i].data.fd){
-					//PKT_IN
-					process_packet_ins();	
-				}else{
-					//Netlink message
-					read_netlink_message(event_list[i].data.fd);
-				}
-			}
-		}
-		ROFL_INFO("5\n");
-		
-		//check timers expiration 
-		process_timeouts();
+    epe_port.data.fd = get_packet_in_read_fd();
+    epe_port.events = EPOLLIN | EPOLLET;
+    
+    if(epoll_ctl(efd,EPOLL_CTL_ADD, epe_port.data.fd, &epe_port)==-1){
+        ROFL_ERR("Error in epoll_ctl, errno(%d): %s\n", errno, strerror(errno));
+        return NULL;
+    }
+    
+    while(bg_continue_execution){
         
-        ROFL_INFO("6\n");
-	}
-	
-	ROFL_INFO("7\n");
+        //Throttle
+        nfds = epoll_wait(efd, event_list, MAX_EPOLL_EVENTS, LSW_TIMER_SLOT_MS/*timeout needs TBD somewhere else*/);
 
-	//Cleanup packet-in
-	destroy_packetin_pipe();
-	
-	//Cleanup epoll fd
-	close(efd);
-	
-	//Printing some information
-	ROFL_DEBUG("[bg] Finishing thread execution\n"); 
 
-	//Exit
-	pthread_exit(NULL);	
+        if(nfds==-1){
+            //ROFL_DEBUG("Epoll Failed\n");
+            continue;
+        }
+
+        //Check for events
+        for(i=0;i<nfds;i++){
+
+            if( (event_list[i].events & EPOLLERR) || (event_list[i].events & EPOLLHUP)/*||(event_list[i].events & EPOLLIN)*/){
+                //error on this fd
+                //ROFL_ERR("Error in file descriptor\n");
+                close(event_list[i].data.fd); //fd gets removed automatically from efd's
+                continue;
+            }else{
+                //Is netlink or packet-in subsystem
+                if(get_packet_in_read_fd() == event_list[i].data.fd){
+                    //PKT_IN
+                    process_packet_ins();
+                }
+            }
+        }
+        
+        //check timers expiration 
+        process_timeouts();
+    }
+
+    //Cleanup packet-in
+    destroy_packetin_pipe();
+    
+    //Cleanup epoll fd
+    close(efd);
+    
+    //Printing some information
+    ROFL_DEBUG("[bg] Finishing thread execution\n"); 
+
+    //Exit
+    pthread_exit(NULL); 
 }
 
 /**
@@ -401,19 +206,19 @@ void* x86_background_tasks_routine(void* param)
  */
 rofl_result_t launch_background_tasks_manager()
 {
-	//Set flag
-	bg_continue_execution = true;
+    //Set flag
+    bg_continue_execution = true;
 
-	if(pthread_create(&bg_thread, NULL, x86_background_tasks_routine,NULL)<0){
-		ROFL_ERR("pthread_create failed, errno(%d): %s\n", errno, strerror(errno));
-		return ROFL_FAILURE;
-	}
-	return ROFL_SUCCESS;
+    if(pthread_create(&bg_thread, NULL, x86_background_tasks_routine,NULL)<0){
+        ROFL_ERR("pthread_create failed, errno(%d): %s\n", errno, strerror(errno));
+        return ROFL_FAILURE;
+    }
+    return ROFL_SUCCESS;
 }
 
 rofl_result_t stop_background_tasks_manager()
 {
-	bg_continue_execution = false;
-	pthread_join(bg_thread,NULL);
-	return ROFL_SUCCESS;
+    bg_continue_execution = false;
+    pthread_join(bg_thread,NULL);
+    return ROFL_SUCCESS;
 }

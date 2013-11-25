@@ -119,14 +119,14 @@ of_switch_t* fwd_module_create_switch(char* name, uint64_t dpid, of_version_t of
 	sw = (of_switch_t*)of1x_init_switch(name, of_version, dpid, num_of_tables, (enum of1x_matching_algorithm_available*) ma_list);
 
 	//Launch switch processing threads
-    /*
+
 	if(start_ls_workers_wrapper(sw) != ROFL_SUCCESS){
 		
 		ROFL_ERR("<%s:%d> error initializing workers from processing manager. Destroying switch...\n",__func__,__LINE__);
 		of_destroy_switch(sw);
 		return NULL;
 	}
-	*/
+
 	//Add switch to the bank	
 	physical_switch_add_logical_switch(sw);
 	
@@ -502,18 +502,16 @@ afa_result_t fwd_module_enable_port(const char* name){
 		return AFA_FAILURE;
 
 	//Bring it up
-    /*
+    
 	if(port->attached_sw){
 		//Port is attached and belonging to a port group. Instruct I/O manager to start the port
-		ROFL_INFO("fwd_module_enable_port 2.1\n");
 		if(iomanager::bring_port_up((ioport*)port->platform_port_state)!=ROFL_SUCCESS)
 			return AFA_FAILURE;
 	}else{
-        ROFL_INFO("fwd_module_enable_port 2.2\n");
 		//The port is not attached. Only bring it up (ifconfig up)
 		if(enable_port(port->platform_port_state)!=ROFL_SUCCESS)
 			return AFA_FAILURE;
-	}*/
+	}
 
 	if(cmm_notify_port_status_changed(port)!=AFA_SUCCESS)
 		return AFA_FAILURE;
