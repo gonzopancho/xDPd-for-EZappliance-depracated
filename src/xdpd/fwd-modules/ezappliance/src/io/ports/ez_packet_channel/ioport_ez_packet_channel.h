@@ -45,7 +45,7 @@ public:
 	//virtual circular_queue_state_t get_output_queue_state(unsigned int q_id=0);
 
 	virtual rofl_result_t 
-	disable();
+    disable();
 
 	virtual rofl_result_t
 	enable();

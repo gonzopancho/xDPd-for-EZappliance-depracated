@@ -16,7 +16,7 @@ using namespace xdpd::gnu_linux;
 //Constructor and destructor
 ioport_ez_packet_channel::ioport_ez_packet_channel(switch_port_t* of_ps, unsigned int num_queues):ioport(of_ps,num_queues){
 	
-	int ret,flags,i;
+    int ret,flags,i;
     
     ez_packets_socket = connect_to_ezproxy_packet_interface();
 		
