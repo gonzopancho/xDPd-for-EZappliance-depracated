@@ -23,6 +23,7 @@
 
 import sys, os, logging, time
 import socket, errno
+import struct, binascii
 from optparse import OptionParser
 from threading import Lock, Thread
 import thread
@@ -37,12 +38,16 @@ __version__ = '0.1'
 
 ##############################################
 
-def sendFrame(conn, delay, frame):
+def generateMessage(input_port, frame):
+    n = len(frame)
+    return struct.pack("!BH%ds" % n, input_port, len(frame), frame)
+
+def sendMessage(conn, delay, message):
     try:
         logger.info('Event registered for %d seconds', delay)
         time.sleep(delay)
-        conn.sendall(frame)
-        logger.info("Frame %s sent", frame)
+        conn.sendall(message)
+        logger.info(binascii.hexlify(messsage))
     except socket.error as err:
         if err.errno == errno.EBADF:
             logger.error("Socket no longer exists")
@@ -73,8 +78,7 @@ class TcpServer(Thread):
             while self.is_active:
                 logger.info("%d: Waiting for connection...", i)
                 conn, addr = s.accept()
-                thread.start_new_thread(sendFrame, (conn, 7, "C"*10))
-                thread.start_new_thread(sendFrame, (conn, 13, "D"*5))
+                thread.start_new_thread(sendMessage, (conn, 7, generateMessage(2, "C"*10)))
                 logger.info("%d: Connected by %s", i, addr)
                 while self.is_active:
                     logger.info('wait for data')
@@ -166,7 +170,7 @@ if __name__ == "__main__":
     elif 'restart' == args[0]:
         logger.info('restarting the module')
         daemon.stop()
-        deamon.start()
+        daemon.start()
     else:
         print "Unknown command"
         print usage

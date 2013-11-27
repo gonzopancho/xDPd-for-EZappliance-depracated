@@ -9,6 +9,7 @@
 #include <rofl/common/utils/c_logger.h>
 #include "../../bufferpool.h" 
 #include <fcntl.h>
+#include <string.h>
 
 using namespace xdpd::gnu_linux;
 
@@ -98,6 +99,9 @@ datapacket_t* ioport_ez_packet_channel::read(){
 	
 	datapacket_t* pkt; 
 	datapacketx86* pkt_x86;
+    uint8_t packet_buffer[4086];
+    uint8_t input_port;
+    uint32_t frame_size;
 
 
 	//First attempt drain local buffers from previous reads that failed to push 
@@ -113,10 +117,19 @@ datapacket_t* ioport_ez_packet_channel::read(){
 	pkt_x86->init(NULL, SIMULATED_PKT_SIZE, of_port_state->attached_sw, of_port_state->of_port_num);
 	
 	//Copy something from TCP socket to buffer, TODO: read packet metatada header containing input port and packet size
-	if(::read(ez_packets_socket,pkt_x86->get_buffer(),SIMULATED_PKT_SIZE) <0){    
+    int n=0;
+	if((n = ::read(ez_packets_socket,packet_buffer,SIMULATED_PKT_SIZE)) < 0){    
 		bufferpool::release_buffer(pkt);
 		return NULL;
 	}
+    
+     //Parsing metedata header
+	ROFL_DEBUG("Received message from EZ with length: %d\n", n);
+	input_port = packet_buffer[0];
+	frame_size = ntohs(((uint16_t*)(packet_buffer+1))[0]);
+    memcpy(pkt_x86->get_buffer(), packet_buffer+3, frame_size);
+    
+    ROFL_DEBUG("Received packet from port: %d with length: %d\n", input_port, frame_size);
 
 	ROFL_DEBUG("Filled buffer with id:%d. Sending to process.\n", pkt_x86->buffer_id);
 	
@@ -131,6 +144,8 @@ unsigned int ioport_ez_packet_channel::write(unsigned int q_id, unsigned int num
 	unsigned int i;
 	datapacket_t* pkt;
 	datapacketx86* pkt_x86;
+    uint8_t packet_buffer[4086];
+    uint8_t output_port = 1;
 	
 	(void)pkt_x86;
 
@@ -148,8 +163,13 @@ unsigned int ioport_ez_packet_channel::write(unsigned int q_id, unsigned int num
 		
 		pkt_x86 = (datapacketx86*)pkt->platform_state;
         
-        //Send packet by TCP connection to EZ; TODO: add metadata header with output port number and packet length
-        if(::write(ez_packets_socket, pkt_x86->get_buffer(), SIMULATED_PKT_SIZE) < 0) {
+        //Creating metedata header
+        packet_buffer[0] = output_port;
+        ((uint16_t*)(packet_buffer+1))[0] = htons(pkt_x86->get_buffer_length());
+        memcpy(packet_buffer+3, pkt_x86->get_buffer(), pkt_x86->get_buffer_length());
+        
+        //Send packet by TCP connection to EZ
+        if(::write(ez_packets_socket, packet_buffer, SIMULATED_PKT_SIZE) < 0) {
             ROFL_ERR("ERROR writing to socket");
         } 
 		
