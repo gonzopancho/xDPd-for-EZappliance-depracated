@@ -49,6 +49,7 @@ AC_CONFIG_FILES([
 	src/pipeline-imp/Makefile
 	src/processing/Makefile
 	src/util/Makefile
+	src/ezappliance/Makefile
 
 	test/Makefile
 	test/regression/Makefile

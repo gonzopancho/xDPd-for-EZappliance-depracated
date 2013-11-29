@@ -37,17 +37,21 @@ __version__ = '0.1'
 
 ##############################################
 
-def sendFrame(conn, delay, frame):
+def generateMessage(output_port, frame):
+    n = len(frame)
+    return struct.pack("!BH%ds" % n, output_port, len(frame), frame)
+
+def sendMessage(conn, delay, message):
     try:
         logger.info('Event registered for %d seconds', delay)
         time.sleep(delay)
-        conn.sendall(frame)
-        logger.info("Frame %s sent", frame)
+        conn.sendall(message)
+        logger.info(binascii.hexlify(messsage))
     except socket.error as err:
         if err.errno == errno.EBADF:
             logger.error("Socket no longer exists")
         else:
-            logger.error("Generic error", exc_info=True)
+            logger.error("Generic error", exc_info=True)s
  
 ##############################################
     
@@ -72,8 +76,7 @@ class TcpClient(Thread):
                 
                 logger.info("%d: Connected to %s:%d", i, HOST, PORT)
                 
-                thread.start_new_thread(sendFrame, (s, 5, "A"*10))
-                thread.start_new_thread(sendFrame, (s, 10, "B"*5))
+                thread.start_new_thread(sendMessage, (conn, 7, generateMessage(3, "A"*6)))
                 
                 while self.is_active:
                     logger.info('wait for data')
