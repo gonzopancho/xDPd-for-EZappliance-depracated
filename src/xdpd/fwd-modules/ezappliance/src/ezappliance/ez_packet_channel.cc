@@ -28,10 +28,12 @@ static ez_packet_channel* ez_packket_channel_instance = NULL;
 
 //Constructor and destructor
 ez_packet_channel::ez_packet_channel(){
+        
         ez_packket_channel_instance = this;
 }
 
 ez_packet_channel::~ez_packet_channel(){
+        
         close(ez_packets_socket);
 }
 
@@ -40,6 +42,7 @@ ez_packet_channel::~ez_packet_channel(){
 * @brief creates TCP connection for packet-in and packet-out operations between NP-3 and xdpd
 */
 int ez_packet_channel::connect_to_ezproxy_packet_interface() {
+        
         int sockfd;
         struct sockaddr_in dest_addr;
 
@@ -53,8 +56,7 @@ int ez_packet_channel::connect_to_ezproxy_packet_interface() {
                 ROFL_ERR("[EZ-packet-channel] Setting socket timeout failed \n");
         }
 
-        if (sockfd < 0) 
-        {
+        if (sockfd < 0) {
                 ROFL_ERR("[EZ-packet-channel] Couldn't open SOCK_STREAM socket, errno(%d): %s\n", errno, strerror(errno));
                 return -1;
         }
@@ -65,8 +67,7 @@ int ez_packet_channel::connect_to_ezproxy_packet_interface() {
         memset(&(dest_addr.sin_zero), '\0', 8); 
 
         /* Now connect to the server */
-        if (connect(sockfd,(struct sockaddr*) & dest_addr, sizeof(struct sockaddr)) < 0) 
-        {
+        if (connect(sockfd,(struct sockaddr*) & dest_addr, sizeof(struct sockaddr)) < 0) {
                 ROFL_ERR("[EZ-packet-channel] Couldn't connect to %s:%d, errno(%d): %s\n", "127.0.0.1", 8080, errno, strerror(errno));
                 return -1;
         }   
@@ -95,7 +96,7 @@ datapacket_t* ez_packet_channel::read(){
 
         //Copy something from TCP socket to buffer
         int n=0;
-        if((n = ::read(ez_packets_socket,packet_buffer,4086)) < 0){ 
+        if((n = ::read(ez_packets_socket,packet_buffer,4086)) < 0) { 
                 ROFL_DEBUG_VERBOSE("[EZ-packet-channel] Error: %s\n", strerror(errno));
                 bufferpool::release_buffer(pkt);
                 if (errno == EAGAIN || errno == EWOULDBLOCK)
@@ -111,7 +112,6 @@ datapacket_t* ez_packet_channel::read(){
         }
 
         //Parsing metedata header
-        ROFL_DEBUG("[EZ-packet-channel] Received message from EZ with length: %d\n", n);
         input_port = packet_buffer[0];
         frame_size = ntohs(((uint16_t*)(packet_buffer+1))[0]);
 
@@ -119,7 +119,6 @@ datapacket_t* ez_packet_channel::read(){
         pkt_x86->init(packet_buffer+3, frame_size, NULL, (uint32_t)input_port, (uint32_t)input_port, true, true);
         
         ROFL_DEBUG("[EZ-packet-channel] Received packet from port: %d with length: %d\n", input_port, frame_size);
-        ROFL_DEBUG("[EZ-packet-channel] Filled buffer with id:%d. Sending to process.\n", pkt_x86->buffer_id);
         
         return pkt;	
 }
@@ -178,7 +177,7 @@ void ez_packet_channel::start() {
         
         datapacket_t* pkt;
         while (ez_continue_execution) {
-                if((ez_packets_socket = connect_to_ezproxy_packet_interface()) < 0){
+                if((ez_packets_socket = connect_to_ezproxy_packet_interface()) < 0) {
                         close(ez_packets_socket);
                         sleep(10); // retry connect in 10 seconds
                         continue;
@@ -189,7 +188,7 @@ void ez_packet_channel::start() {
                                 if ((pkt = read()) != NULL)
                                         put_packet_to_pipeline(pkt);
                         }
-                        catch (int e)   {
+                        catch (int e) {
                                 if (e == 20)
                                         break; //back to connecting state
                                 else
@@ -200,6 +199,7 @@ void ez_packet_channel::start() {
 }
 
 static void* ez_packet_channel_routine(void* param) {
+        
         ez_packet_channel* channel = new ez_packet_channel();
         channel->start();
         
@@ -208,9 +208,10 @@ static void* ez_packet_channel_routine(void* param) {
 }
 
 /**
-* launches the main thread
+* launches the thread
 */
 rofl_result_t launch_ez_packet_channel() {
+        
         //Set flag
         ez_continue_execution = true;
 
@@ -221,16 +222,22 @@ rofl_result_t launch_ez_packet_channel() {
         return ROFL_SUCCESS;
 }
 
+/**
+* stops the thread
+*/
 rofl_result_t stop_ez_packet_channel() {
+        
         ez_continue_execution = false;
         pthread_join(ez_thread,NULL);
         return ROFL_SUCCESS;
 }
 
 void* get_ez_packet_channel() {
+        
         return (void*)ez_packket_channel_instance;
 }
 
 void set_lsw_for_ez_packet_channel(of_switch_t* sw) {
+        
         ez_packket_channel_instance->logical_switch = sw;
 }
