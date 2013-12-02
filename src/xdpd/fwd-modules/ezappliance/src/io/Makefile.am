@@ -1,6 +1,6 @@
 MAINTAINERCLEANFILES = Makefile.in
 
-SUBDIRS = packet_classifiers ports scheduler
+SUBDIRS = packet_classifiers
 
 noinst_LTLIBRARIES = libfwd_module_gnu_linux_io.la
 
@@ -18,12 +18,7 @@ libfwd_module_gnu_linux_io_la_SOURCES = \
 	datapacketx86.cc \
 	datapacketx86.h \
 	iface_utils.cc\
-	iface_utils.h\
-	iomanager.cc \
-	iomanager.cc \
-	iomanager.h
+	iface_utils.h
 
 libfwd_module_gnu_linux_io_la_LIBADD = \
-	packet_classifiers/libfwd_module_gnu_linux_io_classifiers.la \
-	ports/libfwd_module_gnu_linux_io_ports.la \
-	scheduler/libfwd_module_gnu_linux_io_scheduler.la
+	packet_classifiers/libfwd_module_gnu_linux_io_classifiers.la

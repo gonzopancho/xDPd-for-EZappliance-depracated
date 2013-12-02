@@ -40,21 +40,11 @@ AC_CONFIG_FILES([
 	src/afa-imp/openflow/openflow1x/Makefile
 	src/io/Makefile
 	src/io/packet_classifiers/Makefile
-	src/io/ports/Makefile
-	src/io/ports/mmap/Makefile
-	src/io/ports/mockup/Makefile
-	src/io/ports/vlink/Makefile
-	src/io/ports/ez_packet_channel/Makefile
-	src/io/scheduler/Makefile
 	src/pipeline-imp/Makefile
-	src/processing/Makefile
 	src/util/Makefile
 	src/ezappliance/Makefile
 
 	test/Makefile
-	test/regression/Makefile
-	test/regression/io/Makefile
-	test/regression/processing/Makefile
 	test/unit/Makefile
 	test/unit/util/Makefile
 	test/unit/io/Makefile

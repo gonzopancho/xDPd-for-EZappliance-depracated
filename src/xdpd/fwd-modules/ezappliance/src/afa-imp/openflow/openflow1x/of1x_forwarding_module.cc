@@ -8,8 +8,6 @@
 #include "../../../io/bufferpool.h"
 #include "../../../io/datapacket_storage.h"
 #include "../../../io/datapacketx86.h"
-#include "../../../io/ports/ioport.h"
-#include "../../../processing/ls_internal_state.h"
 
 using namespace xdpd::gnu_linux;
 
@@ -45,17 +43,10 @@ static inline bool action_group_of1x_packet_in_contains_output(of1x_action_group
 afa_result_t fwd_module_of1x_set_port_drop_received_config(uint64_t dpid, unsigned int port_num, bool drop_received){
 	
 	switch_port_t* port = physical_switch_get_port_by_num(dpid,port_num);
-	ioport* ioport_instance;
+        
+        if(!port)
+                return AFA_FAILURE;
 
-	if(!port)
-		return AFA_FAILURE;
-
-	ioport_instance = (ioport*)port->platform_port_state;	
-
-	//Set flag
-	if(ioport_instance->set_drop_received_config(drop_received) != ROFL_SUCCESS )
-		return AFA_FAILURE;
-	
 	return AFA_SUCCESS;
 }
 
@@ -71,15 +62,8 @@ afa_result_t fwd_module_of1x_set_port_drop_received_config(uint64_t dpid, unsign
 afa_result_t fwd_module_of1x_set_port_no_flood_config(uint64_t dpid, unsigned int port_num, bool no_flood){
 	
 	switch_port_t* port = physical_switch_get_port_by_num(dpid,port_num);
-	ioport* ioport_instance;
 
 	if(!port)
-		return AFA_FAILURE;
-
-	ioport_instance = (ioport*)port->platform_port_state;	
-
-	//Set flag
-	if(ioport_instance->set_no_flood_config(no_flood) != ROFL_SUCCESS )
 		return AFA_FAILURE;
 	
 	return AFA_SUCCESS;
@@ -96,17 +80,10 @@ afa_result_t fwd_module_of1x_set_port_no_flood_config(uint64_t dpid, unsigned in
  */
 afa_result_t fwd_module_of1x_set_port_forward_config(uint64_t dpid, unsigned int port_num, bool forward){
 	switch_port_t* port = physical_switch_get_port_by_num(dpid,port_num);
-	ioport* ioport_instance;
 
 	if(!port)
 		return AFA_FAILURE;
 
-	ioport_instance = (ioport*)port->platform_port_state;	
-
-	//Set flag
-	if(ioport_instance->set_forward_config(forward) != ROFL_SUCCESS )
-		return AFA_FAILURE;
-	
 	return AFA_SUCCESS;
 }
 /**
@@ -121,16 +98,9 @@ afa_result_t fwd_module_of1x_set_port_forward_config(uint64_t dpid, unsigned int
 afa_result_t fwd_module_of1x_set_port_generate_packet_in_config(uint64_t dpid, unsigned int port_num, bool generate_packet_in){
 	
 	switch_port_t* port = physical_switch_get_port_by_num(dpid,port_num);
-	ioport* ioport_instance;
 
 	if(!port)
-		return AFA_FAILURE;
-
-	ioport_instance = (ioport*)port->platform_port_state;	
-
-	//Set flag
-	if(ioport_instance->set_generate_packet_in_config(generate_packet_in) != ROFL_SUCCESS )
-		return AFA_FAILURE;
+                return AFA_FAILURE;
 	
 	return AFA_SUCCESS;
 }
@@ -147,16 +117,10 @@ afa_result_t fwd_module_of1x_set_port_generate_packet_in_config(uint64_t dpid, u
 afa_result_t fwd_module_of1x_set_port_advertise_config(uint64_t dpid, unsigned int port_num, uint32_t advertise){
 
 	switch_port_t* port = physical_switch_get_port_by_num(dpid,port_num);
-	ioport* ioport_instance;
 
 	if(!port)
 		return AFA_FAILURE;
 
-	ioport_instance = (ioport*)port->platform_port_state;	
-
-	//Set flag
-	if(ioport_instance->set_advertise_config(advertise) != ROFL_SUCCESS )
-		return AFA_FAILURE;
 	
 	return AFA_SUCCESS;
 }
@@ -258,7 +222,7 @@ afa_result_t fwd_module_of1x_process_packet_out(uint64_t dpid, uint32_t buffer_i
 	if(!action_group_of1x_packet_in_contains_output(action_group)){
 
 		if (OF1XP_NO_BUFFER != buffer_id) {
-			pkt = ((struct logical_switch_internals*)lsw->platform_state)->storage->get_packet(buffer_id);
+			pkt = NULL; //((struct logical_switch_internals*)lsw->platform_state)->storage->get_packet(buffer_id);
 			if (NULL != pkt) {
 				bufferpool::release_buffer(pkt);
 			}
@@ -272,7 +236,7 @@ afa_result_t fwd_module_of1x_process_packet_out(uint64_t dpid, uint32_t buffer_i
 	if( buffer_id && buffer_id != OF1XP_NO_BUFFER){
 	
 		//Retrieve the packet
-		pkt = ((struct logical_switch_internals*)lsw->platform_state)->storage->get_packet(buffer_id);
+		pkt = NULL; //((struct logical_switch_internals*)lsw->platform_state)->storage->get_packet(buffer_id);
 
 		//Buffer has expired
 		if(!pkt){
@@ -344,7 +308,7 @@ afa_result_t fwd_module_of1x_process_flow_mod_add(uint64_t dpid, uint8_t table_i
 
 	if(buffer_id && buffer_id != OF1XP_NO_BUFFER){
 	
-		datapacket_t* pkt = ((struct logical_switch_internals*)lsw->platform_state)->storage->get_packet(buffer_id);
+		datapacket_t* pkt = NULL; //((struct logical_switch_internals*)lsw->platform_state)->storage->get_packet(buffer_id);
 	
 		if(!pkt){
 			assert(0);

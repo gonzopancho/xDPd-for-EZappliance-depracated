@@ -8,8 +8,6 @@ libfwd_module_gnu_linux_afa_imp_ladir = $(includedir)/fwd-modules/ezappliance/af
 
 libfwd_module_gnu_linux_afa_imp_la_HEADERS =
 libfwd_module_gnu_linux_afa_imp_la_SOURCES = \
-	atest.cc \
-	atest.h \
 	forwarding_module.cc
 
 libfwd_module_gnu_linux_afa_imp_la_LIBADD = \

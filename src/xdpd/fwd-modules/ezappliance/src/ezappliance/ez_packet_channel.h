@@ -34,12 +34,15 @@ protected:
     int ez_packets_socket;
 };
 
+}// namespace xdpd::gnu_linux 
+}// namespace xdpd
+
 
 rofl_result_t launch_ez_packet_channel();
 rofl_result_t stop_ez_packet_channel();
 
-}// namespace xdpd::gnu_linux 
-}// namespace xdpd
+void* get_ez_packet_channel();
+
 
 
 #endif /* EZ_PACKET_CHANNEL_H */

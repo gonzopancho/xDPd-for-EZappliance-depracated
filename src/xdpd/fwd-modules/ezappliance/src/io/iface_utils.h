@@ -7,7 +7,6 @@
 
 #include <rofl.h>
 #include <rofl/datapath/afa/fwd_module.h>
-#include "ports/ioport.h" 
 
 /**
 * @file iface_utils.h
@@ -31,16 +30,6 @@ switch_port_t* get_port_by_name(const char *name);
  */
 rofl_result_t discover_physical_ports(void);
 
-/**
- * Creates a virtual port pair between two switches
- */
-rofl_result_t create_virtual_port_pair(of_switch_t* lsw1, xdpd::gnu_linux::ioport** vport1, of_switch_t* lsw2, xdpd::gnu_linux::ioport** vport2);
-
-/*
-* Get port pair
-*/
-switch_port_t* get_vlink_pair(switch_port_t* port);
-
 /*
  * @name update_port_status
  */
@@ -61,17 +50,6 @@ rofl_result_t destroy_ports(void);
  * Destroy port 
  */
 rofl_result_t destroy_port(switch_port_t* port);
-
-//Port enable/disable
-/*
-* Enable port (direct call to ioport instance)
-*/
-rofl_result_t enable_port(platform_port_state_t* ioport_instance);
-
-/*
-* Disable port (direct call to ioport instance)
-*/
-rofl_result_t disable_port(platform_port_state_t* ioport_instance);
 
 //C++ extern C
 ROFL_END_DECLS

@@ -22,15 +22,11 @@
 #include <rofl/datapath/pipeline/platform/memory.h>
 #include <rofl/datapath/pipeline/physical_switch.h>
 #include <rofl/datapath/pipeline/openflow/openflow1x/of1x_switch.h>
-#include "../processing/processingmanager.h"
 #include "../io/bufferpool.h"
-#include "../io/iomanager.h"
 #include "../bg_taskmanager.h"
 
 #include "../io/iface_utils.h"
-#include "../processing/ls_internal_state.h"
-#include "../ezappliance/my_test2.h"
-#include "atest.h"
+#include "../ezappliance/ez_packet_channel.h"
 
 //only for Test
 #include <stdlib.h>
@@ -64,12 +60,10 @@ afa_result_t fwd_module_init(){
 	if(discover_physical_ports() != ROFL_SUCCESS)
 		return AFA_FAILURE;
         
-        test_func();
-        //atest_func();
         //Initialize packet channel to EZ
-        //if(launch_ez_packet_channel() != ROFL_SUCCESS){
-        //        return AFA_FAILURE;
-        //}
+        if(launch_ez_packet_channel() != ROFL_SUCCESS){
+                return AFA_FAILURE;
+        }
 
 	//Initialize Background Tasks Manager
 	if(launch_background_tasks_manager() != ROFL_SUCCESS){
@@ -88,7 +82,7 @@ afa_result_t fwd_module_destroy(){
         ROFL_DEBUG("[AFA] fwd_module_destroy\n");
 
         //Stop 
-        //stop_ez_packet_channel();
+        stop_ez_packet_channel();
         
 	//Stop the bg manager
 	stop_background_tasks_manager();
@@ -123,15 +117,6 @@ of_switch_t* fwd_module_create_switch(char* name, uint64_t dpid, of_version_t of
 	of_switch_t* sw;
 	
 	sw = (of_switch_t*)of1x_init_switch(name, of_version, dpid, num_of_tables, (enum of1x_matching_algorithm_available*) ma_list);
-
-	//Launch switch processing threads
-
-	if(start_ls_workers_wrapper(sw) != ROFL_SUCCESS){
-		
-		ROFL_ERR("<%s:%d> error initializing workers from processing manager. Destroying switch...\n",__func__,__LINE__);
-		of_destroy_switch(sw);
-		return NULL;
-	}
 
 	//Add switch to the bank	
 	physical_switch_add_logical_switch(sw);
@@ -172,11 +157,6 @@ afa_result_t fwd_module_destroy_switch_by_dpid(const uint64_t dpid){
 	for(i=0;i<sw->max_ports;i++){
 
 		if(sw->logical_ports[i].attachment_state == LOGICAL_PORT_STATE_ATTACHED && sw->logical_ports[i].port){
-			//Take it out from the group
-			if( iomanager::remove_port((ioport*)sw->logical_ports[i].port->platform_port_state) != ROFL_SUCCESS ){
-				ROFL_ERR("WARNING! Error removing port %s from the iomanager for the switch: %s. This can leave the port unusable in the future.\n", sw->logical_ports[i].port->name, sw->name);
-				assert(0);
-			}
 
 		}
 	}
@@ -184,10 +164,6 @@ afa_result_t fwd_module_destroy_switch_by_dpid(const uint64_t dpid){
 	//Detach ports from switch. Do not feed more packets to the switch
 	if(physical_switch_detach_all_ports_from_logical_switch(sw)!=ROFL_SUCCESS)
 		return AFA_FAILURE;
-	
-	//stop the threads here (it is blocking)
-	if(stop_ls_workers_wrapper(sw)!= ROFL_SUCCESS)
-		ROFL_ERR("<%s:%d> error stopping workers from processing manager\n",__func__,__LINE__);
 	
 	//Remove switch from the switch bank
 	if(physical_switch_remove_logical_switch(sw)!=ROFL_SUCCESS)
@@ -295,10 +271,6 @@ afa_result_t fwd_module_attach_port_to_switch(uint64_t dpid, const char* name, u
 			return AFA_FAILURE;
 		}
 	}
-	//Add it to the iomanager
-	if(iomanager::add_port((ioport*)port->platform_port_state) != ROFL_SUCCESS){
-		return AFA_FAILURE;	
-	}
 
 	//notify port attached
 	if(cmm_notify_port_add(port)!=AFA_SUCCESS){
@@ -320,8 +292,6 @@ afa_result_t fwd_module_connect_switches(uint64_t dpid_lsi1, switch_port_t** por
 
         ROFL_DEBUG("[AFA] fwd_module_connect_switches (dpid_1: %d, dpid_2: %d)\n", dpid_lsi1, dpid_lsi2);
 	of_switch_t *lsw1, *lsw2;
-	ioport *vport1, *vport2;
-	unsigned int port_num = 0; //We don't care about of the port
 
 	//Check existance of the dpid
 	lsw1 = physical_switch_get_logical_switch_by_dpid(dpid_lsi1);
@@ -332,34 +302,6 @@ afa_result_t fwd_module_connect_switches(uint64_t dpid_lsi1, switch_port_t** por
 		return AFA_FAILURE;
 	}
 	
-	//Create virtual port pair
-	if(create_virtual_port_pair(lsw1, &vport1, lsw2, &vport2) != ROFL_SUCCESS){
-		assert(0);
-		return AFA_FAILURE;
-	}
-
-	//Attach both ports
-	if(fwd_module_attach_port_to_switch(dpid_lsi1, vport1->of_port_state->name, &port_num) != AFA_SUCCESS){
-		assert(0);
-		return AFA_FAILURE;
-	}
-	port_num=0;
-	if(fwd_module_attach_port_to_switch(dpid_lsi2, vport2->of_port_state->name, &port_num) != AFA_SUCCESS){
-		assert(0);
-		return AFA_FAILURE;
-	}
-
-	//Enable interfaces (start packet transmission)
-	if(fwd_module_enable_port(vport1->of_port_state->name) != AFA_SUCCESS || fwd_module_enable_port(vport2->of_port_state->name) != AFA_SUCCESS){
-		ROFL_ERR("ERROR: unable to bring up vlink ports.\n");
-		assert(0);
-		return AFA_FAILURE;
-	}
-	
-
-	//Set switch ports and return
-	*port1 = vport1->of_port_state;
-	*port2 = vport2->of_port_state;
 
 	return AFA_SUCCESS; 
 }
@@ -391,50 +333,6 @@ afa_result_t fwd_module_detach_port_from_switch(uint64_t dpid, const char* name)
 	if(physical_switch_detach_port_from_logical_switch(port,lsw) != ROFL_SUCCESS)
 		return AFA_FAILURE;
 	
-	//Remove counter port from the iomanager
-	if(port->type == PORT_TYPE_VIRTUAL){
-		switch_port_t* port_pair = get_vlink_pair(port); 
-
-		if(!port_pair){
-			ROFL_ERR("Error detaching a virtual link port. Could not find the counter port of %s.\n",port->name);
-			assert(0);
-			return AFA_FAILURE;
-		}
-	
-		if(!port_pair->attached_sw || physical_switch_detach_port_from_logical_switch(port_pair,port_pair->attached_sw) != ROFL_SUCCESS){
-			ROFL_ERR("Error detaching port-pair %s from the sw.\n",port_pair->name);
-			assert(0);
-			return AFA_FAILURE;
-		}
-
-		//Remove it from the iomanager
-		if(iomanager::remove_port((ioport*)port_pair->platform_port_state) != ROFL_SUCCESS){
-			ROFL_ERR("Error removing port %s from the iomanager. The port may become unusable...\n",port->name);
-			assert(0);
-			return AFA_FAILURE;
-		}
-
-		//notify port dettached
-		if(cmm_notify_port_delete(port_pair) != AFA_SUCCESS){
-			///return AFA_FAILURE; //ignore
-		}	
-		
-		//Remove from the pipeline and delete
-		if(physical_switch_remove_port(port_pair->name) != ROFL_SUCCESS){
-			ROFL_ERR("Error removing port from the physical_switch. The port may become unusable...\n");
-			assert(0);
-			return AFA_FAILURE;
-			
-		}
-		delete (ioport*)port_pair->platform_port_state;
-	}
-	
-	//Remove it from the iomanager(
-	if(iomanager::remove_port((ioport*)port->platform_port_state) != ROFL_SUCCESS){
-		ROFL_ERR("Error removing port %s from the iomanager. The port may become unusable...\n",port->name);
-		assert(0);
-	}
-
 	//notify port dettached
 	if(cmm_notify_port_delete(port) != AFA_SUCCESS){
 		///return AFA_FAILURE; //ignore
@@ -449,8 +347,6 @@ afa_result_t fwd_module_detach_port_from_switch(uint64_t dpid, const char* name)
 			return AFA_FAILURE;
 			
 		}
-		delete (ioport*)port->platform_port_state;
-		
 	}
 	
 	return AFA_SUCCESS; 
@@ -510,13 +406,6 @@ afa_result_t fwd_module_enable_port(const char* name){
 	//Bring it up
     
 	if(port->attached_sw){
-		//Port is attached and belonging to a port group. Instruct I/O manager to start the port
-		if(iomanager::bring_port_up((ioport*)port->platform_port_state)!=ROFL_SUCCESS)
-			return AFA_FAILURE;
-	}else{
-		//The port is not attached. Only bring it up (ifconfig up)
-		if(enable_port(port->platform_port_state)!=ROFL_SUCCESS)
-			return AFA_FAILURE;
 	}
 
 	if(cmm_notify_port_status_changed(port)!=AFA_SUCCESS)
@@ -543,15 +432,7 @@ afa_result_t fwd_module_disable_port(const char* name){
 		return AFA_FAILURE;
 
 	//Bring it down
-	if(port->attached_sw){
-		//Port is attached and belonging to a port group. Instruct I/O manager to stop the port
-		if( iomanager::bring_port_down((ioport*)port->platform_port_state)!=ROFL_SUCCESS)
-			return AFA_FAILURE;
-	}else{
-		//The port is not attached. Only bring it down (ifconfig down)
-		if(disable_port(port->platform_port_state)==ROFL_FAILURE)
-			return AFA_FAILURE;
-	}
+	if(port->attached_sw){}
 
 	if(cmm_notify_port_status_changed(port)!=AFA_SUCCESS)
 		return AFA_FAILURE;
@@ -580,9 +461,6 @@ afa_result_t fwd_module_enable_port_by_num(uint64_t dpid, unsigned int port_num)
 	if( !lsw->logical_ports[port_num].port || lsw->logical_ports[port_num].attachment_state != LOGICAL_PORT_STATE_ATTACHED || lsw->logical_ports[port_num].port->attached_sw->dpid != dpid)
 		return AFA_FAILURE;
 
-	//Call I/O manager to bring it up
-	if(iomanager::bring_port_up((ioport*)lsw->logical_ports[port_num].port->platform_port_state) != ROFL_SUCCESS)
-		return AFA_FAILURE;
 	
 	if(cmm_notify_port_status_changed(lsw->logical_ports[port_num].port)!=AFA_SUCCESS)
 		return AFA_FAILURE;
@@ -611,9 +489,6 @@ afa_result_t fwd_module_disable_port_by_num(uint64_t dpid, unsigned int port_num
 	if( !lsw->logical_ports[port_num].port || lsw->logical_ports[port_num].attachment_state != LOGICAL_PORT_STATE_ATTACHED || lsw->logical_ports[port_num].port->attached_sw->dpid != dpid)
 		return AFA_FAILURE;
 
-	//Call I/O manager to bring it down
-	if(iomanager::bring_port_down((ioport*)lsw->logical_ports[port_num].port->platform_port_state) != ROFL_SUCCESS)
-		return AFA_FAILURE;
 	
 	if(cmm_notify_port_status_changed(lsw->logical_ports[port_num].port)!=AFA_SUCCESS)
 		return AFA_FAILURE;

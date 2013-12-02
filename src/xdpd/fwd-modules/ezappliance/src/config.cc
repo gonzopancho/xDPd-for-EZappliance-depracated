@@ -2,7 +2,7 @@
 #include "util/compiler_assert.h"
 
 //Boundary values retrival
-#include "processing/ls_internal_state.h"
+#include "ls_internal_state.h"
 
 /*
 * Validation of config values (at compile time)

@@ -16,12 +16,15 @@
 
 using namespace xdpd::gnu_linux;
 
+
 //Local static variable for ez_packet_channel thread
 static pthread_t ez_thread;
 static bool ez_continue_execution = true;
+static ez_packet_channel* ez_packket_channel_instance = NULL;
 
 //Constructor and destructor
 ez_packet_channel::ez_packet_channel(){
+        ez_packket_channel_instance = this;
 }
 
 ez_packet_channel::~ez_packet_channel(){
@@ -175,4 +178,8 @@ rofl_result_t stop_ez_packet_channel() {
         ez_continue_execution = false;
         pthread_join(ez_thread,NULL);
         return ROFL_SUCCESS;
+}
+
+void* get_ez_packet_channel() {
+        return (void*)ez_packket_channel_instance;
 }

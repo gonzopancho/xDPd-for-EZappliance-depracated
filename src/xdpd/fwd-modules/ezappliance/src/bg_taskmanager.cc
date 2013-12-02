@@ -21,11 +21,10 @@
 #include <rofl/datapath/pipeline/physical_switch.h>
 #include <rofl/datapath/afa/fwd_module.h>
 #include <rofl/datapath/afa/cmm.h>
-#include "processing/ls_internal_state.h"
+#include "ls_internal_state.h"
 #include "io/bufferpool.h"
 #include "io/datapacket_storage.h"
 #include "io/pktin_dispatcher.h"
-#include "io/iomanager.h"
 #include "io/iface_utils.h"
 #include "util/time_utils.h"
 

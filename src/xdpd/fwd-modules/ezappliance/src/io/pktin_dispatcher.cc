@@ -12,7 +12,7 @@
 #include "../io/bufferpool.h"
 #include "../io/datapacketx86.h"
 #include "../io/datapacket_storage.h"
-#include "../processing/ls_internal_state.h"
+#include "../ls_internal_state.h"
 
 using namespace xdpd::gnu_linux;
 
