@@ -155,7 +155,7 @@ void ez_packet_channel::put_packet_to_pipeline(datapacket_t* pkt) {
         storage = ((logical_switch_internals*)logical_switch->platform_state)->storage;
         storeid storage_id = storage->store_packet(pkt);
 
-        __of1x_init_packet_matches(pkt);// tranform packet->matches into of12 matches
+        __of1x_init_packet_matches(pkt);
         of1x_packet_matches_t* matches = &pkt->matches.of1x;  
 
         afa_result result = cmm_process_of1x_packet_in(
@@ -170,9 +170,9 @@ void ez_packet_channel::put_packet_to_pipeline(datapacket_t* pkt) {
                 *matches);
 
         if (result == AFA_SUCCESS) 
-                ROFL_DEBUG("[EZ-packet-channel] packet_io.cc cmm packet_in successful\n");
+                ROFL_DEBUG("[EZ-packet-channel] Sending a frame to pipeline successful\n");
         else
-                ROFL_DEBUG("[EZ-packet-channel] packet_io.cc cmm packet_in unsuccessful\n");
+                ROFL_DEBUG("[EZ-packet-channel] Sending a frame to pipeline unsuccessful\n");
 }
 
 
@@ -192,7 +192,10 @@ void ez_packet_channel::start() {
                                         put_packet_to_pipeline(pkt);
                         }
                         catch (int e)   {
-                                break; //back to connecting state
+                                if (e == 20)
+                                        break; //back to connecting state
+                                else
+                                        ROFL_ERR("Exception code is %d", e);
                         }
                 }
         }

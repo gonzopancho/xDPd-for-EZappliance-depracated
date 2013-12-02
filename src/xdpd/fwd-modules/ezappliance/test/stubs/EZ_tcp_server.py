@@ -47,7 +47,7 @@ def sendMessage(conn, delay, message):
         logger.info('Event registered for %d seconds', delay)
         time.sleep(delay)
         conn.sendall(message)
-        logger.info(binascii.hexlify(messsage))
+        logger.info("Message sent")
     except socket.error as err:
         if err.errno == errno.EBADF:
             logger.error("Socket no longer exists")

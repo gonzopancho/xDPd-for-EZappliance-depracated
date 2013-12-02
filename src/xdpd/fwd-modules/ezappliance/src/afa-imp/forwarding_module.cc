@@ -46,8 +46,7 @@ using namespace xdpd::gnu_linux;
 */
 afa_result_t fwd_module_init(){
 
-        ROFL_DEBUG("[AFA] fwd_module_init\n");
-	ROFL_INFO("Initializing EZappliance forwarding module...\n");
+	ROFL_INFO("[AFA] Initializing EZappliance forwarding module...\n");
 	
 	//Init the ROFL-PIPELINE phyisical switch
 	if(physical_switch_init() != ROFL_SUCCESS)
@@ -96,7 +95,7 @@ afa_result_t fwd_module_destroy(){
 	// destroy bufferpool
 	bufferpool::destroy();
 	
-	ROFL_INFO("EZappliance forwarding module destroyed.\n");
+	ROFL_INFO("[AFA] EZappliance forwarding module destroyed.\n");
 	
 	return AFA_SUCCESS; 
 }
