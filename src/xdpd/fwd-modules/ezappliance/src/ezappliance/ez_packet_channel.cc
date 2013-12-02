@@ -9,10 +9,14 @@
 #include <fcntl.h>
 #include <string.h>
 #include <rofl.h>
+#include<time.h>
 #include <rofl/datapath/pipeline/switch_port.h>
 #include <rofl/common/utils/c_logger.h>
-#include "../io/datapacketx86.h" 
+#include <rofl/datapath/pipeline/openflow/openflow1x/pipeline/of1x_pipeline.h>
+#include <rofl/datapath/afa/openflow/openflow1x/of1x_cmm.h>
+#include "../io/datapacket_storage.h"
 #include "../io/bufferpool.h" 
+#include "../ls_internal_state.h"
 
 using namespace xdpd::gnu_linux;
 
@@ -40,11 +44,18 @@ int ez_packet_channel::connect_to_ezproxy_packet_interface() {
         struct sockaddr_in dest_addr;
 
         sockfd = socket(AF_INET, SOCK_STREAM, 0);
-        //fcntl(sockfd, F_SETFL, fcntl(sockfd, F_GETFL) | O_NONBLOCK);
+        //fcntl(sockfd, F_SETFL, fcntl(sockfd, F_GETFL) | O_NONBLOCK); //set socket as non-blocking
+        
+        struct timeval tv;
+        tv.tv_sec = 5;  /*5 secs Timeout */
+        tv.tv_usec = 0;
+        if (setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (char*)&tv, sizeof(struct timeval)) < 0) {
+                ROFL_ERR("[EZ-packet-channel] Setting socket timeout failed \n");
+        }
 
         if (sockfd < 0) 
         {
-                ROFL_ERR("Couldn't open SOCK_STREAM socket, errno(%d): %s\n", errno, strerror(errno));
+                ROFL_ERR("[EZ-packet-channel] Couldn't open SOCK_STREAM socket, errno(%d): %s\n", errno, strerror(errno));
                 return -1;
         }
 
@@ -56,15 +67,15 @@ int ez_packet_channel::connect_to_ezproxy_packet_interface() {
         /* Now connect to the server */
         if (connect(sockfd,(struct sockaddr*) & dest_addr, sizeof(struct sockaddr)) < 0) 
         {
-                ROFL_ERR("Couldn't connect to %s:%d, errno(%d): %s\n", "127.0.0.1", 8080, errno, strerror(errno));
-                return sockfd;
+                ROFL_ERR("[EZ-packet-channel] Couldn't connect to %s:%d, errno(%d): %s\n", "127.0.0.1", 8080, errno, strerror(errno));
+                return -1;
         }   
-        ROFL_INFO("Connected to %s:%d\n", "127.0.0.1", 8080);
+        ROFL_INFO("[EZ-packet-channel] Connected to %s:%d\n", "127.0.0.1", 8080);
 
         char msg[] = "Testing message to server!";
 
         if(::write(sockfd, msg, strlen(msg)) < 0) { //returns bytes sent
-                ROFL_ERR("ERROR writing to socket");
+                ROFL_ERR("[EZ-packet-channel] ERROR writing to socket\n");
                 
         } 
         return sockfd;
@@ -82,41 +93,42 @@ datapacket_t* ez_packet_channel::read(){
         pkt = bufferpool::get_free_buffer();
         pkt_x86 = ((datapacketx86*)pkt->platform_state);
 
-        
-        
         //Copy something from TCP socket to buffer, TODO: read packet metatada header containing input port and packet size
         int n=0;
-        if((n = ::read(ez_packets_socket,packet_buffer,4086)) < 0){    
+        if((n = ::read(ez_packets_socket,packet_buffer,4086)) < 0){ 
+                ROFL_DEBUG_VERBOSE("[EZ-packet-channel] Error: %s\n", strerror(errno));
                 bufferpool::release_buffer(pkt);
+                if (errno == EAGAIN || errno == EWOULDBLOCK)
+                        ROFL_DEBUG_VERBOSE("[EZ-packet-channel] socket read timeout\n");
+                return NULL;
+        }
+        if (n==0) {
+                ROFL_ERR("[EZ-packet-channel] EZ-Proxy Server no longer online!\n");
+                sleep(10);
+                throw 20; // handled upper will break the read loop
                 return NULL;
         }
 
         //Parsing metedata header
-        ROFL_DEBUG("Received message from EZ with length: %d\n", n);
+        ROFL_DEBUG("[EZ-packet-channel] Received message from EZ with length: %d\n", n);
         input_port = packet_buffer[0];
         frame_size = ntohs(((uint16_t*)(packet_buffer+1))[0]);
 
         //Init in user space
         pkt_x86->init(packet_buffer+3, frame_size, NULL, (uint32_t) input_port, (uint32_t) input_port, true, true);
         
-        ROFL_DEBUG("Received packet from port: %d with length: %d\n", input_port, frame_size);
-        ROFL_DEBUG("Filled buffer with id:%d. Sending to process.\n", pkt_x86->buffer_id);
+        ROFL_DEBUG("[EZ-packet-channel] Received packet from port: %d with length: %d\n", input_port, frame_size);
+        ROFL_DEBUG("[EZ-packet-channel] Filled buffer with id:%d. Sending to process.\n", pkt_x86->buffer_id);
         
         return pkt;	
 }
 
 
-unsigned int ez_packet_channel::write(unsigned int q_id, unsigned int num_of_buckets){
+unsigned int ez_packet_channel::write(datapacket_t* pkt){
 
-        datapacket_t* pkt;
         datapacketx86* pkt_x86;
         uint8_t packet_buffer[4086];
         uint8_t output_port = 1;
-        
-        (void)pkt_x86;
-
-        // from where get pkt?
-        pkt=NULL;
 
         pkt_x86 = (datapacketx86*)pkt->platform_state;
 
@@ -127,7 +139,7 @@ unsigned int ez_packet_channel::write(unsigned int q_id, unsigned int num_of_buc
 
         //Send packet by TCP connection to EZ
         if(::write(ez_packets_socket, packet_buffer, 4086) < 0) {
-                ROFL_ERR("ERROR writing to socket");
+                ROFL_ERR("[EZ-packet-channel] ERROR writing to socket\n");
         } 
 
         //Free buffer
@@ -135,19 +147,53 @@ unsigned int ez_packet_channel::write(unsigned int q_id, unsigned int num_of_buc
         return 0;
 }
 
+void ez_packet_channel::put_packet_to_pipeline(datapacket_t* pkt) {
+        
+        datapacketx86* pkt_x86 = (datapacketx86*)pkt->platform_state;
+        datapacket_storage* storage;
+        
+        storage = ((logical_switch_internals*)logical_switch->platform_state)->storage;
+        storeid storage_id = storage->store_packet(pkt);
+
+        __of1x_init_packet_matches(pkt);// tranform packet->matches into of12 matches
+        of1x_packet_matches_t* matches = &pkt->matches.of1x;  
+
+        afa_result result = cmm_process_of1x_packet_in(
+                (of1x_switch*)logical_switch,
+                pkt_x86->pktin_table_id,
+                pkt_x86->pktin_reason,
+                pkt_x86->in_port,
+                storage_id,
+                pkt_x86->get_buffer(),
+                pkt_x86->get_buffer_length(),
+                pkt_x86->get_buffer_length(), 
+                *matches);
+
+        if (result == AFA_SUCCESS) 
+                ROFL_DEBUG("[EZ-packet-channel] packet_io.cc cmm packet_in successful\n");
+        else
+                ROFL_DEBUG("[EZ-packet-channel] packet_io.cc cmm packet_in unsuccessful\n");
+}
+
 
 void ez_packet_channel::start() {
         
         datapacket_t* pkt;
         while (ez_continue_execution) {
-                ez_packets_socket = connect_to_ezproxy_packet_interface();
-                
+                if((ez_packets_socket = connect_to_ezproxy_packet_interface()) < 0){
+                        close(ez_packets_socket);
+                        sleep(10); // retry connect in 10 secunds
+                        continue;
+                }
+               
                 while (ez_continue_execution) {
-                        if ((pkt = read()) == NULL) {
-                                ROFL_INFO("EZ-Proxy TCP server not online");
-                                //sleep (10)
+                        try {
+                                if ((pkt = read()) != NULL)
+                                        put_packet_to_pipeline(pkt);
                         }
-                        //put pkt to pipeline
+                        catch (int e)   {
+                                break; //back to connecting state
+                        }
                 }
         }
 }
@@ -168,7 +214,7 @@ rofl_result_t launch_ez_packet_channel() {
         ez_continue_execution = true;
 
         if(pthread_create(&ez_thread, NULL, ez_packet_channel_routine, NULL)<0){
-                ROFL_ERR("pthread_create failed, errno(%d): %s\n", errno, strerror(errno));
+                ROFL_ERR("[EZ-packet-channel] pthread_create failed, errno(%d): %s\n", errno, strerror(errno));
                 return ROFL_FAILURE;
         }
         return ROFL_SUCCESS;
@@ -182,4 +228,8 @@ rofl_result_t stop_ez_packet_channel() {
 
 void* get_ez_packet_channel() {
         return (void*)ez_packket_channel_instance;
+}
+
+void set_lsw_for_ez_packet_channel(of_switch_t* sw) {
+        ez_packket_channel_instance->logical_switch = sw;
 }

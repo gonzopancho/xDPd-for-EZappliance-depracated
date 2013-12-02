@@ -120,6 +120,9 @@ of_switch_t* fwd_module_create_switch(char* name, uint64_t dpid, of_version_t of
 
 	//Add switch to the bank	
 	physical_switch_add_logical_switch(sw);
+        
+        // Add switch (with pipeline) to EZ-packet-channel
+        set_lsw_for_ez_packet_channel(sw);
 	
 	return sw;
 }

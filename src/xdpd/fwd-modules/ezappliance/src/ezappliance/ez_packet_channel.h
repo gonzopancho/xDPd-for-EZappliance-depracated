@@ -6,7 +6,9 @@
 #define EZ_PACKET_CHANNEL_H 
 
 #include <unistd.h>
-#include <rofl/datapath/pipeline/common/datapacket.h>
+#include <rofl.h>
+#include "../io/datapacketx86.h"
+#include <rofl/datapath/pipeline/openflow/of_switch.h>
 
 namespace xdpd {
 namespace gnu_linux {
@@ -23,8 +25,13 @@ public:
 	virtual ~ez_packet_channel();
 
 	virtual datapacket_t* read(void);
-	virtual unsigned int write(unsigned int q_id, unsigned int num_of_buckets);
+	virtual unsigned int write(datapacket_t* pkt);
+        virtual void put_packet_to_pipeline(datapacket_t* pkt);
         virtual void start();
+        
+        
+        // logical switch contains OF pipeline
+        of_switch_t* logical_switch;
 
 protected:
     
@@ -41,8 +48,11 @@ protected:
 rofl_result_t launch_ez_packet_channel();
 rofl_result_t stop_ez_packet_channel();
 
+// retieve a single existing instance of EZ packet channel
 void* get_ez_packet_channel();
 
+// create a reference to a logical switch instance 
+void set_lsw_for_ez_packet_channel(of_switch_t* sw);
 
 
 #endif /* EZ_PACKET_CHANNEL_H */
