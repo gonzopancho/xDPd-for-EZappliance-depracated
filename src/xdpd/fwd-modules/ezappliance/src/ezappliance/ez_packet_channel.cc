@@ -9,7 +9,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include <rofl.h>
-#include<time.h>
+#include <time.h>
 #include <rofl/datapath/pipeline/switch_port.h>
 #include <rofl/common/utils/c_logger.h>
 #include <rofl/datapath/pipeline/openflow/openflow1x/pipeline/of1x_pipeline.h>
@@ -93,7 +93,7 @@ datapacket_t* ez_packet_channel::read(){
         pkt = bufferpool::get_free_buffer();
         pkt_x86 = ((datapacketx86*)pkt->platform_state);
 
-        //Copy something from TCP socket to buffer, TODO: read packet metatada header containing input port and packet size
+        //Copy something from TCP socket to buffer
         int n=0;
         if((n = ::read(ez_packets_socket,packet_buffer,4086)) < 0){ 
                 ROFL_DEBUG_VERBOSE("[EZ-packet-channel] Error: %s\n", strerror(errno));
@@ -104,6 +104,7 @@ datapacket_t* ez_packet_channel::read(){
         }
         if (n==0) {
                 ROFL_ERR("[EZ-packet-channel] EZ-Proxy Server no longer online!\n");
+                bufferpool::release_buffer(pkt);
                 sleep(10);
                 throw 20; // handled upper will break the read loop
                 return NULL;
@@ -115,7 +116,7 @@ datapacket_t* ez_packet_channel::read(){
         frame_size = ntohs(((uint16_t*)(packet_buffer+1))[0]);
 
         //Init in user space
-        pkt_x86->init(packet_buffer+3, frame_size, NULL, (uint32_t) input_port, (uint32_t) input_port, true, true);
+        pkt_x86->init(packet_buffer+3, frame_size, NULL, (uint32_t)input_port, (uint32_t)input_port, true, true);
         
         ROFL_DEBUG("[EZ-packet-channel] Received packet from port: %d with length: %d\n", input_port, frame_size);
         ROFL_DEBUG("[EZ-packet-channel] Filled buffer with id:%d. Sending to process.\n", pkt_x86->buffer_id);
@@ -155,24 +156,21 @@ void ez_packet_channel::put_packet_to_pipeline(datapacket_t* pkt) {
         storage = ((logical_switch_internals*)logical_switch->platform_state)->storage;
         storeid storage_id = storage->store_packet(pkt);
 
-        __of1x_init_packet_matches(pkt);
-        of1x_packet_matches_t* matches = &pkt->matches.of1x;  
+        __of1x_init_packet_matches(pkt); 
 
-        afa_result result = cmm_process_of1x_packet_in(
-                (of1x_switch*)logical_switch,
-                pkt_x86->pktin_table_id,
-                pkt_x86->pktin_reason,
-                pkt_x86->in_port,
-                storage_id,
-                pkt_x86->get_buffer(),
-                pkt_x86->get_buffer_length(),
-                pkt_x86->get_buffer_length(), 
-                *matches);
-
-        if (result == AFA_SUCCESS) 
-                ROFL_DEBUG("[EZ-packet-channel] Sending a frame to pipeline successful\n");
+        if(cmm_process_of1x_packet_in(
+                        (of1x_switch*)logical_switch,
+                        pkt_x86->pktin_table_id,
+                        pkt_x86->pktin_reason,
+                        pkt_x86->in_port,
+                        storage_id,
+                        pkt_x86->get_buffer(),
+                        pkt_x86->get_buffer_length(),
+                        pkt_x86->get_buffer_length(), 
+                        pkt->matches.of1x) == AFA_FAILURE)
+                ROFL_ERR("[EZ-packet-channel] Sending a frame to pipeline unsuccessful\n");
         else
-                ROFL_DEBUG("[EZ-packet-channel] Sending a frame to pipeline unsuccessful\n");
+                ROFL_DEBUG("[EZ-packet-channel] Sending a frame to pipeline successful\n");
 }
 
 
@@ -182,7 +180,7 @@ void ez_packet_channel::start() {
         while (ez_continue_execution) {
                 if((ez_packets_socket = connect_to_ezproxy_packet_interface()) < 0){
                         close(ez_packets_socket);
-                        sleep(10); // retry connect in 10 secunds
+                        sleep(10); // retry connect in 10 seconds
                         continue;
                 }
                
