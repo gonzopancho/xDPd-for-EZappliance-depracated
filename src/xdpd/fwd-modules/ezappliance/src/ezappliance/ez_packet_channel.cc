@@ -17,6 +17,7 @@
 #include "../io/datapacket_storage.h"
 #include "../io/bufferpool.h" 
 #include "../ls_internal_state.h"
+#include "../config.h"
 
 using namespace xdpd::gnu_linux;
 
@@ -62,16 +63,16 @@ int ez_packet_channel::connect_to_ezproxy_packet_interface() {
         }
 
         dest_addr.sin_family = AF_INET; // host byte order
-        dest_addr.sin_port = htons(8080); // destination port
-        dest_addr.sin_addr.s_addr = inet_addr("127.0.0.1"); // destination address
+        dest_addr.sin_port = htons(EZ_PORT); // destination port
+        dest_addr.sin_addr.s_addr = inet_addr(EZ_IP); // destination address
         memset(&(dest_addr.sin_zero), '\0', 8); 
 
         /* Now connect to the server */
         if (connect(sockfd,(struct sockaddr*) & dest_addr, sizeof(struct sockaddr)) < 0) {
-                ROFL_ERR("[EZ-packet-channel] Couldn't connect to %s:%d, errno(%d): %s\n", "127.0.0.1", 8080, errno, strerror(errno));
+                ROFL_ERR("[EZ-packet-channel] Couldn't connect to %s:%d, errno(%d): %s\n", EZ_IP, EZ_PORT, errno, strerror(errno));
                 return -1;
         }   
-        ROFL_INFO("[EZ-packet-channel] Connected to %s:%d\n", "127.0.0.1", 8080);
+        ROFL_INFO("[EZ-packet-channel] Connected to %s:%d\n", EZ_IP, EZ_PORT);
 
         char msg[] = "Testing message to server!";
 
