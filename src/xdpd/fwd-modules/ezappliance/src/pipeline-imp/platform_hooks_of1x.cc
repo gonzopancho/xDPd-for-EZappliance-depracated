@@ -103,14 +103,12 @@ rofl_result_t platform_pre_destroy_of1x_switch(of1x_switch_t* sw) {
 
 void platform_of1x_packet_in(const of1x_switch_t* sw, uint8_t table_id, datapacket_t* pkt, of_packet_in_reason_t reason) {
         
-        ROFL_DEBUG("[Pipeline-imp] platform_of1x_packet_in (of1x switch: %p, table_id: %d, pkt: %p)\n", sw, table_id, pkt);
-	datapacketx86* pkt_x86;
+        ROFL_DEBUG("[Pipeline-imp] platform_of1x_packet_in (switch: %s, table_id: %d, pkt: %p)\n", sw->name, table_id, pkt);
+        
+	datapacketx86* pkt_x86 = (datapacketx86*)pkt->platform_state;
 	struct logical_switch_internals* ls_state = (struct logical_switch_internals*)sw->platform_state;
-
-	ROFL_DEBUG("Enqueuing PKT_IN event for packet(%p) in switch: %s\n",pkt,sw->name);
 	
 	//Recover platform state and fill it so that state can be recovered afterwards
-	pkt_x86 = (datapacketx86*)pkt->platform_state;
 	pkt_x86->pktin_table_id = table_id;
 	pkt_x86->pktin_reason = reason;
 		

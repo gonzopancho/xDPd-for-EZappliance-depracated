@@ -155,7 +155,7 @@ void ez_packet_channel::put_packet_to_pipeline(datapacket_t* pkt) {
         datapacketx86* pkt_x86 = (datapacketx86*)pkt->platform_state;
         datapacket_storage* storage =( (logical_switch_internals*)logical_switch->platform_state)->storage;
         
-        // check port->platform_port_state
+        // TODO: check if port enabled (port->platform_port_state != NULL)
         
         storeid storage_id = storage->store_packet(pkt);
 
