@@ -78,7 +78,7 @@ class TcpServer(Thread):
             while self.is_active:
                 logger.info("%d: Waiting for connection...", i)
                 conn, addr = s.accept()
-                thread.start_new_thread(sendMessage, (conn, 7, generateMessage(2, "C"*10)))
+                thread.start_new_thread(sendMessage, (conn, 7, generateMessage(2, "C"*3000)))
                 logger.info("%d: Connected by %s", i, addr)
                 while self.is_active:
                     logger.info('wait for data')
@@ -102,6 +102,8 @@ class TcpServer(Thread):
             
     def handle_data(self, data, conn):
         logger.debug("Data received: %s", data)
+        if len(data) > 1:
+            logger.debug("Output port %d, length is %d" % struct.unpack("!BH", data[:3]))
         
     def stop(self):
         self.is_active = False

@@ -27,8 +27,10 @@ using namespace xdpd::gnu_linux;
 /*
 * Hooks for configuration of the switch
 */
-rofl_result_t platform_post_init_of1x_switch(of1x_switch_t* sw){
-	unsigned int i;
+rofl_result_t platform_post_init_of1x_switch(of1x_switch_t* sw) {
+	
+        ROFL_DEBUG("[Pipeline-imp] platform_post_init_of1x_switch (of1x switch: %p)\n", sw);
+        unsigned int i;
 	
 	//Create GNU/Linux FWD_Module additional state (platform state)
 	struct logical_switch_internals* ls_int = (struct logical_switch_internals*)calloc(1, sizeof(struct logical_switch_internals));
@@ -74,8 +76,9 @@ rofl_result_t platform_post_init_of1x_switch(of1x_switch_t* sw){
 	return ROFL_SUCCESS;
 }
 
-rofl_result_t platform_pre_destroy_of1x_switch(of1x_switch_t* sw){
+rofl_result_t platform_pre_destroy_of1x_switch(of1x_switch_t* sw) {
 	
+        ROFL_DEBUG("[Pipeline-imp] platform_pre_destroy_of1x_switch (of1x switch: %p)\n", sw);
 	unsigned int i;
 
 	struct logical_switch_internals* ls_int =  (struct logical_switch_internals*)sw->platform_state;
@@ -98,8 +101,9 @@ rofl_result_t platform_pre_destroy_of1x_switch(of1x_switch_t* sw){
 * Packet in
 */
 
-void platform_of1x_packet_in(const of1x_switch_t* sw, uint8_t table_id, datapacket_t* pkt, of_packet_in_reason_t reason)
-{
+void platform_of1x_packet_in(const of1x_switch_t* sw, uint8_t table_id, datapacket_t* pkt, of_packet_in_reason_t reason) {
+        
+        ROFL_DEBUG("[Pipeline-imp] platform_of1x_packet_in (of1x switch: %p, table_id: %d, pkt: %p)\n", sw, table_id, pkt);
 	datapacketx86* pkt_x86;
 	struct logical_switch_internals* ls_state = (struct logical_switch_internals*)sw->platform_state;
 
@@ -126,25 +130,28 @@ void platform_of1x_notify_flow_removed(const of1x_switch_t* sw,
 						of1x_flow_remove_reason_t reason, 
 						of1x_flow_entry_t* removed_flow_entry){
 
+        ROFL_DEBUG("[Pipeline-imp] platform_of1x_notify_flow_removed (of1x switch: %p, removed_flow_entry: %p)\n", sw, removed_flow_entry);
 	cmm_process_of1x_flow_removed(sw, (uint8_t)reason, removed_flow_entry);
 
 }
 
 
-void plaftorm_of1x_add_entry_hook(of1x_flow_entry_t* new_entry){
-
+void plaftorm_of1x_add_entry_hook(of1x_flow_entry_t* new_entry) {
+        
+        ROFL_DEBUG("[Pipeline-imp] plaftorm_of1x_add_entry_hook (new_entry: %p)\n", new_entry);
 }
 
-void platform_of1x_modify_entry_hook(of1x_flow_entry_t* old_entry, of1x_flow_entry_t* mod, int reset_count){
-
+void platform_of1x_modify_entry_hook(of1x_flow_entry_t* old_entry, of1x_flow_entry_t* mod, int reset_count) {
+        
+        ROFL_DEBUG("[Pipeline-imp] platform_of1x_modify_entry_hook (old_entry: %p, reset_count: %d)\n", old_entry, reset_count);
 }
 
-void platform_of1x_remove_entry_hook(of1x_flow_entry_t* entry){
-
+void platform_of1x_remove_entry_hook(of1x_flow_entry_t* entry) {
+        
+        ROFL_DEBUG("[Pipeline-imp] platform_of1x_remove_entry_hook (entry: %p)\n", entry);
 }
 
-void
-platform_of1x_update_stats_hook(of1x_flow_entry_t* entry)
-{
-
+void platform_of1x_update_stats_hook(of1x_flow_entry_t* entry) {
+        
+        ROFL_DEBUG("[Pipeline-imp] platform_of1x_update_stats_hook (entry: %p)\n", entry);
 }

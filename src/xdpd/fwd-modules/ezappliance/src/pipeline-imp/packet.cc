@@ -30,6 +30,7 @@
 
 #include "../io/datapacketx86.h"
 #include "../io/bufferpool.h"
+#include "../ezappliance/ez_packet_channel.h"
 
 using namespace rofl;
 using namespace xdpd::gnu_linux;
@@ -997,7 +998,7 @@ void platform_packet_push_gtp(datapacket_t* pkt)
 void
 platform_packet_drop(datapacket_t* pkt)
 {
-	ROFL_DEBUG("Dropping packet(%p)\n",pkt);
+	ROFL_DEBUG("Dropping packet (%p)\n",pkt);
 	
 	//Release buffer
 	bufferpool::release_buffer(pkt);
@@ -1006,24 +1007,18 @@ platform_packet_drop(datapacket_t* pkt)
 
 static void output_single_packet(datapacket_t* pkt, datapacketx86* pack, switch_port_t* port){
 
-	//Output packet to the appropiate queue and port_num
-	if(likely(port && port->platform_port_state) && port->up && port->forward_packets){
+	//Output packet to the appropiate port_num
+	if(port && port->platform_port_state && port->up && port->forward_packets) {
 		
-		ROFL_DEBUG("[%s] OUTPUT packet(%p)\n", port->name, pkt);
+		ROFL_DEBUG("[%s] OUTPUT packet (%p) to port %d\n", port->name, pkt, port->of_port_num);
 #ifdef DEBUG
 		of1x_dump_packet_matches(&pkt->matches);
 #endif
-
-		//Schedule in the port
-		//ioport* ioport_inst = (ioport*)port->platform_port_state; 
-		//ioport_inst->enqueue_packet(pkt, pack->output_queue);
-	
-		//Packet must never be retured to the buffer pool, the port will do that
-		//once sent
-	}else{
+                set_packet_via_ez_packet_channel(pkt, port->of_port_num);
+	}
+	else {
 		//Silently drop the packet
 		bufferpool::release_buffer(pkt);
-		//TODO: debug trace here
 	}
 }
 
@@ -1036,6 +1031,8 @@ static void output_single_packet(datapacket_t* pkt, datapacketx86* pack, switch_
 * has itself to deal with packet replication.
 */
 void platform_packet_output(datapacket_t* pkt, switch_port_t* output_port){
+        
+        ROFL_DEBUG("[Pipeline-imp] platform_packet_output (output_port: %d, pkt: %p)\n", output_port->of_port_num, pkt);
 
 	of_switch_t const* sw;
 	datapacketx86* pack;

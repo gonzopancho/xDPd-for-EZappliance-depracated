@@ -25,7 +25,7 @@ public:
 	virtual ~ez_packet_channel();
 
 	virtual datapacket_t* read(void);
-	virtual unsigned int write(datapacket_t* pkt);
+	virtual rofl_result_t write(datapacket_t* pkt, uint8_t output_port);
         virtual void put_packet_to_pipeline(datapacket_t* pkt);
         virtual void start();
         
@@ -54,5 +54,7 @@ void* get_ez_packet_channel();
 // create a reference to a logical switch instance 
 void set_lsw_for_ez_packet_channel(of_switch_t* sw);
 
+// packet is pushed to EZ NP-3 and send via network port
+rofl_result_t set_packet_via_ez_packet_channel(datapacket_t* pkt, uint32_t output_port);
 
 #endif /* EZ_PACKET_CHANNEL_H */

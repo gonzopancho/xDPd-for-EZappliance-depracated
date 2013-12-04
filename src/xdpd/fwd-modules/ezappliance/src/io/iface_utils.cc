@@ -61,18 +61,20 @@ static switch_port_t* fill_port(char* name){
     switch_port_t* port;
     
     //Init the port
-    port = switch_port_init(name, true/*will be overriden afterwards*/, PORT_TYPE_PHYSICAL, PORT_STATE_NONE);
+    port = switch_port_init(name, true/*will be overriden afterwards*/, PORT_TYPE_PHYSICAL, PORT_STATE_LIVE);
     if(!port)
         return NULL;
     
-      for(int j=0;j<6;j++)
+    for(int j=0;j<6;j++)
         port->hwaddr[j] = 0x00; //FIXME: get MAC from EZ-port
-
-    // Assing channel for packet exchange from/to EZ
-    port->platform_port_state = (platform_port_state_t*)get_ez_packet_channel();
     
+    switch_port_set_current_speed(port, PORT_FEATURE_1GB_FD);
+    
+    switch_port_add_capabilities(&port->curr, PORT_FEATURE_COPPER);
+    switch_port_add_capabilities(&port->curr, PORT_FEATURE_AUTONEG);
+    
+    port->advertised = port->supported = port->curr;
 
-    //TODO: set rest of switch port attributes; See: rofl-core\src\rofl\datapath\pipeline\switch_port.h
     return port;
 }
 

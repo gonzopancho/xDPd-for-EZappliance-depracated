@@ -47,22 +47,21 @@ using namespace xdpd::gnu_linux;
 afa_result_t fwd_module_init(){
 
 	ROFL_INFO("[AFA] Initializing EZappliance forwarding module...\n");
-	
+        
 	//Init the ROFL-PIPELINE phyisical switch
 	if(physical_switch_init() != ROFL_SUCCESS)
 		return AFA_FAILURE;
-	
 
 	//create bufferpool
 	bufferpool::init(NUM_ELEM_INIT_BUFFERPOOL);
-
-	if(discover_physical_ports() != ROFL_SUCCESS)
-		return AFA_FAILURE;
         
         //Initialize packet channel to EZ
         if(launch_ez_packet_channel() != ROFL_SUCCESS){
                 return AFA_FAILURE;
         }
+        
+	if(discover_physical_ports() != ROFL_SUCCESS)
+		return AFA_FAILURE;
 
 	//Initialize Background Tasks Manager
 	if(launch_background_tasks_manager() != ROFL_SUCCESS){
@@ -397,20 +396,15 @@ afa_result_t fwd_module_enable_port(const char* name){
     
         ROFL_DEBUG("[AFA] fwd_module_enable_port (name: %s)\n", name);
 
-	switch_port_t* port;
+	switch_port_t* port = physical_switch_get_port_by_name(name);
 
-	//Check if the port does exist
-	port = physical_switch_get_port_by_name(name);
-
-	if(!port)// || !port->platform_port_state)
+	if(!port)
 		return AFA_FAILURE;
+        
+        // Assing channel for packet exchange from/to EZ
+        port->platform_port_state = (platform_port_state_t*)get_ez_packet_channel();
 
-	//Bring it up
-    
-	if(port->attached_sw){
-	}
-
-	if(cmm_notify_port_status_changed(port)!=AFA_SUCCESS)
+	if(cmm_notify_port_status_changed(port) != AFA_SUCCESS)
 		return AFA_FAILURE;
 	
 	return AFA_SUCCESS;
@@ -426,17 +420,16 @@ afa_result_t fwd_module_enable_port(const char* name){
 afa_result_t fwd_module_disable_port(const char* name){
 
         ROFL_DEBUG("[AFA] fwd_module_disable_port (name: %s)\n", name);
-	switch_port_t* port;
-	
+        
+	switch_port_t* port = physical_switch_get_port_by_name(name);
+        
 	//Check if the port does exist
-	port = physical_switch_get_port_by_name(name);
 	if(!port || !port->platform_port_state)
 		return AFA_FAILURE;
+        
+        port->platform_port_state = NULL;
 
-	//Bring it down
-	if(port->attached_sw){}
-
-	if(cmm_notify_port_status_changed(port)!=AFA_SUCCESS)
+	if(cmm_notify_port_status_changed(port) != AFA_SUCCESS)
 		return AFA_FAILURE;
 	
 	return AFA_SUCCESS;
@@ -463,6 +456,7 @@ afa_result_t fwd_module_enable_port_by_num(uint64_t dpid, unsigned int port_num)
 	if( !lsw->logical_ports[port_num].port || lsw->logical_ports[port_num].attachment_state != LOGICAL_PORT_STATE_ATTACHED || lsw->logical_ports[port_num].port->attached_sw->dpid != dpid)
 		return AFA_FAILURE;
 
+        lsw->logical_ports[port_num].port->platform_port_state = (platform_port_state_t*)get_ez_packet_channel();
 	
 	if(cmm_notify_port_status_changed(lsw->logical_ports[port_num].port)!=AFA_SUCCESS)
 		return AFA_FAILURE;
@@ -491,6 +485,7 @@ afa_result_t fwd_module_disable_port_by_num(uint64_t dpid, unsigned int port_num
 	if( !lsw->logical_ports[port_num].port || lsw->logical_ports[port_num].attachment_state != LOGICAL_PORT_STATE_ATTACHED || lsw->logical_ports[port_num].port->attached_sw->dpid != dpid)
 		return AFA_FAILURE;
 
+        lsw->logical_ports[port_num].port->platform_port_state = NULL;
 	
 	if(cmm_notify_port_status_changed(lsw->logical_ports[port_num].port)!=AFA_SUCCESS)
 		return AFA_FAILURE;
