@@ -25,12 +25,10 @@ using namespace xdpd::gnu_linux;
 //Local static variable for ez_packet_channel thread
 static pthread_t ez_thread;
 static bool ez_continue_execution = true;
-static ez_packet_channel* ez_packket_channel_instance = NULL;
+static ez_packet_channel* ez_packet_channel_instance = NULL;
 
 //Constructor and destructor
 ez_packet_channel::ez_packet_channel() {
-        
-        ez_packket_channel_instance = this;
 }
 
 ez_packet_channel::~ez_packet_channel() {
@@ -205,7 +203,7 @@ void ez_packet_channel::start() {
 
 static void* ez_packet_channel_routine(void* param) {
         
-        ez_packet_channel* channel = new ez_packet_channel();
+        ez_packet_channel* channel = (ez_packet_channel*) param;
         channel->start();
         
         delete channel;
@@ -220,7 +218,8 @@ rofl_result_t launch_ez_packet_channel() {
         //Set flag
         ez_continue_execution = true;
 
-        if(pthread_create(&ez_thread, NULL, ez_packet_channel_routine, NULL)<0){
+        ez_packet_channel_instance = new ez_packet_channel();
+        if(pthread_create(&ez_thread, NULL, ez_packet_channel_routine, ez_packet_channel_instance)<0){
                 ROFL_ERR("[EZ-packet-channel] pthread_create failed, errno(%d): %s\n", errno, strerror(errno));
                 return ROFL_FAILURE;
         }
@@ -239,15 +238,15 @@ rofl_result_t stop_ez_packet_channel() {
 
 void* get_ez_packet_channel() {
         
-        return (void*)ez_packket_channel_instance;
+        return (void*)ez_packet_channel_instance;
 }
 
 void set_lsw_for_ez_packet_channel(of_switch_t* sw) {
         
-        ez_packket_channel_instance->logical_switch = sw;
+	ez_packet_channel_instance->logical_switch = sw;
 }
 
-rofl_result_t set_packet_via_ez_packet_channel(datapacket_t* pkt, uint32_t output_port) {
+rofl_result_t send_packet_via_ez_packet_channel(datapacket_t* pkt, uint32_t output_port) {
         
-        return ez_packket_channel_instance->write(pkt, (uint8_t)output_port);
+        return ez_packet_channel_instance->write(pkt, (uint8_t)output_port);
 }

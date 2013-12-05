@@ -55,6 +55,6 @@ void* get_ez_packet_channel();
 void set_lsw_for_ez_packet_channel(of_switch_t* sw);
 
 // packet is pushed to EZ NP-3 and send via network port
-rofl_result_t set_packet_via_ez_packet_channel(datapacket_t* pkt, uint32_t output_port);
+rofl_result_t send_packet_via_ez_packet_channel(datapacket_t* pkt, uint32_t output_port);
 
 #endif /* EZ_PACKET_CHANNEL_H */

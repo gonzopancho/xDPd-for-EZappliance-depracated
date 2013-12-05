@@ -1014,7 +1014,7 @@ static void output_single_packet(datapacket_t* pkt, datapacketx86* pack, switch_
 #ifdef DEBUG
 		of1x_dump_packet_matches(&pkt->matches);
 #endif
-                set_packet_via_ez_packet_channel(pkt, port->of_port_num);
+                send_packet_via_ez_packet_channel(pkt, port->of_port_num);
 	}
 	else {
 		//Silently drop the packet
