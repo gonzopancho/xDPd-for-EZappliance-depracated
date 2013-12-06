@@ -117,7 +117,7 @@ datapacket_t* ez_packet_channel::read() {
         input_port = packet_buffer[0];
         frame_size = ntohs(((uint16_t*)(packet_buffer+1))[0]);
         
-        if((n = ::read(ez_packets_socket, packet_buffer, 4086)) < 0) { 
+        if((n = ::read(ez_packets_socket, packet_buffer, frame_size)) < 0) { 
                 //ROFL_DEBUG_VERBOSE("[EZ-packet-channel] Error: %s\n", strerror(errno));
                 bufferpool::release_buffer(pkt);
                 if (errno == EAGAIN || errno == EWOULDBLOCK) {
