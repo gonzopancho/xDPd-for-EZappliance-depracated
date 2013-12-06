@@ -95,7 +95,9 @@ datapacket_t* ez_packet_channel::read() {
 
         //Copy something from TCP socket to buffer
         int n=0;
-        if((n = ::read(ez_packets_socket,packet_buffer,4086)) < 0) { 
+        
+        // read metadata header
+        if((n = ::read(ez_packets_socket, packet_buffer, 3)) < 0) { 
                 //ROFL_DEBUG_VERBOSE("[EZ-packet-channel] Error: %s\n", strerror(errno));
                 bufferpool::release_buffer(pkt);
                 if (errno == EAGAIN || errno == EWOULDBLOCK) {
@@ -114,9 +116,25 @@ datapacket_t* ez_packet_channel::read() {
         //Parsing metedata header
         input_port = packet_buffer[0];
         frame_size = ntohs(((uint16_t*)(packet_buffer+1))[0]);
+        
+        if((n = ::read(ez_packets_socket, packet_buffer, 4086)) < 0) { 
+                //ROFL_DEBUG_VERBOSE("[EZ-packet-channel] Error: %s\n", strerror(errno));
+                bufferpool::release_buffer(pkt);
+                if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                       // ROFL_DEBUG_VERBOSE("[EZ-packet-channel] socket read timeout\n");
+                }
+                return NULL;
+        }
+        if (n==0) {
+                ROFL_ERR("[EZ-packet-channel] EZ-Proxy Server no longer online!\n");
+                bufferpool::release_buffer(pkt);
+                sleep(10);
+                throw 20; // handled upper will break the read loop
+                return NULL;
+        }
 
         //Init in user space
-        pkt_x86->init(packet_buffer+3, frame_size, NULL, (uint32_t)input_port);
+        pkt_x86->init(packet_buffer, frame_size, NULL, (uint32_t)input_port);
         
         ROFL_DEBUG("[EZ-packet-channel] Received packet from port: %d with length: %d\n", input_port, frame_size);
         
