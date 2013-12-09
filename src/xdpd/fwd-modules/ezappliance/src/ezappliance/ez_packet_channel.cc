@@ -97,7 +97,7 @@ datapacket_t* ez_packet_channel::read() {
         int n=0;
         
         // read metadata header
-        if((n = ::read(ez_packets_socket, packet_buffer, 3)) < 0) { 
+        if ((n = ::read(ez_packets_socket, packet_buffer, 3)) < 0) { 
                 //ROFL_DEBUG_VERBOSE("[EZ-packet-channel] Error: %s\n", strerror(errno));
                 bufferpool::release_buffer(pkt);
                 if (errno == EAGAIN || errno == EWOULDBLOCK) {
@@ -105,19 +105,27 @@ datapacket_t* ez_packet_channel::read() {
                 }
                 return NULL;
         }
-        if (n==0) {
-                ROFL_ERR("[EZ-packet-channel] EZ-Proxy Server no longer online!\n");
-                bufferpool::release_buffer(pkt);
-                sleep(10);
-                throw 20; // handled upper will break the read loop
-                return NULL;
-        }
-
-        //Parsing metedata header
-        input_port = packet_buffer[0];
-        frame_size = ntohs(((uint16_t*)(packet_buffer+1))[0]);
         
-        if((n = ::read(ez_packets_socket, packet_buffer, frame_size)) < 0) { 
+        if (n == 0) {
+                ROFL_ERR("[EZ-packet-channel] EZ-Proxy Server no longer online!\n");
+                bufferpool::release_buffer(pkt);
+                sleep(10);
+                throw 20; // handled upper will break the read loop
+                return NULL;
+        }
+        
+        if (n == 3) {
+                //Parsing metedata header
+                input_port = packet_buffer[0];
+                frame_size = ntohs(((uint16_t*)(packet_buffer+1))[0]);
+        }
+        else {
+                ROFL_ERR("[EZ-packet-channel] Received metadata header is incorect!\n");
+                bufferpool::release_buffer(pkt);
+                return NULL;
+        }
+        
+        if ((n = ::read(ez_packets_socket, packet_buffer, frame_size)) < 0) { 
                 //ROFL_DEBUG_VERBOSE("[EZ-packet-channel] Error: %s\n", strerror(errno));
                 bufferpool::release_buffer(pkt);
                 if (errno == EAGAIN || errno == EWOULDBLOCK) {
@@ -125,11 +133,18 @@ datapacket_t* ez_packet_channel::read() {
                 }
                 return NULL;
         }
-        if (n==0) {
+        
+        if (n == 0) {
                 ROFL_ERR("[EZ-packet-channel] EZ-Proxy Server no longer online!\n");
                 bufferpool::release_buffer(pkt);
                 sleep(10);
                 throw 20; // handled upper will break the read loop
+                return NULL;
+        }
+        
+        if (n != (int)frame_size) {
+                ROFL_ERR("[EZ-packet-channel] Received packet is fragmented. Abandoning the packet!\n");
+                bufferpool::release_buffer(pkt);
                 return NULL;
         }
 
