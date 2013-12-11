@@ -32,18 +32,18 @@ class CorbaException(Exception): pass
 
 class CorbaServant(Thread):
     """Inherit this class if you want create Corba Servant for the interface"""
-    def __init__(self, servantClass, dataModels, iorDir, iorName=None):
+    def __init__(self, servantClass, data, iorDir, iorName=None):
         """
         Constructor of the class with arguments:
             servantClass - a class implementing the interface
-            dataModels - object containing data models
+            dataModels - object containing data
             iorDir - path to the directory where ior file will be created
             iorName - ior filename - otherwise IDL interface name is used
         """
         Thread.__init__(self)
         self.servantClass = servantClass
         self.interfaceName = iorName or servantClass.__name__
-        self.dataModels = dataModels
+        self.data = data
         logger.info('initializing corba enviroment for %s' % self.interfaceName)
         try:
             self.orb = CORBA.ORB_init([], CORBA.ORB_ID)
@@ -52,7 +52,7 @@ class CorbaServant(Thread):
             poaManager.activate()
             self.iorFile = iorDir + '/%s.ior' % self.interfaceName
 
-            servantInstance = self.servantClass(self.dataModels)
+            servantInstance = self.servantClass(self.data)
             servantObject = servantInstance._this()
             #logger.debug("Look at servant %s", servantObject)
             self.servantObject = servantObject

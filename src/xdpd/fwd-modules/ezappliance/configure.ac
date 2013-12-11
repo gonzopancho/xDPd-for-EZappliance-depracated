@@ -39,6 +39,7 @@ AC_CONFIG_FILES([
 	src/afa-imp/Makefile
 	src/afa-imp/openflow/openflow1x/Makefile
 	src/io/Makefile
+	src/idl/Makefile
 	src/io/packet_classifiers/Makefile
 	src/pipeline-imp/Makefile
 	src/util/Makefile

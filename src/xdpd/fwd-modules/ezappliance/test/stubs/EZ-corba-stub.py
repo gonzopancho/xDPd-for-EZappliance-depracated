@@ -1,5 +1,7 @@
+#!/usr/bin/env python
+
 #
-# The Geysers project (work funded by European Commission).
+# The ALIEN project (work funded by European Commission).
 #
 # Copyright (C) 2012  Poznan Supercomputing and Network Center
 # Authors:
@@ -17,46 +19,200 @@
 # 
 # You should have received a copy of the GNU Lesser General Public
 # License along with this library; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USASA
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-import uuid, httplib, sys, os, thread
+import sys, os, logging
+import socket, errno
+from optparse import OptionParser
+from threading import Lock, Thread
+import thread, time
+from functools import wraps
 
-sys.path.append(os.getcwd()+"/../") # add directory with corba stub to python modules path
-import Proxy_Adapter__POA as Proxy_Adapter
-import Proxy_Adapter as Proxy
-import _GlobalIDL as glob
+from deamon import Daemon
+from corbaUtils import CorbaServant
+
+sys.path.append(os.getcwd()+"/../../src/idl/") # add directory with corba stub to python modules path
+import Proxy_Adapter__POA
+import Proxy_Adapter
 del sys.path[-1]
 
-from corbaUtils import CorbaServant, corbaClient
+##############################################
 
-import logging
+MODULE_NAME = 'EZ-corba-stub'
+__version__ = '0.1'
 
-logging.basicConfig(filename = "EZ-corba-stub.log", level = logging.DEBUG, 
-                           format = "%(levelname)s - %(asctime)s - %(name)s - %(message)s")
-logger = logging.getLogger('EZ-corba-stub')
+##############################################
 
+def exception_handler(f):
+    'intercepting all corba calls and checking for exceptions'
+    wraps(f)
+    def wrapper(*args, **kwargs):
+        try:
+            v = f(*args, **kwargs)
+            return v
+        except:
+            import traceback
+            logger.error("Exception" + traceback.format_exc())
+    return wrapper
 
-class DevMonitor (Proxy_Adapter.DevMonitor):
+##############################################
+
+class DevMonitor (Proxy_Adapter__POA.DevMonitor):
+        
+    def __init__(self, data):
+        pass
      
+    @exception_handler
     def testDevMonitor(self, testVal):
-        print 'DevMonitor.testDevMonitor() called'
+        logger.debug('DevMonitor.testDevMonitor(%s) called', testVal)
+        return 0, 0
+
+    @exception_handler
+    def getPorts(self, ports):
+        logger.debug('DevMonitor.getPorts(%s) called', ports)
+        return 0, [1,2,3]
+     
+    @exception_handler
+    def getPortStatus(self, port_number):
+        logger.debug('DevMonitor.getPortStatus(%d) called', port_number)
+        return 0, True
+    
+    @exception_handler
+    def getPortName(self, port_number):
+        logger.debug('DevMonitor.getPortName(%d) called', port_number)
+        return 0, "eth0"
+
+##############################################
+
+class StructConf (Proxy_Adapter__POA.StructConf):
+        
+    def __init__(self, data):
+        pass
+     
+    @exception_handler
+    def testStructConf(self, testVal):
+        logger.debug('StructConf.testStructConf(%s) called', testVal)
+        return 0, 0
+        
+    @exception_handler
+    def setStruct(self, struct_type, struct_num, k_length, r_length, key, result, mask):
+        logger.debug('StructConf.setStruct called (struct_type: %s, struct_num: %d, k_length: %d, r_length: %d, key: %d, result: %d, mask: %d)', struct_type, struct_num, k_length, r_length, key, result, mask)
+        return 0
+        
+    @exception_handler
+    def getStruct(self, struct_type, struct_num, index, k_length, r_length, key, result, mask):
+        logger.debug('StructConf.getStruct called (struct_type: %s, struct_num: %d, index: %d, k_length: %d, r_length: %d, key: %d, result: %d, mask: %d)', struct_type, struct_num, index, k_length, r_length, key, result, mask)
+        return 0, k_length, r_length, key, result, mask
+
+    @exception_handler
+    def getStructResult(self, struct_type, struct_num, k_length, r_length, key, result):
+        logger.debug('StructConf.getStructResult called (struct_type: %s, struct_num: %d, k_length: %d, r_length: %d, key: %d, result: %d)', struct_type, struct_num, k_length, r_length, key, result)
+        return 0, result
+        
+    @exception_handler
+    def getStructLimit(self, struct_type, struct_num):
+        logger.debug('StructConf.getStructLimit called (struct_type: %s, struct_num: %d)', struct_type, struct_num)
+        return 0, 10
+
+    @exception_handler
+    def getStructLength(self, struct_type, struct_num):
+        logger.debug('StructConf.getStructLength called (struct_type: %s, struct_num: %d)', struct_type, struct_num)
+        return 0, 10
+ 
+    @exception_handler
+    def delStruct(self, struct_type, struct_num, k_length, r_length, key, result, mask):
+        logger.debug('StructConf.delStruct called (struct_type: %s, struct_num: %d, k_length: %d, r_length: %d, key: %d, result: %d, mask: %d)', struct_type, struct_num, k_length, r_length, key, result, mask)
+        return 0
+        
+    @exception_handler
+    def delStructAllEntries(self, struct_type, struct_num):
+        logger.debug('StructConf.delStructAllEntries called (struct_type: %s, struct_num: %d)', struct_type, struct_num)
         return 0
 
-    def getPorts(self, ports):
-        print 'DevMonitor.getPorts() called'
-        return [1,2,3]
-        
-    def getPortStatus(self, port_number):
-        print 'DevMonitor.getPortStatus() called'
-        return True
-        
-    def getPortName(self, port_number):
-        print 'DevMonitor.getPortName() called'
-        return "eth0"
+##############################################
+    
+class CorbaServers(Thread):
+    
+    def __init__(self, config):
+        '''contructor method required for access to common data model'''
+        Thread.__init__(self)
+        self.config = config
+            
+    def run(self):
+        """Called when server is starting"""
+        for servant in [DevMonitor, StructConf]:
+                server = CorbaServant(servant, None, '/tmp/')
+                server.start()       
 
-if __name__ == '__main__':
-    # processed when module is started as a standlone application
-    for servant in [DevMonitor]:
-        server = CorbaServant(servant, None, '/tmp/')
-        server.start()
+##############################################
 
+class ModuleDaemon(Daemon):
+    def __init__(self, moduleName, options):
+        self.moduleName=moduleName
+        self.options = options
+        self.logger = logging.getLogger(self.__class__.__name__)
+        pidFile = "%s/%s.pid" % (self.options.pidDir, self.moduleName)
+        Daemon.__init__(self, pidFile)
+
+    #---------------------
+    def run(self):
+        """
+        Method called when starting the daemon. 
+        """
+        try:
+            # starting interfaces threads
+            self.servers = CorbaServers(self.options)
+            self.servers.start()
+        except:
+            import traceback
+            self.logger.error("Exception" + traceback.format_exc())
+   
+
+##############################################
+
+if __name__ == "__main__":
+    
+    # optional command-line arguments processing
+    usage="usage: %prog start|stop|restart [options]"
+    parser = OptionParser(usage=usage, version="%prog " + __version__)
+    parser.add_option("-p", "--pidDir", dest="pidDir", default='/tmp', help="directory for pid file")
+    parser.add_option("-l", "--logDir", dest="logDir", default='.', help="directory for log file")
+    options, args = parser.parse_args()
+
+    if 'start' in args[0]:
+        # clear log file
+        try:
+            os.remove("%s/%s.log" % (options.logDir, MODULE_NAME))
+        except: 
+            pass          
+
+    # creation of logging infrastructure
+    logging.basicConfig(filename = "%s/%s.log" % (options.logDir, MODULE_NAME),
+                        level    = logging.DEBUG,
+                        format   = "%(levelname)s - %(asctime)s - %(name)s - %(message)s")
+    logger = logging.getLogger(MODULE_NAME)
+
+    # starting module's daemon
+    daemon = ModuleDaemon(MODULE_NAME, options)
+    
+    # mandatory command-line arguments processing
+    if len(args) == 0:
+        print usage
+        sys.exit(2)
+    if 'start' == args[0]:
+        logger.info('starting the module')
+        daemon.start()
+    elif 'stop' == args[0]:
+        logger.info('stopping the module')
+        daemon.stop()
+    elif 'restart' == args[0]:
+        logger.info('restarting the module')
+        daemon.stop()
+        deamon.start()
+    else:
+        print "Unknown command"
+        print usage
+        sys.exit(2)
+    sys.exit(0)
+
+ 
