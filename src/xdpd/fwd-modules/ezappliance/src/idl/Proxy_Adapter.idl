@@ -1,0 +1,247 @@
+#ifndef __DATADIST_IDL__
+#define __DATADIST_IDL__
+
+
+module Proxy_Adapter
+{
+	typedef  sequence <octet> EZvalue;
+  	typedef   sequence <long> EZport;
+    typedef   unsigned long   EZuint;
+  	typedef     EZuint        EZStr_Num;
+  	typedef     EZuint        EZstatus;
+  	typedef     EZuint        KeySize;
+	typedef     EZuint        ResultSize;
+  	typedef 	unsigned long uint32;
+  	typedef		boolean 	  EZPortStatus;
+  
+  	enum EZStruct_type
+   	{ 
+       EzapiParse2 ,EzapiSearch1, EzapiSearch2, EzapiParse
+   	};
+
+	enum EZapiTM_type
+   	{ 
+       EZapiTM_ID_TMa, EZapiTM_ID_TMb
+   	};
+
+	enum EZapiTM_Shaping
+	{
+		ShapingMode_EXPLICIT,
+		ShapingMode_UNSHAPED,
+		ShapingMode_BEST_EFFORT,
+   		ShapingMode_UNLIMITED_EXCESS,
+ 		ShapingMode_NO_EXCESS,
+    	ShapingMode_NO_COMMIT   
+	};
+
+	enum EZapiTM_ShapingLevel
+	{
+		EZapiTM_ShapingLevel_0,
+   		EZapiTM_ShapingLevel_1,
+   		EZapiTM_ShapingLevel_2,
+   		EZapiTM_ShapingLevel_3,
+   		EZapiTM_ShapingLevel_4    
+	};
+
+	enum EZapiTM_WREDLevel
+	{
+   		EZapiTM_WREDLevel_GLOBAL,
+   		EZapiTM_WREDLevel_TM,
+   		EZapiTM_WREDLevel_12,
+  		EZapiTM_WREDLevel_3,
+   		EZapiTM_WREDLevel_4
+	};
+
+	enum EZapiTM_Entity
+	{
+   		EZapiTM_EntityLevel_0 ,
+   		EZapiTM_EntityLevel_1 , 
+   		EZapiTM_EntityLevel_2 ,
+   		EZapiTM_EntityLevel_3 ,
+   		EZapiTM_EntityLevel_4    
+	};
+
+	enum EZapiTM_WFQLevel
+	{
+   		EZapiTM_WFQLevel_0,
+   		EZapiTM_WFQLevel_1,
+   		EZapiTM_WFQLevel_2,
+   		EZapiTM_WFQLevel_3,
+   		EZapiTM_WFQLevel_4
+	};
+
+	enum EZapiTM_Priority
+	{
+		EZapiTM_Priority_NORMAL,
+     	EZapiTM_Priority_HIGH,
+     	EZapiTM_Priority_PROPAGATED  
+	};
+
+	enum EZapiFrame_TransmitQ
+	{
+   		EZapiFrame_TransmitQ_OQ,
+   		EZapiFrame_TransmitQ_ETFD,
+   		EZapiFrame_TransmitQ_TMa,
+   		EZapiFrame_TransmitQ_TMb
+	};
+
+	enum EZapiFrame_BufferRegion
+	{
+   		EZapiFrame_BufferRegion_RX,
+   		EZapiFrame_BufferRegion_TX
+     } ;
+
+	interface StructConf
+	{
+		EZstatus testStructConf (inout EZuint   testVal);
+		
+		EZstatus setStruct (in EZStruct_type struct_type,
+                   			in EZStr_Num     struct_num,
+		   					in KeySize       k_length,
+                   			in ResultSize    r_length,
+                   			in EZvalue       key,
+                   			in EZvalue       result,
+                   			in EZvalue       mask);
+                   			
+		EZstatus getStruct (in EZStruct_type  struct_type,
+							in EZStr_Num      struct_num,
+		   					in uint32         index,
+		   					inout KeySize     k_length,
+                   			inout ResultSize  r_length,
+                   			inout EZvalue     key,
+                   			inout EZvalue     result,
+                   			inout EZvalue     mask);
+
+		EZstatus getStructResult (in EZStruct_type  struct_type,
+        						in EZStr_Num      struct_num,
+                          		in KeySize        k_length,
+                          		in EZvalue        key,
+                          		in ResultSize     r_length,
+                          		inout EZvalue     result);
+
+		EZstatus getStructLimit (in EZStruct_type struct_type,
+								in EZStr_Num      struct_num,
+		   						out uint32         limit);
+		   						
+		EZstatus getStructLength (in EZStruct_type struct_type,
+								in EZStr_Num      struct_num,
+		   						out uint32         length);
+		   						
+    	EZstatus delStruct (in EZStruct_type struct_type,
+                   			in EZStr_Num     struct_num,
+		   					in KeySize       k_length,
+                   			in ResultSize    r_length,
+                   			in EZvalue       key,
+                   			in EZvalue       result,
+                   			in EZvalue       mask);
+
+    	EZstatus delStructAllEntries (in EZStruct_type struct_type,
+                   					in EZStr_Num      struct_num);
+	};
+
+	interface DevMonitor
+    {
+    	EZstatus testDevMonitor (inout EZuint   testVal);
+    	
+    	EZstatus getPorts (inout EZport    ports);
+
+    	EZstatus getPortStatus ( in EZuint port_number,
+                  				 out EZPortStatus    port_status);
+        
+    	EZstatus getPortName( in EZuint port_number,
+                  				 out string    port_name);
+
+	};
+
+	interface TrafficMngt
+	{
+		EZstatus testTrafficMngt (inout EZuint   testVal);
+		
+		EZstatus tmSetShapingProfile ( in uint32             profile,
+                                  	in uint32                cir,
+				  					in uint32		         cbs,	
+		                 			in EZapiTM_ShapingLevel  level,
+                                  	in EZapiTM_type          tm);
+                                  	
+    	EZstatus tmGetShapingProfile ( in uint32                profile,
+									out uint32                	cir,
+									out uint32		    		cbs,
+		                      		in EZapiTM_ShapingLevel  	level,
+                                    in EZapiTM_type         	tm);
+                                    
+    	EZstatus tmSetEntity ( in uint32          shaping_profile,
+			     			in uint32             wred_profile,
+			     			in uint32             wfq_profile,
+			     			in EZapiTM_Priority   priority,
+                            in uint32             entity,
+                            in EZapiTM_Entity     level,
+                            in EZapiTM_Shaping    mode,
+                            in EZapiTM_type       tm);
+
+   		EZstatus tmGetEntity (  out uint32        shaping_profile,
+			     			out uint32            wred_profile,
+			     			out uint32            wfq_profile,
+			    			out EZapiTM_Priority  priority,
+                            in uint32             entity,
+                            in EZapiTM_Entity     level,
+                            out EZapiTM_Shaping   mode,
+                            in EZapiTM_type       tm);
+
+
+    	EZstatus tmSetWfqProfile ( in uint32 			profile,
+        	                      in uint32             weight,
+		    			          in EZapiTM_WFQLevel   level,
+                        	      in EZapiTM_type       tm);
+
+    	EZstatus tmGetWfqProfile ( in uint32                profile,
+                             	out uint32                  weight,
+		             			in EZapiTM_WFQLevel         level,
+								in EZapiTM_type             tm);
+
+
+    	EZstatus tmSetWredProfile ( in uint32               profile,
+								in uint32                   guaranteedThresh,
+		              			in EZapiTM_WREDLevel        level,
+								in EZapiTM_type             tm);
+
+    	EZstatus tmGetWredProfile ( in uint32               profile,
+        	                      out uint32                guaranteedThresh,
+		    			          in EZapiTM_WREDLevel      level,
+                        	      in EZapiTM_type  	        tm );
+
+    	EZstatus setTokenbucketProfile ( in uint32         	profil_num,
+                                in uint32                	cir,
+				                in uint32		  			cbs);
+				                
+    	EZstatus setTokenbucketCounter ( in uint32           counter_num,
+									in uint32                tb_profile);
+                   
+    	EZstatus getTokenbucketProfile ( in uint32           profil_num,
+                                out uint32                   cir,
+				                out uint32		   			 cbs);
+				                
+    	EZstatus getTokenbucketCounter ( in uint32           counter_num,
+                                out uint32           	     tb_profile);
+
+	};
+	
+	interface  NP3FrameHandl
+	{
+    	EZstatus testNP3FrameHandl (inout EZuint   testVal);
+
+    	EZstatus frameSend ( in uint32                   destination_port,
+                             in uint32                   uqTMFlowId,
+			                 in EZapiFrame_BufferRegion  buffor_region,
+                             in EZapiFrame_TransmitQ     transmisions_direction,
+                             in EZvalue                  frame_data,
+                             in uint32                   frame_length);
+    
+    	EZstatus frameRead ( inout EZvalue                  frame_data,
+                             inout uint32                   frame_length);
+                             
+	}; 
+    
+}; //module Proxy_Adapter
+
+
+#endif
