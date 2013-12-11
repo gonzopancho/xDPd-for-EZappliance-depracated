@@ -96,17 +96,17 @@ class StructConf (Proxy_Adapter__POA.StructConf):
         
     @exception_handler
     def setStruct(self, struct_type, struct_num, k_length, r_length, key, result, mask):
-        logger.debug('StructConf.setStruct called (struct_type: %s, struct_num: %d, k_length: %d, r_length: %d, key: %d, result: %d, mask: %d)', struct_type, struct_num, k_length, r_length, key, result, mask)
+        logger.debug('StructConf.setStruct called (struct_type: %s, struct_num: %d, k_length: %d, r_length: %d, key: %s, result: %s, mask: %s)', struct_type, struct_num, k_length, r_length, key, result, mask)
         return 0
         
     @exception_handler
     def getStruct(self, struct_type, struct_num, index, k_length, r_length, key, result, mask):
-        logger.debug('StructConf.getStruct called (struct_type: %s, struct_num: %d, index: %d, k_length: %d, r_length: %d, key: %d, result: %d, mask: %d)', struct_type, struct_num, index, k_length, r_length, key, result, mask)
+        logger.debug('StructConf.getStruct called (struct_type: %s, struct_num: %d, index: %d, k_length: %d, r_length: %d, key: %s, result: %s, mask: %s)', struct_type, struct_num, index, k_length, r_length, key, result, mask)
         return 0, k_length, r_length, key, result, mask
 
     @exception_handler
-    def getStructResult(self, struct_type, struct_num, k_length, r_length, key, result):
-        logger.debug('StructConf.getStructResult called (struct_type: %s, struct_num: %d, k_length: %d, r_length: %d, key: %d, result: %d)', struct_type, struct_num, k_length, r_length, key, result)
+    def getStructResult(self, struct_type, struct_num, k_length, key, r_length, result):
+        logger.debug('StructConf.getStructResult called (struct_type: %s, struct_num: %d, k_length: %d, r_length: %d, key: %s, result: %s)', struct_type, struct_num, k_length, r_length, key, result)
         return 0, result
         
     @exception_handler
@@ -121,7 +121,7 @@ class StructConf (Proxy_Adapter__POA.StructConf):
  
     @exception_handler
     def delStruct(self, struct_type, struct_num, k_length, r_length, key, result, mask):
-        logger.debug('StructConf.delStruct called (struct_type: %s, struct_num: %d, k_length: %d, r_length: %d, key: %d, result: %d, mask: %d)', struct_type, struct_num, k_length, r_length, key, result, mask)
+        logger.debug('StructConf.delStruct called (struct_type: %s, struct_num: %d, k_length: %d, r_length: %d, key: %s, result: %s, mask: %s)', struct_type, struct_num, k_length, r_length, key, result, mask)
         return 0
         
     @exception_handler
