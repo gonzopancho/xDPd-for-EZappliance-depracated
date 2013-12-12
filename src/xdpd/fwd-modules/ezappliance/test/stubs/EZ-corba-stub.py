@@ -70,7 +70,7 @@ class DevMonitor (Proxy_Adapter__POA.DevMonitor):
     @exception_handler
     def getPorts(self, ports):
         logger.debug('DevMonitor.getPorts(%s) called', ports)
-        return 0, [1,2,3]
+        return 0, [0,1,2,3]
      
     @exception_handler
     def getPortStatus(self, port_number):
@@ -80,7 +80,7 @@ class DevMonitor (Proxy_Adapter__POA.DevMonitor):
     @exception_handler
     def getPortName(self, port_number):
         logger.debug('DevMonitor.getPortName(%d) called', port_number)
-        return 0, "eth0"
+        return 0, "eth%d" % port_number
 
 ##############################################
 

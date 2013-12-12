@@ -22,6 +22,7 @@
 #include "iface_utils.h" 
 
 #include "../ezappliance/ez_packet_channel.h"
+#include "../ezappliance/ez_corba_client.h"
 
 using namespace xdpd::gnu_linux;
 
@@ -33,7 +34,7 @@ using namespace xdpd::gnu_linux;
 *
 */
 
-rofl_result_t update_port_status(char * name){
+rofl_result_t update_port_status(char * name) {
  
 	switch_port_t *port;
 	
@@ -56,58 +57,58 @@ rofl_result_t update_port_status(char * name){
 }
 
 
-static switch_port_t* fill_port(char* name){
+static switch_port_t* fill_port(uint32_t port_id) {
 	
-    switch_port_t* port;
-    
-    //Init the port
-    port = switch_port_init(name, true/*will be overriden afterwards*/, PORT_TYPE_PHYSICAL, PORT_STATE_LIVE);
-    if(!port)
-        return NULL;
-    
-    for(int j=0;j<6;j++)
-        port->hwaddr[j] = 0x00; //FIXME: get MAC from EZ-port
-    
-    switch_port_set_current_speed(port, PORT_FEATURE_1GB_FD);
-    
-    switch_port_add_capabilities(&port->curr, PORT_FEATURE_COPPER);
-    switch_port_add_capabilities(&port->curr, PORT_FEATURE_AUTONEG);
-    
-    port->advertised = port->supported = port->curr;
+        //Init the port
+        char* name = get_ez_port_name(port_id);
+        
+        switch_port_t* port = switch_port_init(name, true/*will be overriden afterwards*/, PORT_TYPE_PHYSICAL, PORT_STATE_LIVE);
+        if(!port)
+                return NULL;
 
-    return port;
+        for(int j=0;j<6;j++)
+                port->hwaddr[j] = 0x00; //FIXME: get MAC from EZ-port
+
+        switch_port_set_current_speed(port, PORT_FEATURE_1GB_FD);
+
+        switch_port_add_capabilities(&port->curr, PORT_FEATURE_COPPER);
+        switch_port_add_capabilities(&port->curr, PORT_FEATURE_AUTONEG);
+
+        port->advertised = port->supported = port->curr;
+
+        return port;
 }
 
 /*
  * Looks in the system physical ports and fills up the switch_port_t sructure with them
  *
  */
-rofl_result_t discover_physical_ports(){
+rofl_result_t discover_physical_ports() {
     
-    switch_port_t* port;
-    
-    //Fill ports
-    
-    port = fill_port((char*)"ez0");
-    if( physical_switch_add_port(port) != ROFL_SUCCESS ){
-        ROFL_ERR("<%s:%d> All physical port slots are occupied\n",__func__, __LINE__);
-        assert(0);
-        return ROFL_FAILURE;
-    }
+        switch_port_t* port;
+
+        //Fill ports
+        Proxy_Adapter::EZport ports = get_ez_ports();
+
+        ROFL_DEBUG("Number of EZ port is %d \n", ports.length());
         
-    port = fill_port((char*)"ez1");
-    if( physical_switch_add_port(port) != ROFL_SUCCESS ){
-        ROFL_ERR("<%s:%d> All physical port slots are occupied\n",__func__, __LINE__);
-        assert(0);
-        return ROFL_FAILURE;
-    }
-    return ROFL_SUCCESS;
+        for (uint32_t i=0; i<ports.length(); i++) {
+                
+                port = fill_port(ports[i]);
+                
+                if( physical_switch_add_port(port) != ROFL_SUCCESS ) {
+                        ROFL_ERR("<%s:%d> All physical port slots are occupied\n",__func__, __LINE__);
+                        assert(0);
+                        return ROFL_FAILURE;
+                }
+        }
+        return ROFL_SUCCESS;
 }
 
 
 
 
-rofl_result_t destroy_port(switch_port_t* port){
+rofl_result_t destroy_port(switch_port_t* port) {
 
 	if(!port)
 		return ROFL_FAILURE;
@@ -124,7 +125,7 @@ rofl_result_t destroy_port(switch_port_t* port){
  * Discovers platform physical ports and fills up the switch_port_t sructures
  *
  */
-rofl_result_t destroy_ports(){
+rofl_result_t destroy_ports() {
 
 	unsigned int max_ports, i;
 	switch_port_t** array;	
@@ -154,7 +155,7 @@ rofl_result_t destroy_ports(){
 /*
  * Discover new platform ports (usually triggered by bg task manager)
  */
-rofl_result_t update_physical_ports(){
+rofl_result_t update_physical_ports() {
 
 	switch_port_t *port, **ports;
 	int sock;
