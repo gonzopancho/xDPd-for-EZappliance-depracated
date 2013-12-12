@@ -6,6 +6,7 @@ module Proxy_Adapter
 {
 	typedef  sequence <octet> EZvalue;
   	typedef   sequence <long> EZport;
+        typedef   sequence <octet,6> MacAddress;
     typedef   unsigned long   EZuint;
   	typedef     EZuint        EZStr_Num;
   	typedef     EZuint        EZstatus;
@@ -89,7 +90,23 @@ module Proxy_Adapter
 	{
    		EZapiFrame_BufferRegion_RX,
    		EZapiFrame_BufferRegion_TX
-     } ;
+        } ;
+     
+        enum EZapiPort_Medium
+        {
+                EZapiPort_Medium_Fiber,
+                EZapiPort_Medium_Copper
+        };
+        
+        enum EZapiPort_Rate
+        {
+                EZapiPort_Rate_10MB,
+                EZapiPort_Rate_100MB,
+                EZapiPort_Rate_1GB,
+                EZapiPort_Rate_10GB,
+                EZapiPort_Rate_40GB,
+                EZapiPort_Rate_100GB
+        };
 
 	interface StructConf
 	{
@@ -150,6 +167,13 @@ module Proxy_Adapter
         
     	EZstatus getPortName( in EZuint port_number,
                   				 out string    port_name);
+        
+        EZstatus getPortMac( in EZuint port_number,
+                             out MacAddress    mac);
+        
+        EZstatus getPortFeatures(in EZuint port_number,
+                                 out EZapiPort_Medium medium,
+                                 out EZapiPort_Rate rate);
 
 	};
 

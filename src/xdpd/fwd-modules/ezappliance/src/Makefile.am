@@ -1,7 +1,7 @@
 MAINTAINERCLEANFILES = Makefile.in
 
 #Do first the config
-SUBDIRS = afa-imp io util pipeline-imp ezappliance
+SUBDIRS = afa-imp io util pipeline-imp ezappliance idl
 
 noinst_LTLIBRARIES = libfwd_module_gnu_linux_src.la
 

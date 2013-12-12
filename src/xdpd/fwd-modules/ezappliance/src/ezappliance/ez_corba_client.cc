@@ -100,31 +100,57 @@ static bool devMonitorConnect(bool force_new_connection=false) {
                 return true;
         } 
         catch (CORBA::UNKNOWN) {
-                ROFL_ERR("[CORBA] unknown exception\n");
+                ROFL_ERR("[CORBA] unknown exception in devMonitorConnect\n");
         }
         return false;
 }
 
 Proxy_Adapter::EZport get_ez_ports() {
+        
         Proxy_Adapter::EZport ports;
         try {
                 if (devMonitorConnect())
                         deviceMonitorProxy->getPorts(ports);
         } 
         catch (CORBA::UNKNOWN) {
-                ROFL_ERR("[CORBA] unknown exception");
+                ROFL_ERR("[CORBA] unknown exception in get_ez_ports");
         }
         return ports;
 }
 
 char* get_ez_port_name(uint32_t port_id) {
+        
         CORBA::String_var name;
         try {
                 if (devMonitorConnect())
                         deviceMonitorProxy->getPortName((Proxy_Adapter::EZuint)port_id, name);
         } 
         catch (CORBA::UNKNOWN) {
-                ROFL_ERR("[CORBA] unknown exception");
+                ROFL_ERR("[CORBA] unknown exception in get_ez_port_name");
         }
         return CORBA::string_dup(name);
+}
+
+Proxy_Adapter::MacAddress get_ez_port_mac(uint32_t port_id) {
+        
+        Proxy_Adapter::MacAddress_var mac;
+        try {
+                if (devMonitorConnect())
+                        deviceMonitorProxy->getPortMac((Proxy_Adapter::EZuint)port_id, mac);
+        } 
+        catch (CORBA::UNKNOWN) {
+                ROFL_ERR("[CORBA] unknown exception in get_ez_port_mac");
+        }
+        return mac;
+}
+
+void get_ez_port_features(uint32_t port_id, Proxy_Adapter::EZapiPort_Medium& medium, Proxy_Adapter::EZapiPort_Rate& rate) {
+        
+        try {
+                if (devMonitorConnect())
+                        deviceMonitorProxy->getPortFeatures((Proxy_Adapter::EZuint)port_id, medium, rate);
+        } 
+        catch (CORBA::UNKNOWN) {
+                ROFL_ERR("[CORBA] unknown exception in get_ez_port_features");
+        }
 }

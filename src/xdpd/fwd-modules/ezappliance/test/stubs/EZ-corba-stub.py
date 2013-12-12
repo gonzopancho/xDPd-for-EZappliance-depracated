@@ -81,6 +81,16 @@ class DevMonitor (Proxy_Adapter__POA.DevMonitor):
     def getPortName(self, port_number):
         logger.debug('DevMonitor.getPortName(%d) called', port_number)
         return 0, "eth%d" % port_number
+        
+    @exception_handler
+    def getPortMac(self, port_number):
+        logger.debug('DevMonitor.getPortMac(%d) called', port_number)
+        return 0, "12345%d" % port_number
+        
+    @exception_handler
+    def getPortFeatures(self, port_number):
+        logger.debug('DevMonitor.getPortFeatures(%d) called', port_number)
+        return 0, Proxy_Adapter.EZapiPort_Medium_Fiber, Proxy_Adapter.EZapiPort_Rate_1GB
 
 ##############################################
 
@@ -208,7 +218,7 @@ if __name__ == "__main__":
     elif 'restart' == args[0]:
         logger.info('restarting the module')
         daemon.stop()
-        deamon.start()
+        daemon.start()
     else:
         print "Unknown command"
         print usage

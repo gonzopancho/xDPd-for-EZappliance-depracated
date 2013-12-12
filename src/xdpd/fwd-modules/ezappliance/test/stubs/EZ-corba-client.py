@@ -11,7 +11,9 @@ def test_DevMonitor():
     print "DevMonitor.testDevMonitor result:", ref.testDevMonitor(1)
     print "DevMonitor.getPorts result:", ref.getPorts([])
     print "DevMonitor.getPortStatus result:", ref.getPortStatus(1)
-    print "DevMonitor.getPortName result:", ref.getPortName(1)
+    print "DevMonitor.getPortName result:", ref.getPortName(1) 
+    print "DevMonitor.getPortMac result:", ref.getPortMac(1) 
+    print "DevMonitor.getPortFeatures result:", ref.getPortFeatures(1)
     
 def test_StructConf():
     ref = corbaClient(Proxy_Adapter.StructConf, iorFile='/tmp/StructConf.ior')

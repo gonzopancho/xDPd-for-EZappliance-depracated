@@ -1218,6 +1218,167 @@ Proxy_Adapter::EZstatus Proxy_Adapter::_objref_DevMonitor::getPortName(::Proxy_A
 
 
 }
+// Proxy call descriptor class. Mangled signature:
+//  _cunsigned_plong_i_cunsigned_plong_o_cProxy__Adapter_mMacAddress
+class _0RL_cd_40eea1302de063aa_51000000
+  : public omniCallDescriptor
+{
+public:
+  inline _0RL_cd_40eea1302de063aa_51000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+     omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
+  {
+    
+  }
+  
+  void marshalArguments(cdrStream&);
+  void unmarshalArguments(cdrStream&);
+
+  void unmarshalReturnedValues(cdrStream&);
+  void marshalReturnedValues(cdrStream&);
+  
+  
+  static const char* const _user_exns[];
+
+  Proxy_Adapter::EZuint arg_0;
+  Proxy_Adapter::MacAddress_var arg_1;
+  Proxy_Adapter::EZstatus result;
+};
+
+void _0RL_cd_40eea1302de063aa_51000000::marshalArguments(cdrStream& _n)
+{
+  arg_0 >>= _n;
+
+}
+
+void _0RL_cd_40eea1302de063aa_51000000::unmarshalArguments(cdrStream& _n)
+{
+  (Proxy_Adapter::EZuint&)arg_0 <<= _n;
+
+}
+
+void _0RL_cd_40eea1302de063aa_51000000::marshalReturnedValues(cdrStream& _n)
+{
+  result >>= _n;
+  (const Proxy_Adapter::MacAddress&) arg_1 >>= _n;
+
+}
+
+void _0RL_cd_40eea1302de063aa_51000000::unmarshalReturnedValues(cdrStream& _n)
+{
+  (Proxy_Adapter::EZstatus&)result <<= _n;
+  arg_1 = new Proxy_Adapter::MacAddress;
+  (Proxy_Adapter::MacAddress&)arg_1 <<= _n;
+
+}
+
+const char* const _0RL_cd_40eea1302de063aa_51000000::_user_exns[] = {
+  0
+};
+
+// Local call call-back function.
+static void
+_0RL_lcfn_40eea1302de063aa_61000000(omniCallDescriptor* cd, omniServant* svnt)
+{
+  _0RL_cd_40eea1302de063aa_51000000* tcd = (_0RL_cd_40eea1302de063aa_51000000*)cd;
+  Proxy_Adapter::_impl_DevMonitor* impl = (Proxy_Adapter::_impl_DevMonitor*) svnt->_ptrToInterface(Proxy_Adapter::DevMonitor::_PD_repoId);
+  tcd->result = impl->getPortMac(tcd->arg_0, tcd->arg_1.out());
+
+
+}
+
+Proxy_Adapter::EZstatus Proxy_Adapter::_objref_DevMonitor::getPortMac(::Proxy_Adapter::EZuint port_number, ::Proxy_Adapter::MacAddress_out mac)
+{
+  _0RL_cd_40eea1302de063aa_51000000 _call_desc(_0RL_lcfn_40eea1302de063aa_61000000, "getPortMac", 11);
+  _call_desc.arg_0 = port_number;
+
+  _invoke(_call_desc);
+  mac = _call_desc.arg_1._retn();
+  return _call_desc.result;
+
+
+}
+// Proxy call descriptor class. Mangled signature:
+//  _cunsigned_plong_i_cunsigned_plong_o_cProxy__Adapter_mEZapiPort__Medium_o_cProxy__Adapter_mEZapiPort__Rate
+class _0RL_cd_40eea1302de063aa_71000000
+  : public omniCallDescriptor
+{
+public:
+  inline _0RL_cd_40eea1302de063aa_71000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+     omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
+  {
+    
+  }
+  
+  void marshalArguments(cdrStream&);
+  void unmarshalArguments(cdrStream&);
+
+  void unmarshalReturnedValues(cdrStream&);
+  void marshalReturnedValues(cdrStream&);
+  
+  
+  static const char* const _user_exns[];
+
+  Proxy_Adapter::EZuint arg_0;
+  Proxy_Adapter::EZapiPort_Medium arg_1;
+  Proxy_Adapter::EZapiPort_Rate arg_2;
+  Proxy_Adapter::EZstatus result;
+};
+
+void _0RL_cd_40eea1302de063aa_71000000::marshalArguments(cdrStream& _n)
+{
+  arg_0 >>= _n;
+
+}
+
+void _0RL_cd_40eea1302de063aa_71000000::unmarshalArguments(cdrStream& _n)
+{
+  (Proxy_Adapter::EZuint&)arg_0 <<= _n;
+
+}
+
+void _0RL_cd_40eea1302de063aa_71000000::marshalReturnedValues(cdrStream& _n)
+{
+  result >>= _n;
+  arg_1 >>= _n;
+  arg_2 >>= _n;
+
+}
+
+void _0RL_cd_40eea1302de063aa_71000000::unmarshalReturnedValues(cdrStream& _n)
+{
+  (Proxy_Adapter::EZstatus&)result <<= _n;
+  (Proxy_Adapter::EZapiPort_Medium&)arg_1 <<= _n;
+  (Proxy_Adapter::EZapiPort_Rate&)arg_2 <<= _n;
+
+}
+
+const char* const _0RL_cd_40eea1302de063aa_71000000::_user_exns[] = {
+  0
+};
+
+// Local call call-back function.
+static void
+_0RL_lcfn_40eea1302de063aa_81000000(omniCallDescriptor* cd, omniServant* svnt)
+{
+  _0RL_cd_40eea1302de063aa_71000000* tcd = (_0RL_cd_40eea1302de063aa_71000000*)cd;
+  Proxy_Adapter::_impl_DevMonitor* impl = (Proxy_Adapter::_impl_DevMonitor*) svnt->_ptrToInterface(Proxy_Adapter::DevMonitor::_PD_repoId);
+  tcd->result = impl->getPortFeatures(tcd->arg_0, tcd->arg_1, tcd->arg_2);
+
+
+}
+
+Proxy_Adapter::EZstatus Proxy_Adapter::_objref_DevMonitor::getPortFeatures(::Proxy_Adapter::EZuint port_number, ::Proxy_Adapter::EZapiPort_Medium& medium, ::Proxy_Adapter::EZapiPort_Rate& rate)
+{
+  _0RL_cd_40eea1302de063aa_71000000 _call_desc(_0RL_lcfn_40eea1302de063aa_81000000, "getPortFeatures", 16);
+  _call_desc.arg_0 = port_number;
+
+  _invoke(_call_desc);
+  medium = _call_desc.arg_1;
+  rate = _call_desc.arg_2;
+  return _call_desc.result;
+
+
+}
 Proxy_Adapter::_pof_DevMonitor::~_pof_DevMonitor() {}
 
 
@@ -1274,6 +1435,22 @@ Proxy_Adapter::_impl_DevMonitor::_dispatch(omniCallHandle& _handle)
   if( omni::strMatch(op, "getPortName") ) {
 
     _0RL_cd_40eea1302de063aa_31000000 _call_desc(_0RL_lcfn_40eea1302de063aa_41000000, "getPortName", 12, 1);
+    
+    _handle.upcall(this,_call_desc);
+    return 1;
+  }
+
+  if( omni::strMatch(op, "getPortMac") ) {
+
+    _0RL_cd_40eea1302de063aa_51000000 _call_desc(_0RL_lcfn_40eea1302de063aa_61000000, "getPortMac", 11, 1);
+    
+    _handle.upcall(this,_call_desc);
+    return 1;
+  }
+
+  if( omni::strMatch(op, "getPortFeatures") ) {
+
+    _0RL_cd_40eea1302de063aa_71000000 _call_desc(_0RL_lcfn_40eea1302de063aa_81000000, "getPortFeatures", 16, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;
@@ -1411,7 +1588,7 @@ Proxy_Adapter::_objref_TrafficMngt::_ptrToObjRef(const char* id)
 
 // Local call call-back function.
 static void
-_0RL_lcfn_40eea1302de063aa_51000000(omniCallDescriptor* cd, omniServant* svnt)
+_0RL_lcfn_40eea1302de063aa_91000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_40eea1302de063aa_00000000* tcd = (_0RL_cd_40eea1302de063aa_00000000*)cd;
   Proxy_Adapter::_impl_TrafficMngt* impl = (Proxy_Adapter::_impl_TrafficMngt*) svnt->_ptrToInterface(Proxy_Adapter::TrafficMngt::_PD_repoId);
@@ -1422,7 +1599,7 @@ _0RL_lcfn_40eea1302de063aa_51000000(omniCallDescriptor* cd, omniServant* svnt)
 
 Proxy_Adapter::EZstatus Proxy_Adapter::_objref_TrafficMngt::testTrafficMngt(::Proxy_Adapter::EZuint& testVal)
 {
-  _0RL_cd_40eea1302de063aa_00000000 _call_desc(_0RL_lcfn_40eea1302de063aa_51000000, "testTrafficMngt", 16);
+  _0RL_cd_40eea1302de063aa_00000000 _call_desc(_0RL_lcfn_40eea1302de063aa_91000000, "testTrafficMngt", 16);
   _call_desc.arg_0 = &(::Proxy_Adapter::EZuint&) testVal;
 
   _invoke(_call_desc);
@@ -1432,186 +1609,6 @@ Proxy_Adapter::EZstatus Proxy_Adapter::_objref_TrafficMngt::testTrafficMngt(::Pr
 }
 // Proxy call descriptor class. Mangled signature:
 //  _cunsigned_plong_i_cunsigned_plong_i_cunsigned_plong_i_cunsigned_plong_i_cProxy__Adapter_mEZapiTM__ShapingLevel_i_cProxy__Adapter_mEZapiTM__type
-class _0RL_cd_40eea1302de063aa_61000000
-  : public omniCallDescriptor
-{
-public:
-  inline _0RL_cd_40eea1302de063aa_61000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
-     omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
-  {
-    
-  }
-  
-  void marshalArguments(cdrStream&);
-  void unmarshalArguments(cdrStream&);
-
-  void unmarshalReturnedValues(cdrStream&);
-  void marshalReturnedValues(cdrStream&);
-  
-  
-  static const char* const _user_exns[];
-
-  Proxy_Adapter::uint32 arg_0;
-  Proxy_Adapter::uint32 arg_1;
-  Proxy_Adapter::uint32 arg_2;
-  Proxy_Adapter::EZapiTM_ShapingLevel arg_3;
-  Proxy_Adapter::EZapiTM_type arg_4;
-  Proxy_Adapter::EZstatus result;
-};
-
-void _0RL_cd_40eea1302de063aa_61000000::marshalArguments(cdrStream& _n)
-{
-  arg_0 >>= _n;
-  arg_1 >>= _n;
-  arg_2 >>= _n;
-  arg_3 >>= _n;
-  arg_4 >>= _n;
-
-}
-
-void _0RL_cd_40eea1302de063aa_61000000::unmarshalArguments(cdrStream& _n)
-{
-  (Proxy_Adapter::uint32&)arg_0 <<= _n;
-  (Proxy_Adapter::uint32&)arg_1 <<= _n;
-  (Proxy_Adapter::uint32&)arg_2 <<= _n;
-  (Proxy_Adapter::EZapiTM_ShapingLevel&)arg_3 <<= _n;
-  (Proxy_Adapter::EZapiTM_type&)arg_4 <<= _n;
-
-}
-
-void _0RL_cd_40eea1302de063aa_61000000::marshalReturnedValues(cdrStream& _n)
-{
-  result >>= _n;
-
-}
-
-void _0RL_cd_40eea1302de063aa_61000000::unmarshalReturnedValues(cdrStream& _n)
-{
-  (Proxy_Adapter::EZstatus&)result <<= _n;
-
-}
-
-const char* const _0RL_cd_40eea1302de063aa_61000000::_user_exns[] = {
-  0
-};
-
-// Local call call-back function.
-static void
-_0RL_lcfn_40eea1302de063aa_71000000(omniCallDescriptor* cd, omniServant* svnt)
-{
-  _0RL_cd_40eea1302de063aa_61000000* tcd = (_0RL_cd_40eea1302de063aa_61000000*)cd;
-  Proxy_Adapter::_impl_TrafficMngt* impl = (Proxy_Adapter::_impl_TrafficMngt*) svnt->_ptrToInterface(Proxy_Adapter::TrafficMngt::_PD_repoId);
-  tcd->result = impl->tmSetShapingProfile(tcd->arg_0, tcd->arg_1, tcd->arg_2, tcd->arg_3, tcd->arg_4);
-
-
-}
-
-Proxy_Adapter::EZstatus Proxy_Adapter::_objref_TrafficMngt::tmSetShapingProfile(::Proxy_Adapter::uint32 profile, ::Proxy_Adapter::uint32 cir, ::Proxy_Adapter::uint32 cbs, ::Proxy_Adapter::EZapiTM_ShapingLevel level, ::Proxy_Adapter::EZapiTM_type tm)
-{
-  _0RL_cd_40eea1302de063aa_61000000 _call_desc(_0RL_lcfn_40eea1302de063aa_71000000, "tmSetShapingProfile", 20);
-  _call_desc.arg_0 = profile;
-  _call_desc.arg_1 = cir;
-  _call_desc.arg_2 = cbs;
-  _call_desc.arg_3 = level;
-  _call_desc.arg_4 = tm;
-
-  _invoke(_call_desc);
-  return _call_desc.result;
-
-
-}
-// Proxy call descriptor class. Mangled signature:
-//  _cunsigned_plong_i_cunsigned_plong_o_cunsigned_plong_o_cunsigned_plong_i_cProxy__Adapter_mEZapiTM__ShapingLevel_i_cProxy__Adapter_mEZapiTM__type
-class _0RL_cd_40eea1302de063aa_81000000
-  : public omniCallDescriptor
-{
-public:
-  inline _0RL_cd_40eea1302de063aa_81000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
-     omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
-  {
-    
-  }
-  
-  void marshalArguments(cdrStream&);
-  void unmarshalArguments(cdrStream&);
-
-  void unmarshalReturnedValues(cdrStream&);
-  void marshalReturnedValues(cdrStream&);
-  
-  
-  static const char* const _user_exns[];
-
-  Proxy_Adapter::uint32 arg_0;
-  Proxy_Adapter::uint32 arg_1;
-  Proxy_Adapter::uint32 arg_2;
-  Proxy_Adapter::EZapiTM_ShapingLevel arg_3;
-  Proxy_Adapter::EZapiTM_type arg_4;
-  Proxy_Adapter::EZstatus result;
-};
-
-void _0RL_cd_40eea1302de063aa_81000000::marshalArguments(cdrStream& _n)
-{
-  arg_0 >>= _n;
-  arg_3 >>= _n;
-  arg_4 >>= _n;
-
-}
-
-void _0RL_cd_40eea1302de063aa_81000000::unmarshalArguments(cdrStream& _n)
-{
-  (Proxy_Adapter::uint32&)arg_0 <<= _n;
-  (Proxy_Adapter::EZapiTM_ShapingLevel&)arg_3 <<= _n;
-  (Proxy_Adapter::EZapiTM_type&)arg_4 <<= _n;
-
-}
-
-void _0RL_cd_40eea1302de063aa_81000000::marshalReturnedValues(cdrStream& _n)
-{
-  result >>= _n;
-  arg_1 >>= _n;
-  arg_2 >>= _n;
-
-}
-
-void _0RL_cd_40eea1302de063aa_81000000::unmarshalReturnedValues(cdrStream& _n)
-{
-  (Proxy_Adapter::EZstatus&)result <<= _n;
-  (Proxy_Adapter::uint32&)arg_1 <<= _n;
-  (Proxy_Adapter::uint32&)arg_2 <<= _n;
-
-}
-
-const char* const _0RL_cd_40eea1302de063aa_81000000::_user_exns[] = {
-  0
-};
-
-// Local call call-back function.
-static void
-_0RL_lcfn_40eea1302de063aa_91000000(omniCallDescriptor* cd, omniServant* svnt)
-{
-  _0RL_cd_40eea1302de063aa_81000000* tcd = (_0RL_cd_40eea1302de063aa_81000000*)cd;
-  Proxy_Adapter::_impl_TrafficMngt* impl = (Proxy_Adapter::_impl_TrafficMngt*) svnt->_ptrToInterface(Proxy_Adapter::TrafficMngt::_PD_repoId);
-  tcd->result = impl->tmGetShapingProfile(tcd->arg_0, tcd->arg_1, tcd->arg_2, tcd->arg_3, tcd->arg_4);
-
-
-}
-
-Proxy_Adapter::EZstatus Proxy_Adapter::_objref_TrafficMngt::tmGetShapingProfile(::Proxy_Adapter::uint32 profile, ::Proxy_Adapter::uint32& cir, ::Proxy_Adapter::uint32& cbs, ::Proxy_Adapter::EZapiTM_ShapingLevel level, ::Proxy_Adapter::EZapiTM_type tm)
-{
-  _0RL_cd_40eea1302de063aa_81000000 _call_desc(_0RL_lcfn_40eea1302de063aa_91000000, "tmGetShapingProfile", 20);
-  _call_desc.arg_0 = profile;
-  _call_desc.arg_3 = level;
-  _call_desc.arg_4 = tm;
-
-  _invoke(_call_desc);
-  cir = _call_desc.arg_1;
-  cbs = _call_desc.arg_2;
-  return _call_desc.result;
-
-
-}
-// Proxy call descriptor class. Mangled signature:
-//  _cunsigned_plong_i_cunsigned_plong_i_cunsigned_plong_i_cunsigned_plong_i_cProxy__Adapter_mEZapiTM__Priority_i_cunsigned_plong_i_cProxy__Adapter_mEZapiTM__Entity_i_cProxy__Adapter_mEZapiTM__Shaping_i_cProxy__Adapter_mEZapiTM__type
 class _0RL_cd_40eea1302de063aa_a1000000
   : public omniCallDescriptor
 {
@@ -1634,11 +1631,8 @@ public:
   Proxy_Adapter::uint32 arg_0;
   Proxy_Adapter::uint32 arg_1;
   Proxy_Adapter::uint32 arg_2;
-  Proxy_Adapter::EZapiTM_Priority arg_3;
-  Proxy_Adapter::uint32 arg_4;
-  Proxy_Adapter::EZapiTM_Entity arg_5;
-  Proxy_Adapter::EZapiTM_Shaping arg_6;
-  Proxy_Adapter::EZapiTM_type arg_7;
+  Proxy_Adapter::EZapiTM_ShapingLevel arg_3;
+  Proxy_Adapter::EZapiTM_type arg_4;
   Proxy_Adapter::EZstatus result;
 };
 
@@ -1649,9 +1643,6 @@ void _0RL_cd_40eea1302de063aa_a1000000::marshalArguments(cdrStream& _n)
   arg_2 >>= _n;
   arg_3 >>= _n;
   arg_4 >>= _n;
-  arg_5 >>= _n;
-  arg_6 >>= _n;
-  arg_7 >>= _n;
 
 }
 
@@ -1660,11 +1651,8 @@ void _0RL_cd_40eea1302de063aa_a1000000::unmarshalArguments(cdrStream& _n)
   (Proxy_Adapter::uint32&)arg_0 <<= _n;
   (Proxy_Adapter::uint32&)arg_1 <<= _n;
   (Proxy_Adapter::uint32&)arg_2 <<= _n;
-  (Proxy_Adapter::EZapiTM_Priority&)arg_3 <<= _n;
-  (Proxy_Adapter::uint32&)arg_4 <<= _n;
-  (Proxy_Adapter::EZapiTM_Entity&)arg_5 <<= _n;
-  (Proxy_Adapter::EZapiTM_Shaping&)arg_6 <<= _n;
-  (Proxy_Adapter::EZapiTM_type&)arg_7 <<= _n;
+  (Proxy_Adapter::EZapiTM_ShapingLevel&)arg_3 <<= _n;
+  (Proxy_Adapter::EZapiTM_type&)arg_4 <<= _n;
 
 }
 
@@ -1690,22 +1678,19 @@ _0RL_lcfn_40eea1302de063aa_b1000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_40eea1302de063aa_a1000000* tcd = (_0RL_cd_40eea1302de063aa_a1000000*)cd;
   Proxy_Adapter::_impl_TrafficMngt* impl = (Proxy_Adapter::_impl_TrafficMngt*) svnt->_ptrToInterface(Proxy_Adapter::TrafficMngt::_PD_repoId);
-  tcd->result = impl->tmSetEntity(tcd->arg_0, tcd->arg_1, tcd->arg_2, tcd->arg_3, tcd->arg_4, tcd->arg_5, tcd->arg_6, tcd->arg_7);
+  tcd->result = impl->tmSetShapingProfile(tcd->arg_0, tcd->arg_1, tcd->arg_2, tcd->arg_3, tcd->arg_4);
 
 
 }
 
-Proxy_Adapter::EZstatus Proxy_Adapter::_objref_TrafficMngt::tmSetEntity(::Proxy_Adapter::uint32 shaping_profile, ::Proxy_Adapter::uint32 wred_profile, ::Proxy_Adapter::uint32 wfq_profile, ::Proxy_Adapter::EZapiTM_Priority priority, ::Proxy_Adapter::uint32 entity, ::Proxy_Adapter::EZapiTM_Entity level, ::Proxy_Adapter::EZapiTM_Shaping mode, ::Proxy_Adapter::EZapiTM_type tm)
+Proxy_Adapter::EZstatus Proxy_Adapter::_objref_TrafficMngt::tmSetShapingProfile(::Proxy_Adapter::uint32 profile, ::Proxy_Adapter::uint32 cir, ::Proxy_Adapter::uint32 cbs, ::Proxy_Adapter::EZapiTM_ShapingLevel level, ::Proxy_Adapter::EZapiTM_type tm)
 {
-  _0RL_cd_40eea1302de063aa_a1000000 _call_desc(_0RL_lcfn_40eea1302de063aa_b1000000, "tmSetEntity", 12);
-  _call_desc.arg_0 = shaping_profile;
-  _call_desc.arg_1 = wred_profile;
-  _call_desc.arg_2 = wfq_profile;
-  _call_desc.arg_3 = priority;
-  _call_desc.arg_4 = entity;
-  _call_desc.arg_5 = level;
-  _call_desc.arg_6 = mode;
-  _call_desc.arg_7 = tm;
+  _0RL_cd_40eea1302de063aa_a1000000 _call_desc(_0RL_lcfn_40eea1302de063aa_b1000000, "tmSetShapingProfile", 20);
+  _call_desc.arg_0 = profile;
+  _call_desc.arg_1 = cir;
+  _call_desc.arg_2 = cbs;
+  _call_desc.arg_3 = level;
+  _call_desc.arg_4 = tm;
 
   _invoke(_call_desc);
   return _call_desc.result;
@@ -1713,12 +1698,102 @@ Proxy_Adapter::EZstatus Proxy_Adapter::_objref_TrafficMngt::tmSetEntity(::Proxy_
 
 }
 // Proxy call descriptor class. Mangled signature:
-//  _cunsigned_plong_o_cunsigned_plong_o_cunsigned_plong_o_cunsigned_plong_o_cProxy__Adapter_mEZapiTM__Priority_i_cunsigned_plong_i_cProxy__Adapter_mEZapiTM__Entity_o_cProxy__Adapter_mEZapiTM__Shaping_i_cProxy__Adapter_mEZapiTM__type
+//  _cunsigned_plong_i_cunsigned_plong_o_cunsigned_plong_o_cunsigned_plong_i_cProxy__Adapter_mEZapiTM__ShapingLevel_i_cProxy__Adapter_mEZapiTM__type
 class _0RL_cd_40eea1302de063aa_c1000000
   : public omniCallDescriptor
 {
 public:
   inline _0RL_cd_40eea1302de063aa_c1000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+     omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
+  {
+    
+  }
+  
+  void marshalArguments(cdrStream&);
+  void unmarshalArguments(cdrStream&);
+
+  void unmarshalReturnedValues(cdrStream&);
+  void marshalReturnedValues(cdrStream&);
+  
+  
+  static const char* const _user_exns[];
+
+  Proxy_Adapter::uint32 arg_0;
+  Proxy_Adapter::uint32 arg_1;
+  Proxy_Adapter::uint32 arg_2;
+  Proxy_Adapter::EZapiTM_ShapingLevel arg_3;
+  Proxy_Adapter::EZapiTM_type arg_4;
+  Proxy_Adapter::EZstatus result;
+};
+
+void _0RL_cd_40eea1302de063aa_c1000000::marshalArguments(cdrStream& _n)
+{
+  arg_0 >>= _n;
+  arg_3 >>= _n;
+  arg_4 >>= _n;
+
+}
+
+void _0RL_cd_40eea1302de063aa_c1000000::unmarshalArguments(cdrStream& _n)
+{
+  (Proxy_Adapter::uint32&)arg_0 <<= _n;
+  (Proxy_Adapter::EZapiTM_ShapingLevel&)arg_3 <<= _n;
+  (Proxy_Adapter::EZapiTM_type&)arg_4 <<= _n;
+
+}
+
+void _0RL_cd_40eea1302de063aa_c1000000::marshalReturnedValues(cdrStream& _n)
+{
+  result >>= _n;
+  arg_1 >>= _n;
+  arg_2 >>= _n;
+
+}
+
+void _0RL_cd_40eea1302de063aa_c1000000::unmarshalReturnedValues(cdrStream& _n)
+{
+  (Proxy_Adapter::EZstatus&)result <<= _n;
+  (Proxy_Adapter::uint32&)arg_1 <<= _n;
+  (Proxy_Adapter::uint32&)arg_2 <<= _n;
+
+}
+
+const char* const _0RL_cd_40eea1302de063aa_c1000000::_user_exns[] = {
+  0
+};
+
+// Local call call-back function.
+static void
+_0RL_lcfn_40eea1302de063aa_d1000000(omniCallDescriptor* cd, omniServant* svnt)
+{
+  _0RL_cd_40eea1302de063aa_c1000000* tcd = (_0RL_cd_40eea1302de063aa_c1000000*)cd;
+  Proxy_Adapter::_impl_TrafficMngt* impl = (Proxy_Adapter::_impl_TrafficMngt*) svnt->_ptrToInterface(Proxy_Adapter::TrafficMngt::_PD_repoId);
+  tcd->result = impl->tmGetShapingProfile(tcd->arg_0, tcd->arg_1, tcd->arg_2, tcd->arg_3, tcd->arg_4);
+
+
+}
+
+Proxy_Adapter::EZstatus Proxy_Adapter::_objref_TrafficMngt::tmGetShapingProfile(::Proxy_Adapter::uint32 profile, ::Proxy_Adapter::uint32& cir, ::Proxy_Adapter::uint32& cbs, ::Proxy_Adapter::EZapiTM_ShapingLevel level, ::Proxy_Adapter::EZapiTM_type tm)
+{
+  _0RL_cd_40eea1302de063aa_c1000000 _call_desc(_0RL_lcfn_40eea1302de063aa_d1000000, "tmGetShapingProfile", 20);
+  _call_desc.arg_0 = profile;
+  _call_desc.arg_3 = level;
+  _call_desc.arg_4 = tm;
+
+  _invoke(_call_desc);
+  cir = _call_desc.arg_1;
+  cbs = _call_desc.arg_2;
+  return _call_desc.result;
+
+
+}
+// Proxy call descriptor class. Mangled signature:
+//  _cunsigned_plong_i_cunsigned_plong_i_cunsigned_plong_i_cunsigned_plong_i_cProxy__Adapter_mEZapiTM__Priority_i_cunsigned_plong_i_cProxy__Adapter_mEZapiTM__Entity_i_cProxy__Adapter_mEZapiTM__Shaping_i_cProxy__Adapter_mEZapiTM__type
+class _0RL_cd_40eea1302de063aa_e1000000
+  : public omniCallDescriptor
+{
+public:
+  inline _0RL_cd_40eea1302de063aa_e1000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
      omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
   {
     
@@ -1744,110 +1819,16 @@ public:
   Proxy_Adapter::EZstatus result;
 };
 
-void _0RL_cd_40eea1302de063aa_c1000000::marshalArguments(cdrStream& _n)
-{
-  arg_4 >>= _n;
-  arg_5 >>= _n;
-  arg_7 >>= _n;
-
-}
-
-void _0RL_cd_40eea1302de063aa_c1000000::unmarshalArguments(cdrStream& _n)
-{
-  (Proxy_Adapter::uint32&)arg_4 <<= _n;
-  (Proxy_Adapter::EZapiTM_Entity&)arg_5 <<= _n;
-  (Proxy_Adapter::EZapiTM_type&)arg_7 <<= _n;
-
-}
-
-void _0RL_cd_40eea1302de063aa_c1000000::marshalReturnedValues(cdrStream& _n)
-{
-  result >>= _n;
-  arg_0 >>= _n;
-  arg_1 >>= _n;
-  arg_2 >>= _n;
-  arg_3 >>= _n;
-  arg_6 >>= _n;
-
-}
-
-void _0RL_cd_40eea1302de063aa_c1000000::unmarshalReturnedValues(cdrStream& _n)
-{
-  (Proxy_Adapter::EZstatus&)result <<= _n;
-  (Proxy_Adapter::uint32&)arg_0 <<= _n;
-  (Proxy_Adapter::uint32&)arg_1 <<= _n;
-  (Proxy_Adapter::uint32&)arg_2 <<= _n;
-  (Proxy_Adapter::EZapiTM_Priority&)arg_3 <<= _n;
-  (Proxy_Adapter::EZapiTM_Shaping&)arg_6 <<= _n;
-
-}
-
-const char* const _0RL_cd_40eea1302de063aa_c1000000::_user_exns[] = {
-  0
-};
-
-// Local call call-back function.
-static void
-_0RL_lcfn_40eea1302de063aa_d1000000(omniCallDescriptor* cd, omniServant* svnt)
-{
-  _0RL_cd_40eea1302de063aa_c1000000* tcd = (_0RL_cd_40eea1302de063aa_c1000000*)cd;
-  Proxy_Adapter::_impl_TrafficMngt* impl = (Proxy_Adapter::_impl_TrafficMngt*) svnt->_ptrToInterface(Proxy_Adapter::TrafficMngt::_PD_repoId);
-  tcd->result = impl->tmGetEntity(tcd->arg_0, tcd->arg_1, tcd->arg_2, tcd->arg_3, tcd->arg_4, tcd->arg_5, tcd->arg_6, tcd->arg_7);
-
-
-}
-
-Proxy_Adapter::EZstatus Proxy_Adapter::_objref_TrafficMngt::tmGetEntity(::Proxy_Adapter::uint32& shaping_profile, ::Proxy_Adapter::uint32& wred_profile, ::Proxy_Adapter::uint32& wfq_profile, ::Proxy_Adapter::EZapiTM_Priority& priority, ::Proxy_Adapter::uint32 entity, ::Proxy_Adapter::EZapiTM_Entity level, ::Proxy_Adapter::EZapiTM_Shaping& mode, ::Proxy_Adapter::EZapiTM_type tm)
-{
-  _0RL_cd_40eea1302de063aa_c1000000 _call_desc(_0RL_lcfn_40eea1302de063aa_d1000000, "tmGetEntity", 12);
-  _call_desc.arg_4 = entity;
-  _call_desc.arg_5 = level;
-  _call_desc.arg_7 = tm;
-
-  _invoke(_call_desc);
-  shaping_profile = _call_desc.arg_0;
-  wred_profile = _call_desc.arg_1;
-  wfq_profile = _call_desc.arg_2;
-  priority = _call_desc.arg_3;
-  mode = _call_desc.arg_6;
-  return _call_desc.result;
-
-
-}
-// Proxy call descriptor class. Mangled signature:
-//  _cunsigned_plong_i_cunsigned_plong_i_cunsigned_plong_i_cProxy__Adapter_mEZapiTM__WFQLevel_i_cProxy__Adapter_mEZapiTM__type
-class _0RL_cd_40eea1302de063aa_e1000000
-  : public omniCallDescriptor
-{
-public:
-  inline _0RL_cd_40eea1302de063aa_e1000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
-     omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
-  {
-    
-  }
-  
-  void marshalArguments(cdrStream&);
-  void unmarshalArguments(cdrStream&);
-
-  void unmarshalReturnedValues(cdrStream&);
-  void marshalReturnedValues(cdrStream&);
-  
-  
-  static const char* const _user_exns[];
-
-  Proxy_Adapter::uint32 arg_0;
-  Proxy_Adapter::uint32 arg_1;
-  Proxy_Adapter::EZapiTM_WFQLevel arg_2;
-  Proxy_Adapter::EZapiTM_type arg_3;
-  Proxy_Adapter::EZstatus result;
-};
-
 void _0RL_cd_40eea1302de063aa_e1000000::marshalArguments(cdrStream& _n)
 {
   arg_0 >>= _n;
   arg_1 >>= _n;
   arg_2 >>= _n;
   arg_3 >>= _n;
+  arg_4 >>= _n;
+  arg_5 >>= _n;
+  arg_6 >>= _n;
+  arg_7 >>= _n;
 
 }
 
@@ -1855,8 +1836,12 @@ void _0RL_cd_40eea1302de063aa_e1000000::unmarshalArguments(cdrStream& _n)
 {
   (Proxy_Adapter::uint32&)arg_0 <<= _n;
   (Proxy_Adapter::uint32&)arg_1 <<= _n;
-  (Proxy_Adapter::EZapiTM_WFQLevel&)arg_2 <<= _n;
-  (Proxy_Adapter::EZapiTM_type&)arg_3 <<= _n;
+  (Proxy_Adapter::uint32&)arg_2 <<= _n;
+  (Proxy_Adapter::EZapiTM_Priority&)arg_3 <<= _n;
+  (Proxy_Adapter::uint32&)arg_4 <<= _n;
+  (Proxy_Adapter::EZapiTM_Entity&)arg_5 <<= _n;
+  (Proxy_Adapter::EZapiTM_Shaping&)arg_6 <<= _n;
+  (Proxy_Adapter::EZapiTM_type&)arg_7 <<= _n;
 
 }
 
@@ -1882,18 +1867,22 @@ _0RL_lcfn_40eea1302de063aa_f1000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_40eea1302de063aa_e1000000* tcd = (_0RL_cd_40eea1302de063aa_e1000000*)cd;
   Proxy_Adapter::_impl_TrafficMngt* impl = (Proxy_Adapter::_impl_TrafficMngt*) svnt->_ptrToInterface(Proxy_Adapter::TrafficMngt::_PD_repoId);
-  tcd->result = impl->tmSetWfqProfile(tcd->arg_0, tcd->arg_1, tcd->arg_2, tcd->arg_3);
+  tcd->result = impl->tmSetEntity(tcd->arg_0, tcd->arg_1, tcd->arg_2, tcd->arg_3, tcd->arg_4, tcd->arg_5, tcd->arg_6, tcd->arg_7);
 
 
 }
 
-Proxy_Adapter::EZstatus Proxy_Adapter::_objref_TrafficMngt::tmSetWfqProfile(::Proxy_Adapter::uint32 profile, ::Proxy_Adapter::uint32 weight, ::Proxy_Adapter::EZapiTM_WFQLevel level, ::Proxy_Adapter::EZapiTM_type tm)
+Proxy_Adapter::EZstatus Proxy_Adapter::_objref_TrafficMngt::tmSetEntity(::Proxy_Adapter::uint32 shaping_profile, ::Proxy_Adapter::uint32 wred_profile, ::Proxy_Adapter::uint32 wfq_profile, ::Proxy_Adapter::EZapiTM_Priority priority, ::Proxy_Adapter::uint32 entity, ::Proxy_Adapter::EZapiTM_Entity level, ::Proxy_Adapter::EZapiTM_Shaping mode, ::Proxy_Adapter::EZapiTM_type tm)
 {
-  _0RL_cd_40eea1302de063aa_e1000000 _call_desc(_0RL_lcfn_40eea1302de063aa_f1000000, "tmSetWfqProfile", 16);
-  _call_desc.arg_0 = profile;
-  _call_desc.arg_1 = weight;
-  _call_desc.arg_2 = level;
-  _call_desc.arg_3 = tm;
+  _0RL_cd_40eea1302de063aa_e1000000 _call_desc(_0RL_lcfn_40eea1302de063aa_f1000000, "tmSetEntity", 12);
+  _call_desc.arg_0 = shaping_profile;
+  _call_desc.arg_1 = wred_profile;
+  _call_desc.arg_2 = wfq_profile;
+  _call_desc.arg_3 = priority;
+  _call_desc.arg_4 = entity;
+  _call_desc.arg_5 = level;
+  _call_desc.arg_6 = mode;
+  _call_desc.arg_7 = tm;
 
   _invoke(_call_desc);
   return _call_desc.result;
@@ -1901,7 +1890,7 @@ Proxy_Adapter::EZstatus Proxy_Adapter::_objref_TrafficMngt::tmSetWfqProfile(::Pr
 
 }
 // Proxy call descriptor class. Mangled signature:
-//  _cunsigned_plong_i_cunsigned_plong_o_cunsigned_plong_i_cProxy__Adapter_mEZapiTM__WFQLevel_i_cProxy__Adapter_mEZapiTM__type
+//  _cunsigned_plong_o_cunsigned_plong_o_cunsigned_plong_o_cunsigned_plong_o_cProxy__Adapter_mEZapiTM__Priority_i_cunsigned_plong_i_cProxy__Adapter_mEZapiTM__Entity_o_cProxy__Adapter_mEZapiTM__Shaping_i_cProxy__Adapter_mEZapiTM__type
 class _0RL_cd_40eea1302de063aa_02000000
   : public omniCallDescriptor
 {
@@ -1923,38 +1912,50 @@ public:
 
   Proxy_Adapter::uint32 arg_0;
   Proxy_Adapter::uint32 arg_1;
-  Proxy_Adapter::EZapiTM_WFQLevel arg_2;
-  Proxy_Adapter::EZapiTM_type arg_3;
+  Proxy_Adapter::uint32 arg_2;
+  Proxy_Adapter::EZapiTM_Priority arg_3;
+  Proxy_Adapter::uint32 arg_4;
+  Proxy_Adapter::EZapiTM_Entity arg_5;
+  Proxy_Adapter::EZapiTM_Shaping arg_6;
+  Proxy_Adapter::EZapiTM_type arg_7;
   Proxy_Adapter::EZstatus result;
 };
 
 void _0RL_cd_40eea1302de063aa_02000000::marshalArguments(cdrStream& _n)
 {
-  arg_0 >>= _n;
-  arg_2 >>= _n;
-  arg_3 >>= _n;
+  arg_4 >>= _n;
+  arg_5 >>= _n;
+  arg_7 >>= _n;
 
 }
 
 void _0RL_cd_40eea1302de063aa_02000000::unmarshalArguments(cdrStream& _n)
 {
-  (Proxy_Adapter::uint32&)arg_0 <<= _n;
-  (Proxy_Adapter::EZapiTM_WFQLevel&)arg_2 <<= _n;
-  (Proxy_Adapter::EZapiTM_type&)arg_3 <<= _n;
+  (Proxy_Adapter::uint32&)arg_4 <<= _n;
+  (Proxy_Adapter::EZapiTM_Entity&)arg_5 <<= _n;
+  (Proxy_Adapter::EZapiTM_type&)arg_7 <<= _n;
 
 }
 
 void _0RL_cd_40eea1302de063aa_02000000::marshalReturnedValues(cdrStream& _n)
 {
   result >>= _n;
+  arg_0 >>= _n;
   arg_1 >>= _n;
+  arg_2 >>= _n;
+  arg_3 >>= _n;
+  arg_6 >>= _n;
 
 }
 
 void _0RL_cd_40eea1302de063aa_02000000::unmarshalReturnedValues(cdrStream& _n)
 {
   (Proxy_Adapter::EZstatus&)result <<= _n;
+  (Proxy_Adapter::uint32&)arg_0 <<= _n;
   (Proxy_Adapter::uint32&)arg_1 <<= _n;
+  (Proxy_Adapter::uint32&)arg_2 <<= _n;
+  (Proxy_Adapter::EZapiTM_Priority&)arg_3 <<= _n;
+  (Proxy_Adapter::EZapiTM_Shaping&)arg_6 <<= _n;
 
 }
 
@@ -1968,26 +1969,30 @@ _0RL_lcfn_40eea1302de063aa_12000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_40eea1302de063aa_02000000* tcd = (_0RL_cd_40eea1302de063aa_02000000*)cd;
   Proxy_Adapter::_impl_TrafficMngt* impl = (Proxy_Adapter::_impl_TrafficMngt*) svnt->_ptrToInterface(Proxy_Adapter::TrafficMngt::_PD_repoId);
-  tcd->result = impl->tmGetWfqProfile(tcd->arg_0, tcd->arg_1, tcd->arg_2, tcd->arg_3);
+  tcd->result = impl->tmGetEntity(tcd->arg_0, tcd->arg_1, tcd->arg_2, tcd->arg_3, tcd->arg_4, tcd->arg_5, tcd->arg_6, tcd->arg_7);
 
 
 }
 
-Proxy_Adapter::EZstatus Proxy_Adapter::_objref_TrafficMngt::tmGetWfqProfile(::Proxy_Adapter::uint32 profile, ::Proxy_Adapter::uint32& weight, ::Proxy_Adapter::EZapiTM_WFQLevel level, ::Proxy_Adapter::EZapiTM_type tm)
+Proxy_Adapter::EZstatus Proxy_Adapter::_objref_TrafficMngt::tmGetEntity(::Proxy_Adapter::uint32& shaping_profile, ::Proxy_Adapter::uint32& wred_profile, ::Proxy_Adapter::uint32& wfq_profile, ::Proxy_Adapter::EZapiTM_Priority& priority, ::Proxy_Adapter::uint32 entity, ::Proxy_Adapter::EZapiTM_Entity level, ::Proxy_Adapter::EZapiTM_Shaping& mode, ::Proxy_Adapter::EZapiTM_type tm)
 {
-  _0RL_cd_40eea1302de063aa_02000000 _call_desc(_0RL_lcfn_40eea1302de063aa_12000000, "tmGetWfqProfile", 16);
-  _call_desc.arg_0 = profile;
-  _call_desc.arg_2 = level;
-  _call_desc.arg_3 = tm;
+  _0RL_cd_40eea1302de063aa_02000000 _call_desc(_0RL_lcfn_40eea1302de063aa_12000000, "tmGetEntity", 12);
+  _call_desc.arg_4 = entity;
+  _call_desc.arg_5 = level;
+  _call_desc.arg_7 = tm;
 
   _invoke(_call_desc);
-  weight = _call_desc.arg_1;
+  shaping_profile = _call_desc.arg_0;
+  wred_profile = _call_desc.arg_1;
+  wfq_profile = _call_desc.arg_2;
+  priority = _call_desc.arg_3;
+  mode = _call_desc.arg_6;
   return _call_desc.result;
 
 
 }
 // Proxy call descriptor class. Mangled signature:
-//  _cunsigned_plong_i_cunsigned_plong_i_cunsigned_plong_i_cProxy__Adapter_mEZapiTM__WREDLevel_i_cProxy__Adapter_mEZapiTM__type
+//  _cunsigned_plong_i_cunsigned_plong_i_cunsigned_plong_i_cProxy__Adapter_mEZapiTM__WFQLevel_i_cProxy__Adapter_mEZapiTM__type
 class _0RL_cd_40eea1302de063aa_22000000
   : public omniCallDescriptor
 {
@@ -2009,7 +2014,7 @@ public:
 
   Proxy_Adapter::uint32 arg_0;
   Proxy_Adapter::uint32 arg_1;
-  Proxy_Adapter::EZapiTM_WREDLevel arg_2;
+  Proxy_Adapter::EZapiTM_WFQLevel arg_2;
   Proxy_Adapter::EZapiTM_type arg_3;
   Proxy_Adapter::EZstatus result;
 };
@@ -2027,7 +2032,7 @@ void _0RL_cd_40eea1302de063aa_22000000::unmarshalArguments(cdrStream& _n)
 {
   (Proxy_Adapter::uint32&)arg_0 <<= _n;
   (Proxy_Adapter::uint32&)arg_1 <<= _n;
-  (Proxy_Adapter::EZapiTM_WREDLevel&)arg_2 <<= _n;
+  (Proxy_Adapter::EZapiTM_WFQLevel&)arg_2 <<= _n;
   (Proxy_Adapter::EZapiTM_type&)arg_3 <<= _n;
 
 }
@@ -2054,16 +2059,16 @@ _0RL_lcfn_40eea1302de063aa_32000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_40eea1302de063aa_22000000* tcd = (_0RL_cd_40eea1302de063aa_22000000*)cd;
   Proxy_Adapter::_impl_TrafficMngt* impl = (Proxy_Adapter::_impl_TrafficMngt*) svnt->_ptrToInterface(Proxy_Adapter::TrafficMngt::_PD_repoId);
-  tcd->result = impl->tmSetWredProfile(tcd->arg_0, tcd->arg_1, tcd->arg_2, tcd->arg_3);
+  tcd->result = impl->tmSetWfqProfile(tcd->arg_0, tcd->arg_1, tcd->arg_2, tcd->arg_3);
 
 
 }
 
-Proxy_Adapter::EZstatus Proxy_Adapter::_objref_TrafficMngt::tmSetWredProfile(::Proxy_Adapter::uint32 profile, ::Proxy_Adapter::uint32 guaranteedThresh, ::Proxy_Adapter::EZapiTM_WREDLevel level, ::Proxy_Adapter::EZapiTM_type tm)
+Proxy_Adapter::EZstatus Proxy_Adapter::_objref_TrafficMngt::tmSetWfqProfile(::Proxy_Adapter::uint32 profile, ::Proxy_Adapter::uint32 weight, ::Proxy_Adapter::EZapiTM_WFQLevel level, ::Proxy_Adapter::EZapiTM_type tm)
 {
-  _0RL_cd_40eea1302de063aa_22000000 _call_desc(_0RL_lcfn_40eea1302de063aa_32000000, "tmSetWredProfile", 17);
+  _0RL_cd_40eea1302de063aa_22000000 _call_desc(_0RL_lcfn_40eea1302de063aa_32000000, "tmSetWfqProfile", 16);
   _call_desc.arg_0 = profile;
-  _call_desc.arg_1 = guaranteedThresh;
+  _call_desc.arg_1 = weight;
   _call_desc.arg_2 = level;
   _call_desc.arg_3 = tm;
 
@@ -2073,7 +2078,7 @@ Proxy_Adapter::EZstatus Proxy_Adapter::_objref_TrafficMngt::tmSetWredProfile(::P
 
 }
 // Proxy call descriptor class. Mangled signature:
-//  _cunsigned_plong_i_cunsigned_plong_o_cunsigned_plong_i_cProxy__Adapter_mEZapiTM__WREDLevel_i_cProxy__Adapter_mEZapiTM__type
+//  _cunsigned_plong_i_cunsigned_plong_o_cunsigned_plong_i_cProxy__Adapter_mEZapiTM__WFQLevel_i_cProxy__Adapter_mEZapiTM__type
 class _0RL_cd_40eea1302de063aa_42000000
   : public omniCallDescriptor
 {
@@ -2095,7 +2100,7 @@ public:
 
   Proxy_Adapter::uint32 arg_0;
   Proxy_Adapter::uint32 arg_1;
-  Proxy_Adapter::EZapiTM_WREDLevel arg_2;
+  Proxy_Adapter::EZapiTM_WFQLevel arg_2;
   Proxy_Adapter::EZapiTM_type arg_3;
   Proxy_Adapter::EZstatus result;
 };
@@ -2111,7 +2116,7 @@ void _0RL_cd_40eea1302de063aa_42000000::marshalArguments(cdrStream& _n)
 void _0RL_cd_40eea1302de063aa_42000000::unmarshalArguments(cdrStream& _n)
 {
   (Proxy_Adapter::uint32&)arg_0 <<= _n;
-  (Proxy_Adapter::EZapiTM_WREDLevel&)arg_2 <<= _n;
+  (Proxy_Adapter::EZapiTM_WFQLevel&)arg_2 <<= _n;
   (Proxy_Adapter::EZapiTM_type&)arg_3 <<= _n;
 
 }
@@ -2140,26 +2145,26 @@ _0RL_lcfn_40eea1302de063aa_52000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_40eea1302de063aa_42000000* tcd = (_0RL_cd_40eea1302de063aa_42000000*)cd;
   Proxy_Adapter::_impl_TrafficMngt* impl = (Proxy_Adapter::_impl_TrafficMngt*) svnt->_ptrToInterface(Proxy_Adapter::TrafficMngt::_PD_repoId);
-  tcd->result = impl->tmGetWredProfile(tcd->arg_0, tcd->arg_1, tcd->arg_2, tcd->arg_3);
+  tcd->result = impl->tmGetWfqProfile(tcd->arg_0, tcd->arg_1, tcd->arg_2, tcd->arg_3);
 
 
 }
 
-Proxy_Adapter::EZstatus Proxy_Adapter::_objref_TrafficMngt::tmGetWredProfile(::Proxy_Adapter::uint32 profile, ::Proxy_Adapter::uint32& guaranteedThresh, ::Proxy_Adapter::EZapiTM_WREDLevel level, ::Proxy_Adapter::EZapiTM_type tm)
+Proxy_Adapter::EZstatus Proxy_Adapter::_objref_TrafficMngt::tmGetWfqProfile(::Proxy_Adapter::uint32 profile, ::Proxy_Adapter::uint32& weight, ::Proxy_Adapter::EZapiTM_WFQLevel level, ::Proxy_Adapter::EZapiTM_type tm)
 {
-  _0RL_cd_40eea1302de063aa_42000000 _call_desc(_0RL_lcfn_40eea1302de063aa_52000000, "tmGetWredProfile", 17);
+  _0RL_cd_40eea1302de063aa_42000000 _call_desc(_0RL_lcfn_40eea1302de063aa_52000000, "tmGetWfqProfile", 16);
   _call_desc.arg_0 = profile;
   _call_desc.arg_2 = level;
   _call_desc.arg_3 = tm;
 
   _invoke(_call_desc);
-  guaranteedThresh = _call_desc.arg_1;
+  weight = _call_desc.arg_1;
   return _call_desc.result;
 
 
 }
 // Proxy call descriptor class. Mangled signature:
-//  _cunsigned_plong_i_cunsigned_plong_i_cunsigned_plong_i_cunsigned_plong
+//  _cunsigned_plong_i_cunsigned_plong_i_cunsigned_plong_i_cProxy__Adapter_mEZapiTM__WREDLevel_i_cProxy__Adapter_mEZapiTM__type
 class _0RL_cd_40eea1302de063aa_62000000
   : public omniCallDescriptor
 {
@@ -2181,7 +2186,8 @@ public:
 
   Proxy_Adapter::uint32 arg_0;
   Proxy_Adapter::uint32 arg_1;
-  Proxy_Adapter::uint32 arg_2;
+  Proxy_Adapter::EZapiTM_WREDLevel arg_2;
+  Proxy_Adapter::EZapiTM_type arg_3;
   Proxy_Adapter::EZstatus result;
 };
 
@@ -2190,6 +2196,7 @@ void _0RL_cd_40eea1302de063aa_62000000::marshalArguments(cdrStream& _n)
   arg_0 >>= _n;
   arg_1 >>= _n;
   arg_2 >>= _n;
+  arg_3 >>= _n;
 
 }
 
@@ -2197,7 +2204,8 @@ void _0RL_cd_40eea1302de063aa_62000000::unmarshalArguments(cdrStream& _n)
 {
   (Proxy_Adapter::uint32&)arg_0 <<= _n;
   (Proxy_Adapter::uint32&)arg_1 <<= _n;
-  (Proxy_Adapter::uint32&)arg_2 <<= _n;
+  (Proxy_Adapter::EZapiTM_WREDLevel&)arg_2 <<= _n;
+  (Proxy_Adapter::EZapiTM_type&)arg_3 <<= _n;
 
 }
 
@@ -2223,17 +2231,18 @@ _0RL_lcfn_40eea1302de063aa_72000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_40eea1302de063aa_62000000* tcd = (_0RL_cd_40eea1302de063aa_62000000*)cd;
   Proxy_Adapter::_impl_TrafficMngt* impl = (Proxy_Adapter::_impl_TrafficMngt*) svnt->_ptrToInterface(Proxy_Adapter::TrafficMngt::_PD_repoId);
-  tcd->result = impl->setTokenbucketProfile(tcd->arg_0, tcd->arg_1, tcd->arg_2);
+  tcd->result = impl->tmSetWredProfile(tcd->arg_0, tcd->arg_1, tcd->arg_2, tcd->arg_3);
 
 
 }
 
-Proxy_Adapter::EZstatus Proxy_Adapter::_objref_TrafficMngt::setTokenbucketProfile(::Proxy_Adapter::uint32 profil_num, ::Proxy_Adapter::uint32 cir, ::Proxy_Adapter::uint32 cbs)
+Proxy_Adapter::EZstatus Proxy_Adapter::_objref_TrafficMngt::tmSetWredProfile(::Proxy_Adapter::uint32 profile, ::Proxy_Adapter::uint32 guaranteedThresh, ::Proxy_Adapter::EZapiTM_WREDLevel level, ::Proxy_Adapter::EZapiTM_type tm)
 {
-  _0RL_cd_40eea1302de063aa_62000000 _call_desc(_0RL_lcfn_40eea1302de063aa_72000000, "setTokenbucketProfile", 22);
-  _call_desc.arg_0 = profil_num;
-  _call_desc.arg_1 = cir;
-  _call_desc.arg_2 = cbs;
+  _0RL_cd_40eea1302de063aa_62000000 _call_desc(_0RL_lcfn_40eea1302de063aa_72000000, "tmSetWredProfile", 17);
+  _call_desc.arg_0 = profile;
+  _call_desc.arg_1 = guaranteedThresh;
+  _call_desc.arg_2 = level;
+  _call_desc.arg_3 = tm;
 
   _invoke(_call_desc);
   return _call_desc.result;
@@ -2241,7 +2250,7 @@ Proxy_Adapter::EZstatus Proxy_Adapter::_objref_TrafficMngt::setTokenbucketProfil
 
 }
 // Proxy call descriptor class. Mangled signature:
-//  _cunsigned_plong_i_cunsigned_plong_i_cunsigned_plong
+//  _cunsigned_plong_i_cunsigned_plong_o_cunsigned_plong_i_cProxy__Adapter_mEZapiTM__WREDLevel_i_cProxy__Adapter_mEZapiTM__type
 class _0RL_cd_40eea1302de063aa_82000000
   : public omniCallDescriptor
 {
@@ -2263,32 +2272,38 @@ public:
 
   Proxy_Adapter::uint32 arg_0;
   Proxy_Adapter::uint32 arg_1;
+  Proxy_Adapter::EZapiTM_WREDLevel arg_2;
+  Proxy_Adapter::EZapiTM_type arg_3;
   Proxy_Adapter::EZstatus result;
 };
 
 void _0RL_cd_40eea1302de063aa_82000000::marshalArguments(cdrStream& _n)
 {
   arg_0 >>= _n;
-  arg_1 >>= _n;
+  arg_2 >>= _n;
+  arg_3 >>= _n;
 
 }
 
 void _0RL_cd_40eea1302de063aa_82000000::unmarshalArguments(cdrStream& _n)
 {
   (Proxy_Adapter::uint32&)arg_0 <<= _n;
-  (Proxy_Adapter::uint32&)arg_1 <<= _n;
+  (Proxy_Adapter::EZapiTM_WREDLevel&)arg_2 <<= _n;
+  (Proxy_Adapter::EZapiTM_type&)arg_3 <<= _n;
 
 }
 
 void _0RL_cd_40eea1302de063aa_82000000::marshalReturnedValues(cdrStream& _n)
 {
   result >>= _n;
+  arg_1 >>= _n;
 
 }
 
 void _0RL_cd_40eea1302de063aa_82000000::unmarshalReturnedValues(cdrStream& _n)
 {
   (Proxy_Adapter::EZstatus&)result <<= _n;
+  (Proxy_Adapter::uint32&)arg_1 <<= _n;
 
 }
 
@@ -2302,24 +2317,26 @@ _0RL_lcfn_40eea1302de063aa_92000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_40eea1302de063aa_82000000* tcd = (_0RL_cd_40eea1302de063aa_82000000*)cd;
   Proxy_Adapter::_impl_TrafficMngt* impl = (Proxy_Adapter::_impl_TrafficMngt*) svnt->_ptrToInterface(Proxy_Adapter::TrafficMngt::_PD_repoId);
-  tcd->result = impl->setTokenbucketCounter(tcd->arg_0, tcd->arg_1);
+  tcd->result = impl->tmGetWredProfile(tcd->arg_0, tcd->arg_1, tcd->arg_2, tcd->arg_3);
 
 
 }
 
-Proxy_Adapter::EZstatus Proxy_Adapter::_objref_TrafficMngt::setTokenbucketCounter(::Proxy_Adapter::uint32 counter_num, ::Proxy_Adapter::uint32 tb_profile)
+Proxy_Adapter::EZstatus Proxy_Adapter::_objref_TrafficMngt::tmGetWredProfile(::Proxy_Adapter::uint32 profile, ::Proxy_Adapter::uint32& guaranteedThresh, ::Proxy_Adapter::EZapiTM_WREDLevel level, ::Proxy_Adapter::EZapiTM_type tm)
 {
-  _0RL_cd_40eea1302de063aa_82000000 _call_desc(_0RL_lcfn_40eea1302de063aa_92000000, "setTokenbucketCounter", 22);
-  _call_desc.arg_0 = counter_num;
-  _call_desc.arg_1 = tb_profile;
+  _0RL_cd_40eea1302de063aa_82000000 _call_desc(_0RL_lcfn_40eea1302de063aa_92000000, "tmGetWredProfile", 17);
+  _call_desc.arg_0 = profile;
+  _call_desc.arg_2 = level;
+  _call_desc.arg_3 = tm;
 
   _invoke(_call_desc);
+  guaranteedThresh = _call_desc.arg_1;
   return _call_desc.result;
 
 
 }
 // Proxy call descriptor class. Mangled signature:
-//  _cunsigned_plong_i_cunsigned_plong_o_cunsigned_plong_o_cunsigned_plong
+//  _cunsigned_plong_i_cunsigned_plong_i_cunsigned_plong_i_cunsigned_plong
 class _0RL_cd_40eea1302de063aa_a2000000
   : public omniCallDescriptor
 {
@@ -2348,28 +2365,28 @@ public:
 void _0RL_cd_40eea1302de063aa_a2000000::marshalArguments(cdrStream& _n)
 {
   arg_0 >>= _n;
+  arg_1 >>= _n;
+  arg_2 >>= _n;
 
 }
 
 void _0RL_cd_40eea1302de063aa_a2000000::unmarshalArguments(cdrStream& _n)
 {
   (Proxy_Adapter::uint32&)arg_0 <<= _n;
+  (Proxy_Adapter::uint32&)arg_1 <<= _n;
+  (Proxy_Adapter::uint32&)arg_2 <<= _n;
 
 }
 
 void _0RL_cd_40eea1302de063aa_a2000000::marshalReturnedValues(cdrStream& _n)
 {
   result >>= _n;
-  arg_1 >>= _n;
-  arg_2 >>= _n;
 
 }
 
 void _0RL_cd_40eea1302de063aa_a2000000::unmarshalReturnedValues(cdrStream& _n)
 {
   (Proxy_Adapter::EZstatus&)result <<= _n;
-  (Proxy_Adapter::uint32&)arg_1 <<= _n;
-  (Proxy_Adapter::uint32&)arg_2 <<= _n;
 
 }
 
@@ -2383,25 +2400,25 @@ _0RL_lcfn_40eea1302de063aa_b2000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_40eea1302de063aa_a2000000* tcd = (_0RL_cd_40eea1302de063aa_a2000000*)cd;
   Proxy_Adapter::_impl_TrafficMngt* impl = (Proxy_Adapter::_impl_TrafficMngt*) svnt->_ptrToInterface(Proxy_Adapter::TrafficMngt::_PD_repoId);
-  tcd->result = impl->getTokenbucketProfile(tcd->arg_0, tcd->arg_1, tcd->arg_2);
+  tcd->result = impl->setTokenbucketProfile(tcd->arg_0, tcd->arg_1, tcd->arg_2);
 
 
 }
 
-Proxy_Adapter::EZstatus Proxy_Adapter::_objref_TrafficMngt::getTokenbucketProfile(::Proxy_Adapter::uint32 profil_num, ::Proxy_Adapter::uint32& cir, ::Proxy_Adapter::uint32& cbs)
+Proxy_Adapter::EZstatus Proxy_Adapter::_objref_TrafficMngt::setTokenbucketProfile(::Proxy_Adapter::uint32 profil_num, ::Proxy_Adapter::uint32 cir, ::Proxy_Adapter::uint32 cbs)
 {
-  _0RL_cd_40eea1302de063aa_a2000000 _call_desc(_0RL_lcfn_40eea1302de063aa_b2000000, "getTokenbucketProfile", 22);
+  _0RL_cd_40eea1302de063aa_a2000000 _call_desc(_0RL_lcfn_40eea1302de063aa_b2000000, "setTokenbucketProfile", 22);
   _call_desc.arg_0 = profil_num;
+  _call_desc.arg_1 = cir;
+  _call_desc.arg_2 = cbs;
 
   _invoke(_call_desc);
-  cir = _call_desc.arg_1;
-  cbs = _call_desc.arg_2;
   return _call_desc.result;
 
 
 }
 // Proxy call descriptor class. Mangled signature:
-//  _cunsigned_plong_i_cunsigned_plong_o_cunsigned_plong
+//  _cunsigned_plong_i_cunsigned_plong_i_cunsigned_plong
 class _0RL_cd_40eea1302de063aa_c2000000
   : public omniCallDescriptor
 {
@@ -2429,26 +2446,26 @@ public:
 void _0RL_cd_40eea1302de063aa_c2000000::marshalArguments(cdrStream& _n)
 {
   arg_0 >>= _n;
+  arg_1 >>= _n;
 
 }
 
 void _0RL_cd_40eea1302de063aa_c2000000::unmarshalArguments(cdrStream& _n)
 {
   (Proxy_Adapter::uint32&)arg_0 <<= _n;
+  (Proxy_Adapter::uint32&)arg_1 <<= _n;
 
 }
 
 void _0RL_cd_40eea1302de063aa_c2000000::marshalReturnedValues(cdrStream& _n)
 {
   result >>= _n;
-  arg_1 >>= _n;
 
 }
 
 void _0RL_cd_40eea1302de063aa_c2000000::unmarshalReturnedValues(cdrStream& _n)
 {
   (Proxy_Adapter::EZstatus&)result <<= _n;
-  (Proxy_Adapter::uint32&)arg_1 <<= _n;
 
 }
 
@@ -2462,6 +2479,166 @@ _0RL_lcfn_40eea1302de063aa_d2000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_40eea1302de063aa_c2000000* tcd = (_0RL_cd_40eea1302de063aa_c2000000*)cd;
   Proxy_Adapter::_impl_TrafficMngt* impl = (Proxy_Adapter::_impl_TrafficMngt*) svnt->_ptrToInterface(Proxy_Adapter::TrafficMngt::_PD_repoId);
+  tcd->result = impl->setTokenbucketCounter(tcd->arg_0, tcd->arg_1);
+
+
+}
+
+Proxy_Adapter::EZstatus Proxy_Adapter::_objref_TrafficMngt::setTokenbucketCounter(::Proxy_Adapter::uint32 counter_num, ::Proxy_Adapter::uint32 tb_profile)
+{
+  _0RL_cd_40eea1302de063aa_c2000000 _call_desc(_0RL_lcfn_40eea1302de063aa_d2000000, "setTokenbucketCounter", 22);
+  _call_desc.arg_0 = counter_num;
+  _call_desc.arg_1 = tb_profile;
+
+  _invoke(_call_desc);
+  return _call_desc.result;
+
+
+}
+// Proxy call descriptor class. Mangled signature:
+//  _cunsigned_plong_i_cunsigned_plong_o_cunsigned_plong_o_cunsigned_plong
+class _0RL_cd_40eea1302de063aa_e2000000
+  : public omniCallDescriptor
+{
+public:
+  inline _0RL_cd_40eea1302de063aa_e2000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+     omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
+  {
+    
+  }
+  
+  void marshalArguments(cdrStream&);
+  void unmarshalArguments(cdrStream&);
+
+  void unmarshalReturnedValues(cdrStream&);
+  void marshalReturnedValues(cdrStream&);
+  
+  
+  static const char* const _user_exns[];
+
+  Proxy_Adapter::uint32 arg_0;
+  Proxy_Adapter::uint32 arg_1;
+  Proxy_Adapter::uint32 arg_2;
+  Proxy_Adapter::EZstatus result;
+};
+
+void _0RL_cd_40eea1302de063aa_e2000000::marshalArguments(cdrStream& _n)
+{
+  arg_0 >>= _n;
+
+}
+
+void _0RL_cd_40eea1302de063aa_e2000000::unmarshalArguments(cdrStream& _n)
+{
+  (Proxy_Adapter::uint32&)arg_0 <<= _n;
+
+}
+
+void _0RL_cd_40eea1302de063aa_e2000000::marshalReturnedValues(cdrStream& _n)
+{
+  result >>= _n;
+  arg_1 >>= _n;
+  arg_2 >>= _n;
+
+}
+
+void _0RL_cd_40eea1302de063aa_e2000000::unmarshalReturnedValues(cdrStream& _n)
+{
+  (Proxy_Adapter::EZstatus&)result <<= _n;
+  (Proxy_Adapter::uint32&)arg_1 <<= _n;
+  (Proxy_Adapter::uint32&)arg_2 <<= _n;
+
+}
+
+const char* const _0RL_cd_40eea1302de063aa_e2000000::_user_exns[] = {
+  0
+};
+
+// Local call call-back function.
+static void
+_0RL_lcfn_40eea1302de063aa_f2000000(omniCallDescriptor* cd, omniServant* svnt)
+{
+  _0RL_cd_40eea1302de063aa_e2000000* tcd = (_0RL_cd_40eea1302de063aa_e2000000*)cd;
+  Proxy_Adapter::_impl_TrafficMngt* impl = (Proxy_Adapter::_impl_TrafficMngt*) svnt->_ptrToInterface(Proxy_Adapter::TrafficMngt::_PD_repoId);
+  tcd->result = impl->getTokenbucketProfile(tcd->arg_0, tcd->arg_1, tcd->arg_2);
+
+
+}
+
+Proxy_Adapter::EZstatus Proxy_Adapter::_objref_TrafficMngt::getTokenbucketProfile(::Proxy_Adapter::uint32 profil_num, ::Proxy_Adapter::uint32& cir, ::Proxy_Adapter::uint32& cbs)
+{
+  _0RL_cd_40eea1302de063aa_e2000000 _call_desc(_0RL_lcfn_40eea1302de063aa_f2000000, "getTokenbucketProfile", 22);
+  _call_desc.arg_0 = profil_num;
+
+  _invoke(_call_desc);
+  cir = _call_desc.arg_1;
+  cbs = _call_desc.arg_2;
+  return _call_desc.result;
+
+
+}
+// Proxy call descriptor class. Mangled signature:
+//  _cunsigned_plong_i_cunsigned_plong_o_cunsigned_plong
+class _0RL_cd_40eea1302de063aa_03000000
+  : public omniCallDescriptor
+{
+public:
+  inline _0RL_cd_40eea1302de063aa_03000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+     omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
+  {
+    
+  }
+  
+  void marshalArguments(cdrStream&);
+  void unmarshalArguments(cdrStream&);
+
+  void unmarshalReturnedValues(cdrStream&);
+  void marshalReturnedValues(cdrStream&);
+  
+  
+  static const char* const _user_exns[];
+
+  Proxy_Adapter::uint32 arg_0;
+  Proxy_Adapter::uint32 arg_1;
+  Proxy_Adapter::EZstatus result;
+};
+
+void _0RL_cd_40eea1302de063aa_03000000::marshalArguments(cdrStream& _n)
+{
+  arg_0 >>= _n;
+
+}
+
+void _0RL_cd_40eea1302de063aa_03000000::unmarshalArguments(cdrStream& _n)
+{
+  (Proxy_Adapter::uint32&)arg_0 <<= _n;
+
+}
+
+void _0RL_cd_40eea1302de063aa_03000000::marshalReturnedValues(cdrStream& _n)
+{
+  result >>= _n;
+  arg_1 >>= _n;
+
+}
+
+void _0RL_cd_40eea1302de063aa_03000000::unmarshalReturnedValues(cdrStream& _n)
+{
+  (Proxy_Adapter::EZstatus&)result <<= _n;
+  (Proxy_Adapter::uint32&)arg_1 <<= _n;
+
+}
+
+const char* const _0RL_cd_40eea1302de063aa_03000000::_user_exns[] = {
+  0
+};
+
+// Local call call-back function.
+static void
+_0RL_lcfn_40eea1302de063aa_13000000(omniCallDescriptor* cd, omniServant* svnt)
+{
+  _0RL_cd_40eea1302de063aa_03000000* tcd = (_0RL_cd_40eea1302de063aa_03000000*)cd;
+  Proxy_Adapter::_impl_TrafficMngt* impl = (Proxy_Adapter::_impl_TrafficMngt*) svnt->_ptrToInterface(Proxy_Adapter::TrafficMngt::_PD_repoId);
   tcd->result = impl->getTokenbucketCounter(tcd->arg_0, tcd->arg_1);
 
 
@@ -2469,7 +2646,7 @@ _0RL_lcfn_40eea1302de063aa_d2000000(omniCallDescriptor* cd, omniServant* svnt)
 
 Proxy_Adapter::EZstatus Proxy_Adapter::_objref_TrafficMngt::getTokenbucketCounter(::Proxy_Adapter::uint32 counter_num, ::Proxy_Adapter::uint32& tb_profile)
 {
-  _0RL_cd_40eea1302de063aa_c2000000 _call_desc(_0RL_lcfn_40eea1302de063aa_d2000000, "getTokenbucketCounter", 22);
+  _0RL_cd_40eea1302de063aa_03000000 _call_desc(_0RL_lcfn_40eea1302de063aa_13000000, "getTokenbucketCounter", 22);
   _call_desc.arg_0 = counter_num;
 
   _invoke(_call_desc);
@@ -2509,7 +2686,7 @@ Proxy_Adapter::_impl_TrafficMngt::_dispatch(omniCallHandle& _handle)
 
   if( omni::strMatch(op, "testTrafficMngt") ) {
 
-    _0RL_cd_40eea1302de063aa_00000000 _call_desc(_0RL_lcfn_40eea1302de063aa_51000000, "testTrafficMngt", 16, 1);
+    _0RL_cd_40eea1302de063aa_00000000 _call_desc(_0RL_lcfn_40eea1302de063aa_91000000, "testTrafficMngt", 16, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;
@@ -2517,7 +2694,7 @@ Proxy_Adapter::_impl_TrafficMngt::_dispatch(omniCallHandle& _handle)
 
   if( omni::strMatch(op, "tmSetShapingProfile") ) {
 
-    _0RL_cd_40eea1302de063aa_61000000 _call_desc(_0RL_lcfn_40eea1302de063aa_71000000, "tmSetShapingProfile", 20, 1);
+    _0RL_cd_40eea1302de063aa_a1000000 _call_desc(_0RL_lcfn_40eea1302de063aa_b1000000, "tmSetShapingProfile", 20, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;
@@ -2525,7 +2702,7 @@ Proxy_Adapter::_impl_TrafficMngt::_dispatch(omniCallHandle& _handle)
 
   if( omni::strMatch(op, "tmGetShapingProfile") ) {
 
-    _0RL_cd_40eea1302de063aa_81000000 _call_desc(_0RL_lcfn_40eea1302de063aa_91000000, "tmGetShapingProfile", 20, 1);
+    _0RL_cd_40eea1302de063aa_c1000000 _call_desc(_0RL_lcfn_40eea1302de063aa_d1000000, "tmGetShapingProfile", 20, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;
@@ -2533,7 +2710,7 @@ Proxy_Adapter::_impl_TrafficMngt::_dispatch(omniCallHandle& _handle)
 
   if( omni::strMatch(op, "tmSetEntity") ) {
 
-    _0RL_cd_40eea1302de063aa_a1000000 _call_desc(_0RL_lcfn_40eea1302de063aa_b1000000, "tmSetEntity", 12, 1);
+    _0RL_cd_40eea1302de063aa_e1000000 _call_desc(_0RL_lcfn_40eea1302de063aa_f1000000, "tmSetEntity", 12, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;
@@ -2541,7 +2718,7 @@ Proxy_Adapter::_impl_TrafficMngt::_dispatch(omniCallHandle& _handle)
 
   if( omni::strMatch(op, "tmGetEntity") ) {
 
-    _0RL_cd_40eea1302de063aa_c1000000 _call_desc(_0RL_lcfn_40eea1302de063aa_d1000000, "tmGetEntity", 12, 1);
+    _0RL_cd_40eea1302de063aa_02000000 _call_desc(_0RL_lcfn_40eea1302de063aa_12000000, "tmGetEntity", 12, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;
@@ -2549,7 +2726,7 @@ Proxy_Adapter::_impl_TrafficMngt::_dispatch(omniCallHandle& _handle)
 
   if( omni::strMatch(op, "tmSetWfqProfile") ) {
 
-    _0RL_cd_40eea1302de063aa_e1000000 _call_desc(_0RL_lcfn_40eea1302de063aa_f1000000, "tmSetWfqProfile", 16, 1);
+    _0RL_cd_40eea1302de063aa_22000000 _call_desc(_0RL_lcfn_40eea1302de063aa_32000000, "tmSetWfqProfile", 16, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;
@@ -2557,7 +2734,7 @@ Proxy_Adapter::_impl_TrafficMngt::_dispatch(omniCallHandle& _handle)
 
   if( omni::strMatch(op, "tmGetWfqProfile") ) {
 
-    _0RL_cd_40eea1302de063aa_02000000 _call_desc(_0RL_lcfn_40eea1302de063aa_12000000, "tmGetWfqProfile", 16, 1);
+    _0RL_cd_40eea1302de063aa_42000000 _call_desc(_0RL_lcfn_40eea1302de063aa_52000000, "tmGetWfqProfile", 16, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;
@@ -2565,7 +2742,7 @@ Proxy_Adapter::_impl_TrafficMngt::_dispatch(omniCallHandle& _handle)
 
   if( omni::strMatch(op, "tmSetWredProfile") ) {
 
-    _0RL_cd_40eea1302de063aa_22000000 _call_desc(_0RL_lcfn_40eea1302de063aa_32000000, "tmSetWredProfile", 17, 1);
+    _0RL_cd_40eea1302de063aa_62000000 _call_desc(_0RL_lcfn_40eea1302de063aa_72000000, "tmSetWredProfile", 17, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;
@@ -2573,7 +2750,7 @@ Proxy_Adapter::_impl_TrafficMngt::_dispatch(omniCallHandle& _handle)
 
   if( omni::strMatch(op, "tmGetWredProfile") ) {
 
-    _0RL_cd_40eea1302de063aa_42000000 _call_desc(_0RL_lcfn_40eea1302de063aa_52000000, "tmGetWredProfile", 17, 1);
+    _0RL_cd_40eea1302de063aa_82000000 _call_desc(_0RL_lcfn_40eea1302de063aa_92000000, "tmGetWredProfile", 17, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;
@@ -2581,7 +2758,7 @@ Proxy_Adapter::_impl_TrafficMngt::_dispatch(omniCallHandle& _handle)
 
   if( omni::strMatch(op, "setTokenbucketProfile") ) {
 
-    _0RL_cd_40eea1302de063aa_62000000 _call_desc(_0RL_lcfn_40eea1302de063aa_72000000, "setTokenbucketProfile", 22, 1);
+    _0RL_cd_40eea1302de063aa_a2000000 _call_desc(_0RL_lcfn_40eea1302de063aa_b2000000, "setTokenbucketProfile", 22, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;
@@ -2589,7 +2766,7 @@ Proxy_Adapter::_impl_TrafficMngt::_dispatch(omniCallHandle& _handle)
 
   if( omni::strMatch(op, "setTokenbucketCounter") ) {
 
-    _0RL_cd_40eea1302de063aa_82000000 _call_desc(_0RL_lcfn_40eea1302de063aa_92000000, "setTokenbucketCounter", 22, 1);
+    _0RL_cd_40eea1302de063aa_c2000000 _call_desc(_0RL_lcfn_40eea1302de063aa_d2000000, "setTokenbucketCounter", 22, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;
@@ -2597,7 +2774,7 @@ Proxy_Adapter::_impl_TrafficMngt::_dispatch(omniCallHandle& _handle)
 
   if( omni::strMatch(op, "getTokenbucketProfile") ) {
 
-    _0RL_cd_40eea1302de063aa_a2000000 _call_desc(_0RL_lcfn_40eea1302de063aa_b2000000, "getTokenbucketProfile", 22, 1);
+    _0RL_cd_40eea1302de063aa_e2000000 _call_desc(_0RL_lcfn_40eea1302de063aa_f2000000, "getTokenbucketProfile", 22, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;
@@ -2605,7 +2782,7 @@ Proxy_Adapter::_impl_TrafficMngt::_dispatch(omniCallHandle& _handle)
 
   if( omni::strMatch(op, "getTokenbucketCounter") ) {
 
-    _0RL_cd_40eea1302de063aa_c2000000 _call_desc(_0RL_lcfn_40eea1302de063aa_d2000000, "getTokenbucketCounter", 22, 1);
+    _0RL_cd_40eea1302de063aa_03000000 _call_desc(_0RL_lcfn_40eea1302de063aa_13000000, "getTokenbucketCounter", 22, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;
@@ -2743,7 +2920,7 @@ Proxy_Adapter::_objref_NP3FrameHandl::_ptrToObjRef(const char* id)
 
 // Local call call-back function.
 static void
-_0RL_lcfn_40eea1302de063aa_e2000000(omniCallDescriptor* cd, omniServant* svnt)
+_0RL_lcfn_40eea1302de063aa_23000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_40eea1302de063aa_00000000* tcd = (_0RL_cd_40eea1302de063aa_00000000*)cd;
   Proxy_Adapter::_impl_NP3FrameHandl* impl = (Proxy_Adapter::_impl_NP3FrameHandl*) svnt->_ptrToInterface(Proxy_Adapter::NP3FrameHandl::_PD_repoId);
@@ -2754,7 +2931,7 @@ _0RL_lcfn_40eea1302de063aa_e2000000(omniCallDescriptor* cd, omniServant* svnt)
 
 Proxy_Adapter::EZstatus Proxy_Adapter::_objref_NP3FrameHandl::testNP3FrameHandl(::Proxy_Adapter::EZuint& testVal)
 {
-  _0RL_cd_40eea1302de063aa_00000000 _call_desc(_0RL_lcfn_40eea1302de063aa_e2000000, "testNP3FrameHandl", 18);
+  _0RL_cd_40eea1302de063aa_00000000 _call_desc(_0RL_lcfn_40eea1302de063aa_23000000, "testNP3FrameHandl", 18);
   _call_desc.arg_0 = &(::Proxy_Adapter::EZuint&) testVal;
 
   _invoke(_call_desc);
@@ -2764,11 +2941,11 @@ Proxy_Adapter::EZstatus Proxy_Adapter::_objref_NP3FrameHandl::testNP3FrameHandl(
 }
 // Proxy call descriptor class. Mangled signature:
 //  _cunsigned_plong_i_cunsigned_plong_i_cunsigned_plong_i_cProxy__Adapter_mEZapiFrame__BufferRegion_i_cProxy__Adapter_mEZapiFrame__TransmitQ_i_cProxy__Adapter_mEZvalue_i_cunsigned_plong
-class _0RL_cd_40eea1302de063aa_f2000000
+class _0RL_cd_40eea1302de063aa_33000000
   : public omniCallDescriptor
 {
 public:
-  inline _0RL_cd_40eea1302de063aa_f2000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+  inline _0RL_cd_40eea1302de063aa_33000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
      omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
   {
     
@@ -2793,7 +2970,7 @@ public:
   Proxy_Adapter::EZstatus result;
 };
 
-void _0RL_cd_40eea1302de063aa_f2000000::marshalArguments(cdrStream& _n)
+void _0RL_cd_40eea1302de063aa_33000000::marshalArguments(cdrStream& _n)
 {
   arg_0 >>= _n;
   arg_1 >>= _n;
@@ -2804,7 +2981,7 @@ void _0RL_cd_40eea1302de063aa_f2000000::marshalArguments(cdrStream& _n)
 
 }
 
-void _0RL_cd_40eea1302de063aa_f2000000::unmarshalArguments(cdrStream& _n)
+void _0RL_cd_40eea1302de063aa_33000000::unmarshalArguments(cdrStream& _n)
 {
   (Proxy_Adapter::uint32&)arg_0 <<= _n;
   (Proxy_Adapter::uint32&)arg_1 <<= _n;
@@ -2817,27 +2994,27 @@ void _0RL_cd_40eea1302de063aa_f2000000::unmarshalArguments(cdrStream& _n)
 
 }
 
-void _0RL_cd_40eea1302de063aa_f2000000::marshalReturnedValues(cdrStream& _n)
+void _0RL_cd_40eea1302de063aa_33000000::marshalReturnedValues(cdrStream& _n)
 {
   result >>= _n;
 
 }
 
-void _0RL_cd_40eea1302de063aa_f2000000::unmarshalReturnedValues(cdrStream& _n)
+void _0RL_cd_40eea1302de063aa_33000000::unmarshalReturnedValues(cdrStream& _n)
 {
   (Proxy_Adapter::EZstatus&)result <<= _n;
 
 }
 
-const char* const _0RL_cd_40eea1302de063aa_f2000000::_user_exns[] = {
+const char* const _0RL_cd_40eea1302de063aa_33000000::_user_exns[] = {
   0
 };
 
 // Local call call-back function.
 static void
-_0RL_lcfn_40eea1302de063aa_03000000(omniCallDescriptor* cd, omniServant* svnt)
+_0RL_lcfn_40eea1302de063aa_43000000(omniCallDescriptor* cd, omniServant* svnt)
 {
-  _0RL_cd_40eea1302de063aa_f2000000* tcd = (_0RL_cd_40eea1302de063aa_f2000000*)cd;
+  _0RL_cd_40eea1302de063aa_33000000* tcd = (_0RL_cd_40eea1302de063aa_33000000*)cd;
   Proxy_Adapter::_impl_NP3FrameHandl* impl = (Proxy_Adapter::_impl_NP3FrameHandl*) svnt->_ptrToInterface(Proxy_Adapter::NP3FrameHandl::_PD_repoId);
   tcd->result = impl->frameSend(tcd->arg_0, tcd->arg_1, tcd->arg_2, tcd->arg_3, *tcd->arg_4, tcd->arg_5);
 
@@ -2846,7 +3023,7 @@ _0RL_lcfn_40eea1302de063aa_03000000(omniCallDescriptor* cd, omniServant* svnt)
 
 Proxy_Adapter::EZstatus Proxy_Adapter::_objref_NP3FrameHandl::frameSend(::Proxy_Adapter::uint32 destination_port, ::Proxy_Adapter::uint32 uqTMFlowId, ::Proxy_Adapter::EZapiFrame_BufferRegion buffor_region, ::Proxy_Adapter::EZapiFrame_TransmitQ transmisions_direction, const ::Proxy_Adapter::EZvalue& frame_data, ::Proxy_Adapter::uint32 frame_length)
 {
-  _0RL_cd_40eea1302de063aa_f2000000 _call_desc(_0RL_lcfn_40eea1302de063aa_03000000, "frameSend", 10);
+  _0RL_cd_40eea1302de063aa_33000000 _call_desc(_0RL_lcfn_40eea1302de063aa_43000000, "frameSend", 10);
   _call_desc.arg_0 = destination_port;
   _call_desc.arg_1 = uqTMFlowId;
   _call_desc.arg_2 = buffor_region;
@@ -2861,11 +3038,11 @@ Proxy_Adapter::EZstatus Proxy_Adapter::_objref_NP3FrameHandl::frameSend(::Proxy_
 }
 // Proxy call descriptor class. Mangled signature:
 //  _cunsigned_plong_n_cProxy__Adapter_mEZvalue_n_cunsigned_plong
-class _0RL_cd_40eea1302de063aa_13000000
+class _0RL_cd_40eea1302de063aa_53000000
   : public omniCallDescriptor
 {
 public:
-  inline _0RL_cd_40eea1302de063aa_13000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+  inline _0RL_cd_40eea1302de063aa_53000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
      omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
   {
     
@@ -2887,14 +3064,14 @@ public:
   Proxy_Adapter::EZstatus result;
 };
 
-void _0RL_cd_40eea1302de063aa_13000000::marshalArguments(cdrStream& _n)
+void _0RL_cd_40eea1302de063aa_53000000::marshalArguments(cdrStream& _n)
 {
   (const Proxy_Adapter::EZvalue&) *arg_0 >>= _n;
   *arg_1 >>= _n;
 
 }
 
-void _0RL_cd_40eea1302de063aa_13000000::unmarshalArguments(cdrStream& _n)
+void _0RL_cd_40eea1302de063aa_53000000::unmarshalArguments(cdrStream& _n)
 {
   arg_0_ = new Proxy_Adapter::EZvalue;
   (Proxy_Adapter::EZvalue&)arg_0_ <<= _n;
@@ -2904,7 +3081,7 @@ void _0RL_cd_40eea1302de063aa_13000000::unmarshalArguments(cdrStream& _n)
 
 }
 
-void _0RL_cd_40eea1302de063aa_13000000::marshalReturnedValues(cdrStream& _n)
+void _0RL_cd_40eea1302de063aa_53000000::marshalReturnedValues(cdrStream& _n)
 {
   result >>= _n;
   (const Proxy_Adapter::EZvalue&) *arg_0 >>= _n;
@@ -2912,7 +3089,7 @@ void _0RL_cd_40eea1302de063aa_13000000::marshalReturnedValues(cdrStream& _n)
 
 }
 
-void _0RL_cd_40eea1302de063aa_13000000::unmarshalReturnedValues(cdrStream& _n)
+void _0RL_cd_40eea1302de063aa_53000000::unmarshalReturnedValues(cdrStream& _n)
 {
   (Proxy_Adapter::EZstatus&)result <<= _n;
   (Proxy_Adapter::EZvalue&)*arg_0 <<= _n;
@@ -2920,15 +3097,15 @@ void _0RL_cd_40eea1302de063aa_13000000::unmarshalReturnedValues(cdrStream& _n)
 
 }
 
-const char* const _0RL_cd_40eea1302de063aa_13000000::_user_exns[] = {
+const char* const _0RL_cd_40eea1302de063aa_53000000::_user_exns[] = {
   0
 };
 
 // Local call call-back function.
 static void
-_0RL_lcfn_40eea1302de063aa_23000000(omniCallDescriptor* cd, omniServant* svnt)
+_0RL_lcfn_40eea1302de063aa_63000000(omniCallDescriptor* cd, omniServant* svnt)
 {
-  _0RL_cd_40eea1302de063aa_13000000* tcd = (_0RL_cd_40eea1302de063aa_13000000*)cd;
+  _0RL_cd_40eea1302de063aa_53000000* tcd = (_0RL_cd_40eea1302de063aa_53000000*)cd;
   Proxy_Adapter::_impl_NP3FrameHandl* impl = (Proxy_Adapter::_impl_NP3FrameHandl*) svnt->_ptrToInterface(Proxy_Adapter::NP3FrameHandl::_PD_repoId);
   tcd->result = impl->frameRead(*tcd->arg_0, *tcd->arg_1);
 
@@ -2937,7 +3114,7 @@ _0RL_lcfn_40eea1302de063aa_23000000(omniCallDescriptor* cd, omniServant* svnt)
 
 Proxy_Adapter::EZstatus Proxy_Adapter::_objref_NP3FrameHandl::frameRead(::Proxy_Adapter::EZvalue& frame_data, ::Proxy_Adapter::uint32& frame_length)
 {
-  _0RL_cd_40eea1302de063aa_13000000 _call_desc(_0RL_lcfn_40eea1302de063aa_23000000, "frameRead", 10);
+  _0RL_cd_40eea1302de063aa_53000000 _call_desc(_0RL_lcfn_40eea1302de063aa_63000000, "frameRead", 10);
   _call_desc.arg_0 = &(::Proxy_Adapter::EZvalue&) frame_data;
   _call_desc.arg_1 = &(::Proxy_Adapter::uint32&) frame_length;
 
@@ -2977,7 +3154,7 @@ Proxy_Adapter::_impl_NP3FrameHandl::_dispatch(omniCallHandle& _handle)
 
   if( omni::strMatch(op, "testNP3FrameHandl") ) {
 
-    _0RL_cd_40eea1302de063aa_00000000 _call_desc(_0RL_lcfn_40eea1302de063aa_e2000000, "testNP3FrameHandl", 18, 1);
+    _0RL_cd_40eea1302de063aa_00000000 _call_desc(_0RL_lcfn_40eea1302de063aa_23000000, "testNP3FrameHandl", 18, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;
@@ -2985,7 +3162,7 @@ Proxy_Adapter::_impl_NP3FrameHandl::_dispatch(omniCallHandle& _handle)
 
   if( omni::strMatch(op, "frameSend") ) {
 
-    _0RL_cd_40eea1302de063aa_f2000000 _call_desc(_0RL_lcfn_40eea1302de063aa_03000000, "frameSend", 10, 1);
+    _0RL_cd_40eea1302de063aa_33000000 _call_desc(_0RL_lcfn_40eea1302de063aa_43000000, "frameSend", 10, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;
@@ -2993,7 +3170,7 @@ Proxy_Adapter::_impl_NP3FrameHandl::_dispatch(omniCallHandle& _handle)
 
   if( omni::strMatch(op, "frameRead") ) {
 
-    _0RL_cd_40eea1302de063aa_13000000 _call_desc(_0RL_lcfn_40eea1302de063aa_23000000, "frameRead", 10, 1);
+    _0RL_cd_40eea1302de063aa_53000000 _call_desc(_0RL_lcfn_40eea1302de063aa_63000000, "frameRead", 10, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;

@@ -56,6 +56,36 @@ rofl_result_t update_port_status(char * name) {
 	return ROFL_SUCCESS;
 }
 
+static port_features_t translate_medium_corba_to_of(Proxy_Adapter::EZapiPort_Medium medium) {
+        
+        switch (medium) {
+                case Proxy_Adapter::EZapiPort_Medium_Fiber:
+                        return PORT_FEATURE_FIBER;
+                case Proxy_Adapter::EZapiPort_Medium_Copper:
+                        return PORT_FEATURE_COPPER;
+        }
+        return PORT_FEATURE_COPPER;
+}
+
+static port_features_t translate_rate_corba_to_of(Proxy_Adapter::EZapiPort_Rate rate) {
+        
+        switch (rate) {
+                case Proxy_Adapter::EZapiPort_Rate_10MB:
+                        return PORT_FEATURE_10MB_FD;
+                case Proxy_Adapter::EZapiPort_Rate_100MB:
+                        return PORT_FEATURE_100MB_FD;          
+                case Proxy_Adapter::EZapiPort_Rate_1GB:
+                        return PORT_FEATURE_1GB_FD;
+                case Proxy_Adapter::EZapiPort_Rate_10GB:
+                        return PORT_FEATURE_10GB_FD;
+                case Proxy_Adapter::EZapiPort_Rate_40GB:
+                        return PORT_FEATURE_40GB_FD;
+                case Proxy_Adapter::EZapiPort_Rate_100GB:
+                        return PORT_FEATURE_100GB_FD;
+        }
+        return PORT_FEATURE_1GB_FD;
+}
+
 
 static switch_port_t* fill_port(uint32_t port_id) {
 	
@@ -66,12 +96,19 @@ static switch_port_t* fill_port(uint32_t port_id) {
         if(!port)
                 return NULL;
 
+        Proxy_Adapter::MacAddress mac = get_ez_port_mac(port_id);
         for(int j=0;j<6;j++)
-                port->hwaddr[j] = 0x00; //FIXME: get MAC from EZ-port
+                port->hwaddr[j] = mac[j];
+        
+        
+        Proxy_Adapter::EZapiPort_Medium medium;
+        Proxy_Adapter::EZapiPort_Rate rate;
+        
+        get_ez_port_features(port_id, medium, rate); 
 
-        switch_port_set_current_speed(port, PORT_FEATURE_1GB_FD);
+        switch_port_set_current_speed(port, translate_rate_corba_to_of(rate));
 
-        switch_port_add_capabilities(&port->curr, PORT_FEATURE_COPPER);
+        switch_port_add_capabilities(&port->curr, translate_medium_corba_to_of(medium));
         switch_port_add_capabilities(&port->curr, PORT_FEATURE_AUTONEG);
 
         port->advertised = port->supported = port->curr;

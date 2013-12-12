@@ -276,6 +276,113 @@ _CORBA_MODULE_BEG
     EZport_out& operator=(const EZport_var&);
   };
 
+  class MacAddress_var;
+
+  class MacAddress : public _CORBA_Bounded_Sequence_Octet< 6 >  {
+  public:
+    typedef MacAddress_var _var_type;
+    inline MacAddress() {}
+    inline MacAddress(const MacAddress& _s)
+      : _CORBA_Bounded_Sequence_Octet< 6 > (_s) {}
+
+    inline MacAddress(_CORBA_ULong _len, ::CORBA::Octet* _val, _CORBA_Boolean _rel=0)
+      : _CORBA_Bounded_Sequence_Octet< 6 > (_len, _val, _rel) {}
+
+  
+
+    inline MacAddress& operator = (const MacAddress& _s) {
+      _CORBA_Bounded_Sequence_Octet< 6 > ::operator=(_s);
+      return *this;
+    }
+  };
+
+  class MacAddress_out;
+
+  class MacAddress_var {
+  public:
+    inline MacAddress_var() : _pd_seq(0) {}
+    inline MacAddress_var(MacAddress* _s) : _pd_seq(_s) {}
+    inline MacAddress_var(const MacAddress_var& _s) {
+      if( _s._pd_seq )  _pd_seq = new MacAddress(*_s._pd_seq);
+      else              _pd_seq = 0;
+    }
+    inline ~MacAddress_var() { if( _pd_seq )  delete _pd_seq; }
+      
+    inline MacAddress_var& operator = (MacAddress* _s) {
+      if( _pd_seq )  delete _pd_seq;
+      _pd_seq = _s;
+      return *this;
+    }
+    inline MacAddress_var& operator = (const MacAddress_var& _s) {
+      if( _s._pd_seq ) {
+        if( !_pd_seq )  _pd_seq = new MacAddress;
+        *_pd_seq = *_s._pd_seq;
+      } else if( _pd_seq ) {
+        delete _pd_seq;
+        _pd_seq = 0;
+      }
+      return *this;
+    }
+    inline ::CORBA::Octet& operator [] (_CORBA_ULong _s) {
+      return (*_pd_seq)[_s];
+    }
+
+  
+
+    inline MacAddress* operator -> () { return _pd_seq; }
+    inline const MacAddress* operator -> () const { return _pd_seq; }
+#if defined(__GNUG__)
+    inline operator MacAddress& () const { return *_pd_seq; }
+#else
+    inline operator const MacAddress& () const { return *_pd_seq; }
+    inline operator MacAddress& () { return *_pd_seq; }
+#endif
+      
+    inline const MacAddress& in() const { return *_pd_seq; }
+    inline MacAddress&       inout()    { return *_pd_seq; }
+    inline MacAddress*&      out() {
+      if( _pd_seq ) { delete _pd_seq; _pd_seq = 0; }
+      return _pd_seq;
+    }
+    inline MacAddress* _retn() { MacAddress* tmp = _pd_seq; _pd_seq = 0; return tmp; }
+      
+    friend class MacAddress_out;
+    
+  private:
+    MacAddress* _pd_seq;
+  };
+
+  class MacAddress_out {
+  public:
+    inline MacAddress_out(MacAddress*& _s) : _data(_s) { _data = 0; }
+    inline MacAddress_out(MacAddress_var& _s)
+      : _data(_s._pd_seq) { _s = (MacAddress*) 0; }
+    inline MacAddress_out(const MacAddress_out& _s) : _data(_s._data) {}
+    inline MacAddress_out& operator = (const MacAddress_out& _s) {
+      _data = _s._data;
+      return *this;
+    }
+    inline MacAddress_out& operator = (MacAddress* _s) {
+      _data = _s;
+      return *this;
+    }
+    inline operator MacAddress*&()  { return _data; }
+    inline MacAddress*& ptr()       { return _data; }
+    inline MacAddress* operator->() { return _data; }
+
+    inline ::CORBA::Octet& operator [] (_CORBA_ULong _i) {
+      return (*_data)[_i];
+    }
+
+  
+
+    MacAddress*& _data;
+
+  private:
+    MacAddress_out();
+    MacAddress_out& operator=(const MacAddress_var&);
+  };
+
   typedef ::CORBA::ULong EZuint;
   typedef ::CORBA::ULong_out EZuint_out;
 
@@ -326,6 +433,12 @@ _CORBA_MODULE_BEG
 
   enum EZapiFrame_BufferRegion { EZapiFrame_BufferRegion_RX, EZapiFrame_BufferRegion_TX /*, __max_EZapiFrame_BufferRegion=0xffffffff */ };
   typedef EZapiFrame_BufferRegion& EZapiFrame_BufferRegion_out;
+
+  enum EZapiPort_Medium { EZapiPort_Medium_Fiber, EZapiPort_Medium_Copper /*, __max_EZapiPort_Medium=0xffffffff */ };
+  typedef EZapiPort_Medium& EZapiPort_Medium_out;
+
+  enum EZapiPort_Rate { EZapiPort_Rate_10MB, EZapiPort_Rate_100MB, EZapiPort_Rate_1GB, EZapiPort_Rate_10GB, EZapiPort_Rate_40GB, EZapiPort_Rate_100GB /*, __max_EZapiPort_Rate=0xffffffff */ };
+  typedef EZapiPort_Rate& EZapiPort_Rate_out;
 
 #ifndef __Proxy__Adapter_mStructConf__
 #define __Proxy__Adapter_mStructConf__
@@ -513,6 +626,8 @@ _CORBA_MODULE_BEG
     EZstatus getPorts(::Proxy_Adapter::EZport& ports);
     EZstatus getPortStatus(::Proxy_Adapter::EZuint port_number, ::Proxy_Adapter::EZPortStatus& port_status);
     EZstatus getPortName(::Proxy_Adapter::EZuint port_number, ::CORBA::String_out port_name);
+    EZstatus getPortMac(::Proxy_Adapter::EZuint port_number, ::Proxy_Adapter::MacAddress_out mac);
+    EZstatus getPortFeatures(::Proxy_Adapter::EZuint port_number, ::Proxy_Adapter::EZapiPort_Medium& medium, ::Proxy_Adapter::EZapiPort_Rate& rate);
 
     inline _objref_DevMonitor()  { _PR_setobj(0); }  // nil
     _objref_DevMonitor(omniIOR*, omniIdentity*);
@@ -550,6 +665,8 @@ _CORBA_MODULE_BEG
     virtual EZstatus getPorts(::Proxy_Adapter::EZport& ports) = 0;
     virtual EZstatus getPortStatus(::Proxy_Adapter::EZuint port_number, ::Proxy_Adapter::EZPortStatus& port_status) = 0;
     virtual EZstatus getPortName(::Proxy_Adapter::EZuint port_number, ::CORBA::String_out port_name) = 0;
+    virtual EZstatus getPortMac(::Proxy_Adapter::EZuint port_number, ::Proxy_Adapter::MacAddress_out mac) = 0;
+    virtual EZstatus getPortFeatures(::Proxy_Adapter::EZuint port_number, ::Proxy_Adapter::EZapiPort_Medium& medium, ::Proxy_Adapter::EZapiPort_Rate& rate) = 0;
     
   public:  // Really protected, workaround for xlC
     virtual _CORBA_Boolean _dispatch(omniCallHandle&);
@@ -1027,6 +1144,38 @@ inline void operator <<= (Proxy_Adapter::EZapiFrame_BufferRegion& _e, cdrStream&
   ::operator<<=(_0RL_e,s);
   if (_0RL_e <= Proxy_Adapter::EZapiFrame_BufferRegion_TX) {
     _e = (Proxy_Adapter::EZapiFrame_BufferRegion) _0RL_e;
+  }
+  else {
+    OMNIORB_THROW(MARSHAL,_OMNI_NS(MARSHAL_InvalidEnumValue),
+                  (::CORBA::CompletionStatus)s.completion());
+  }
+}
+
+inline void operator >>=(Proxy_Adapter::EZapiPort_Medium _e, cdrStream& s) {
+  ::operator>>=((::CORBA::ULong)_e, s);
+}
+
+inline void operator <<= (Proxy_Adapter::EZapiPort_Medium& _e, cdrStream& s) {
+  ::CORBA::ULong _0RL_e;
+  ::operator<<=(_0RL_e,s);
+  if (_0RL_e <= Proxy_Adapter::EZapiPort_Medium_Copper) {
+    _e = (Proxy_Adapter::EZapiPort_Medium) _0RL_e;
+  }
+  else {
+    OMNIORB_THROW(MARSHAL,_OMNI_NS(MARSHAL_InvalidEnumValue),
+                  (::CORBA::CompletionStatus)s.completion());
+  }
+}
+
+inline void operator >>=(Proxy_Adapter::EZapiPort_Rate _e, cdrStream& s) {
+  ::operator>>=((::CORBA::ULong)_e, s);
+}
+
+inline void operator <<= (Proxy_Adapter::EZapiPort_Rate& _e, cdrStream& s) {
+  ::CORBA::ULong _0RL_e;
+  ::operator<<=(_0RL_e,s);
+  if (_0RL_e <= Proxy_Adapter::EZapiPort_Rate_100GB) {
+    _e = (Proxy_Adapter::EZapiPort_Rate) _0RL_e;
   }
   else {
     OMNIORB_THROW(MARSHAL,_OMNI_NS(MARSHAL_InvalidEnumValue),

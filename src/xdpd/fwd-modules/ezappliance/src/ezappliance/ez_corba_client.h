@@ -11,7 +11,14 @@
 
 
 Proxy_Adapter::EZport get_ez_ports();
+
 char* get_ez_port_name(uint32_t port_id);
+
+Proxy_Adapter::MacAddress get_ez_port_mac(uint32_t port_id);
+
+void get_ez_port_features(uint32_t port_id, 
+                          Proxy_Adapter::EZapiPort_Medium& medium, 
+                          Proxy_Adapter::EZapiPort_Rate&   rate);
 
 #endif /* EZ_CORBA_CLIENT_H */
  
