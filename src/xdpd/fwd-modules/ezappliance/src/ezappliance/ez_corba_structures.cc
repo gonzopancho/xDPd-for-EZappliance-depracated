@@ -1,6 +1,7 @@
 
 #include <assert.h>
 
+#include <rofl/common/utils/c_logger.h>
 #include "ez_corba_structures.h"
 #include "ez_corba_client.h"
 
@@ -70,7 +71,6 @@ rofl_result_t set_ez_struct_key(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue
         mask.reserved = 0xFF;
         key.priority = (uint16_t)entry->priority;
         mask.priority = 0xFFFF;
-        //uint64_t mac_mask = 0xFFFFFFFFFFFFFFFF;
         
         of1x_match_t* curr_match = entry->matches.head;
         
@@ -93,8 +93,16 @@ rofl_result_t set_ez_struct_key(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue
                         case OF1X_MATCH_ETH_TYPE:
                                 break;
                         case OF1X_MATCH_VLAN_VID:
-                                key.vlan_id = curr_match->value->value.u16;
-                                mask.vlan_id = curr_match->value->mask.u16;
+                                ROFL_DEBUG("VLAN ID is %d with mask 0x%x\n", curr_match->value->value.u16, curr_match->value->mask.u16);
+                                key.vlan_tag |= curr_match->value->value.u16;
+                                mask.vlan_tag |= curr_match->value->mask.u16;
+                                mask.vlan_tag |= 0x1000; // set 13bit to matched in EZ
+                                key_generated = ROFL_SUCCESS;
+                                break;
+                        case OF1X_MATCH_VLAN_PCP:
+                                ROFL_DEBUG("VLAN PCP is %d with mask 0x%x\n", curr_match->value->value.u8, curr_match->value->mask.u8);
+                                key.vlan_tag |= curr_match->value->value.u8 << 13;
+                                mask.vlan_tag |= curr_match->value->mask.u8 << 13;
                                 key_generated = ROFL_SUCCESS;
                                 break;
                         default:

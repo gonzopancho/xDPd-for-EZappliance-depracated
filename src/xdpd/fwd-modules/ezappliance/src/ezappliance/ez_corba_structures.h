@@ -21,7 +21,7 @@ typedef struct EZFlowTableKey {
         uint16_t priority;
         uint8_t src_mac[6];
         uint8_t dst_mac[6];
-        uint16_t vlan_id;
+        uint16_t vlan_tag;
 } EZFlowTableKey_t;  
 
 typedef struct EZFlowTableResult {
