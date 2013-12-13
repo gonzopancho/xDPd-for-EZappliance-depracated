@@ -129,7 +129,7 @@ class StructConf (Proxy_Adapter__POA.StructConf):
         return 0, 0
         
     @exception_handler
-    def setStruct(self, struct_type, struct_num, k_length, r_length, key, result, mask):
+    def setStructEntry(self, struct_type, struct_num, k_length, r_length, key, result, mask):
         logger.debug('StructConf.setStruct called (struct_type: %s, struct_num: %d, k_length: %d, r_length: %d, key: %s, result: %s, mask: %s)', struct_type, struct_num, k_length, r_length, key, result, mask)
         
         if struct_type == Proxy_Adapter.EzapiSearch1 and struct_num == 0:
@@ -139,7 +139,7 @@ class StructConf (Proxy_Adapter__POA.StructConf):
         return 0
         
     @exception_handler
-    def getStruct(self, struct_type, struct_num, index, k_length, r_length, key, result, mask):
+    def getStructEntry(self, struct_type, struct_num, index, k_length, r_length, key, result, mask):
         logger.debug('StructConf.getStruct called (struct_type: %s, struct_num: %d, index: %d, k_length: %d, r_length: %d, key: %s, result: %s, mask: %s)', struct_type, struct_num, index, k_length, r_length, key, result, mask)
         return 0, k_length, r_length, key, result, mask
 
@@ -159,7 +159,7 @@ class StructConf (Proxy_Adapter__POA.StructConf):
         return 0, 10
  
     @exception_handler
-    def delStruct(self, struct_type, struct_num, k_length, r_length, key, result, mask):
+    def delStructEntry(self, struct_type, struct_num, k_length, r_length, key, result, mask):
         logger.debug('StructConf.delStruct called (struct_type: %s, struct_num: %d, k_length: %d, r_length: %d, key: %s, result: %s, mask: %s)', struct_type, struct_num, k_length, r_length, key, result, mask)
         
         if struct_type == Proxy_Adapter.EzapiSearch1 and struct_num == 0:

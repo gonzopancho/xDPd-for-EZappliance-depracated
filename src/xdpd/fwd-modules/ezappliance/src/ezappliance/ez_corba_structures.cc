@@ -70,7 +70,7 @@ rofl_result_t set_ez_struct_key(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue
         mask.reserved = 0xFF;
         key.priority = (uint16_t)entry->priority;
         mask.priority = 0xFFFF;
-        uint64_t mac_mask = 0xFFFFFFFFFFFFFFFF;
+        //uint64_t mac_mask = 0xFFFFFFFFFFFFFFFF;
         
         of1x_match_t* curr_match = entry->matches.head;
         
@@ -82,19 +82,19 @@ rofl_result_t set_ez_struct_key(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue
                                 break;
                         case OF1X_MATCH_ETH_DST:
                                 set_mac(key.dst_mac, curr_match->value->value.u64);
-                                set_mac(mask.dst_mac, mac_mask); 
+                                set_mac(mask.dst_mac, curr_match->value->mask.u64); 
                                 key_generated = ROFL_SUCCESS;
                                 break;
                         case OF1X_MATCH_ETH_SRC:
                                 set_mac(key.src_mac, curr_match->value->value.u64);
-                                set_mac(mask.src_mac, mac_mask); 
+                                set_mac(mask.src_mac, curr_match->value->mask.u64); 
                                 key_generated = ROFL_SUCCESS;
                                 break;
                         case OF1X_MATCH_ETH_TYPE:
                                 break;
                         case OF1X_MATCH_VLAN_VID:
                                 key.vlan_id = curr_match->value->value.u16;
-                                mask.vlan_id = 0xFFFF;
+                                mask.vlan_id = curr_match->value->mask.u16;
                                 key_generated = ROFL_SUCCESS;
                                 break;
                         default:
