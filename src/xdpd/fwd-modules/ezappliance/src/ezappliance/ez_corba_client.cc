@@ -234,6 +234,6 @@ void del_ez_struct(Proxy_Adapter::EZStruct_type struct_type,
                         structConfProxy->delStruct(struct_type, struct_num, k_length, r_length, key, result, mask);
         } 
         catch (CORBA::UNKNOWN) {
-                ROFL_ERR("[CORBA] unknown exception in set_ez_struct");
+                ROFL_ERR("[CORBA] unknown exception in del_ez_struct");
         }
 }

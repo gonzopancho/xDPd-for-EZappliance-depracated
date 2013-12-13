@@ -94,6 +94,30 @@ class DevMonitor (Proxy_Adapter__POA.DevMonitor):
 
 ##############################################
 
+import struct
+
+def show_flowtable_key(key, mask):
+    KEY_LENGTH = 18
+    def show(value, name):
+        if len(value) < KEY_LENGTH:
+            logger.debug("-> Too short flow entry")
+            logger.debug("-> %s length is %d", name, len(value))
+            return
+        values = struct.unpack("BH6B6BH", value[:KEY_LENGTH])
+        logger.debug(" %s " % name + "-> reserved: 0x%x, priority: %d, src_mac: %x:%x:%x:%x:%x:%x, dst_mac: %x:%x:%x:%x:%x:%x, vlan_id: %d" % values)
+    show(key, "key")
+    show(mask, "mask")
+   
+def show_flowtable_result(result):
+    RESULT_LENGTH = 3
+    if len(result) < RESULT_LENGTH:
+        logger.debug("-> Too short flow result")
+        logger.debug("-> Result length is %d", len(result))
+        return
+    values = struct.unpack("BBB", result[:RESULT_LENGTH])
+    logger.debug(" result -> control: 0x%x, actions: 0x%x, port_number: %d" % values)
+        
+
 class StructConf (Proxy_Adapter__POA.StructConf):
         
     def __init__(self, data):
@@ -107,6 +131,11 @@ class StructConf (Proxy_Adapter__POA.StructConf):
     @exception_handler
     def setStruct(self, struct_type, struct_num, k_length, r_length, key, result, mask):
         logger.debug('StructConf.setStruct called (struct_type: %s, struct_num: %d, k_length: %d, r_length: %d, key: %s, result: %s, mask: %s)', struct_type, struct_num, k_length, r_length, key, result, mask)
+        
+        if struct_type == Proxy_Adapter.EzapiSearch1 and struct_num == 0:
+                show_flowtable_key(key, mask)
+                show_flowtable_result(result)
+        
         return 0
         
     @exception_handler
@@ -132,6 +161,11 @@ class StructConf (Proxy_Adapter__POA.StructConf):
     @exception_handler
     def delStruct(self, struct_type, struct_num, k_length, r_length, key, result, mask):
         logger.debug('StructConf.delStruct called (struct_type: %s, struct_num: %d, k_length: %d, r_length: %d, key: %s, result: %s, mask: %s)', struct_type, struct_num, k_length, r_length, key, result, mask)
+        
+        if struct_type == Proxy_Adapter.EzapiSearch1 and struct_num == 0:
+                show_flowtable_key(key, mask)
+                show_flowtable_result(result)
+                
         return 0
         
     @exception_handler

@@ -240,7 +240,9 @@ static void* ez_packet_channel_routine(void* param) {
         channel->start();
         
         delete channel;
+        channel = NULL;
         pthread_exit(NULL);
+        return (void*)channel;
 }
 
 /**

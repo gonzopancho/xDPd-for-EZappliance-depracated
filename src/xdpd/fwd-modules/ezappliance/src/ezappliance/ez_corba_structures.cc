@@ -6,13 +6,8 @@
 
 
 static void set_mac(uint8_t* mac, uint64_t _mac) {
-        
-        mac[0] = (uint8_t)((_mac >> 5*8) && 0xFF);
-        mac[1] = (uint8_t)((_mac >> 4*8) && 0xFF);
-        mac[2] = (uint8_t)((_mac >> 3*8) && 0xFF);
-        mac[3] = (uint8_t)((_mac >> 2*8) && 0xFF);
-        mac[4] = (uint8_t)((_mac >> 1*8) && 0xFF);
-        mac[5] = (uint8_t)((_mac >> 0*8) && 0xFF);
+    
+        memcpy(mac, &_mac, 6);
 }
 
 //         OF1X_MATCH_IN_PORT,             /* Switch input port. */                //required
@@ -94,6 +89,7 @@ rofl_result_t set_ez_struct_key(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue
                                 set_mac(key.src_mac, curr_match->value->value.u64);
                                 set_mac(mask.src_mac, mac_mask); 
                                 key_generated = ROFL_SUCCESS;
+                                break;
                         case OF1X_MATCH_ETH_TYPE:
                                 break;
                         case OF1X_MATCH_VLAN_VID:
@@ -109,6 +105,8 @@ rofl_result_t set_ez_struct_key(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue
         
         memcpy(_key.get_buffer(), &key, sizeof(key));
         memcpy(_mask.get_buffer(), &mask, sizeof(mask));
+        _key.length(sizeof(key));
+        _mask.length(sizeof(mask));
         return key_generated;
 }
 
@@ -291,22 +289,24 @@ rofl_result_t set_ez_struct_key(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue
                                 result_generated = ROFL_SUCCESS;
                                 break;
                         case OF1X_AT_NO_ACTION:
-                                result.actions = (uint8_t)(0x00 | 0x01 << 6);
+                                result.actions = (uint8_t)(0x00 | 0x01 << 6); // set drop bit
                                 result_generated = ROFL_SUCCESS;
+                                break;
                         default:
                                 break;
                 }
         }
         memcpy(_result.get_buffer(), &result, sizeof(result));
+        _result.length(sizeof(result));
         return result_generated;
 }
 
 
 void set_ez_flow_entry(of1x_flow_entry_t* entry) {
 
-        Proxy_Adapter::EZvalue key, result, mask; 
+        Proxy_Adapter::EZvalue key(EZ_FLOWTABLE_KEY_SIZE), result(EZ_FLOWTABLE_RESULT_SIZE), mask(EZ_FLOWTABLE_KEY_SIZE); 
         
-        if(set_ez_struct_key(entry, key, mask) == ROFL_SUCCESS 
+        if (set_ez_struct_key(entry, key, mask) == ROFL_SUCCESS 
            && set_ez_struct_result(entry, result) == ROFL_SUCCESS) {
         
                 set_ez_struct(Proxy_Adapter::EzapiSearch1, EZ_FLOWTABLE_STRUCTURE_NUM, EZ_FLOWTABLE_KEY_SIZE, EZ_FLOWTABLE_RESULT_SIZE, key, result, mask);
@@ -314,12 +314,12 @@ void set_ez_flow_entry(of1x_flow_entry_t* entry) {
 }
 
 
-void delete_ez_flow_entry(of1x_flow_entry_t* entry) {
+void del_ez_flow_entry(of1x_flow_entry_t* entry) {
 
-        Proxy_Adapter::EZvalue key, result, mask; 
+        Proxy_Adapter::EZvalue key(EZ_FLOWTABLE_KEY_SIZE), result(EZ_FLOWTABLE_RESULT_SIZE), mask(EZ_FLOWTABLE_KEY_SIZE); 
         
-        if(set_ez_struct_key(entry, key, mask) == ROFL_SUCCESS 
-           && set_ez_struct_result(entry, result) == ROFL_SUCCESS) {
+        if (set_ez_struct_key(entry, key, mask) == ROFL_SUCCESS) {
+           //&& set_ez_struct_result(entry, result) == ROFL_SUCCESS) {
         
                 del_ez_struct(Proxy_Adapter::EzapiSearch1, EZ_FLOWTABLE_STRUCTURE_NUM, EZ_FLOWTABLE_KEY_SIZE, EZ_FLOWTABLE_RESULT_SIZE, key, result, mask);
         }
