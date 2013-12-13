@@ -127,7 +127,7 @@ rofl_result_t discover_physical_ports() {
         //Fill ports
         Proxy_Adapter::EZport ports = get_ez_ports();
 
-        ROFL_DEBUG("Number of EZ port is %d \n", ports.length());
+        ROFL_DEBUG("Number of retrieved EZ ports is %d \n", ports.length());
         
         for (uint32_t i=0; i<ports.length(); i++) {
                 

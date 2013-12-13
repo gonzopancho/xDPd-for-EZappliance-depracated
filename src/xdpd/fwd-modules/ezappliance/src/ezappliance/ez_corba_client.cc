@@ -8,6 +8,9 @@
 #include "../config.h"
 
 Proxy_Adapter::DevMonitor_var deviceMonitorProxy;
+Proxy_Adapter::StructConf_var structConfProxy;
+
+//========================================================================================
 
 static bool corba_fetch_ior(std::string file_name, std::string& ior) {
 
@@ -63,6 +66,8 @@ static bool corba_init(CORBA::ORB_var& orb)
         return true;
 }
 
+//========================================================================================
+
 static bool devMonitorConnect(bool force_new_connection=false) {
         
         // check if corba object reference created
@@ -79,20 +84,20 @@ static bool devMonitorConnect(bool force_new_connection=false) {
                 
                 std::string ior;
                 if (!corba_fetch_ior("/tmp/DevMonitor.ior", ior)) {
-                        ROFL_ERR("[CORBA] Cannot fetch IOR\n");
+                        ROFL_ERR("[CORBA] Cannot fetch DeviceMonitor IOR\n");
                         return false;
                 }
 
                 CORBA::Object_var obj;
                 obj = orb->string_to_object(ior.c_str());
                 if (CORBA::is_nil(obj)) {
-                        ROFL_ERR("[CORBA] Cannot get object\n");
+                        ROFL_ERR("[CORBA] Cannot get DeviceMonitor object\n");
                         return false;
                 }
 
                 deviceMonitorProxy = Proxy_Adapter::DevMonitor::_narrow(obj);
                 if (CORBA::is_nil(deviceMonitorProxy)) {
-                        ROFL_ERR("[CORBA] Cannot invoke on a nil object reference\n");
+                        ROFL_ERR("[CORBA] Cannot invoke on a nil DeviceMonitor object reference\n");
                         return false;
                 }
 
@@ -152,5 +157,83 @@ void get_ez_port_features(uint32_t port_id, Proxy_Adapter::EZapiPort_Medium& med
         } 
         catch (CORBA::UNKNOWN) {
                 ROFL_ERR("[CORBA] unknown exception in get_ez_port_features");
+        }
+}
+
+//========================================================================================
+
+static bool structConfConnect(bool force_new_connection=false) {
+        
+        // check if corba object reference created
+        if (!force_new_connection && !CORBA::is_nil(structConfProxy))
+                return true; 
+        
+        try {
+                CORBA::ORB_var orb;
+                corba_init(orb);
+                if (CORBA::is_nil(orb)) {
+                        ROFL_ERR("[CORBA] Cannot get ORB\n");
+                        return false;
+                }
+                
+                std::string ior;
+                if (!corba_fetch_ior("/tmp/StructConf.ior", ior)) {
+                        ROFL_ERR("[CORBA] Cannot fetch StructConf IOR\n");
+                        return false;
+                }
+
+                CORBA::Object_var obj;
+                obj = orb->string_to_object(ior.c_str());
+                if (CORBA::is_nil(obj)) {
+                        ROFL_ERR("[CORBA] Cannot get StructConf object\n");
+                        return false;
+                }
+
+                structConfProxy = Proxy_Adapter::StructConf::_narrow(obj);
+                if (CORBA::is_nil(structConfProxy)) {
+                        ROFL_ERR("[CORBA] Cannot invoke on a nil StructConf object reference\n");
+                        return false;
+                }
+
+                ROFL_DEBUG("[CORBA] Proxy_Adapter::StructConf object connected\n");
+                return true;
+        } 
+        catch (CORBA::UNKNOWN) {
+                ROFL_ERR("[CORBA] unknown exception in structConfConnect\n");
+        }
+        return false;
+}
+
+void set_ez_struct(Proxy_Adapter::EZStruct_type struct_type,
+                   uint32_t struct_num,
+                   uint32_t k_length,
+                   uint32_t r_length,
+                   Proxy_Adapter::EZvalue key,
+                   Proxy_Adapter::EZvalue result,
+                   Proxy_Adapter::EZvalue mask) {
+                   
+        try {
+                if (structConfConnect())
+                        structConfProxy->setStruct(struct_type, struct_num, k_length, r_length, key, result, mask);
+        } 
+        catch (CORBA::UNKNOWN) {
+                ROFL_ERR("[CORBA] unknown exception in set_ez_struct");
+        }
+}
+
+void del_ez_struct(Proxy_Adapter::EZStruct_type struct_type,
+                   uint32_t struct_num,
+                   uint32_t k_length,
+                   uint32_t r_length,
+                   Proxy_Adapter::EZvalue key,
+                   Proxy_Adapter::EZvalue result,
+                   Proxy_Adapter::EZvalue mask) {
+                   
+        try {
+                if (structConfConnect())
+                        structConfProxy->delStruct(struct_type, struct_num, k_length, r_length, key, result, mask);
+        } 
+        catch (CORBA::UNKNOWN) {
+                ROFL_ERR("[CORBA] unknown exception in set_ez_struct");
         }
 }

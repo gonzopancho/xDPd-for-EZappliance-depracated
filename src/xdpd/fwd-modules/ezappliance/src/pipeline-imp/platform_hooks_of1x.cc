@@ -11,6 +11,9 @@
 #include <rofl/datapath/pipeline/openflow/openflow1x/pipeline/of1x_flow_table.h>
 #include <rofl/datapath/afa/openflow/openflow1x/of1x_cmm.h>
 #include <rofl/common/utils/c_logger.h>
+//#include <rofl/datapath/pipeline/openflow/openflow1x/pipeline/of1x_instruction.h>
+//#include <rofl/datapath/pipeline/openflow/openflow1x/pipeline/of1x_flow_entry.h>
+//#include <rofl/datapath/pipeline/openflow/openflow1x/pipeline/of1x_action.h>
 
 #include "../config.h"
 #include "../io/bufferpool.h"
@@ -18,6 +21,8 @@
 #include "../io/datapacket_storage.h"
 #include "../ls_internal_state.h"
 #include "../io/pktin_dispatcher.h"
+#include "../ezappliance/ez_corba_client.h"
+#include "../ezappliance/ez_corba_structures.h"
 
 using namespace xdpd::gnu_linux;
 
@@ -132,24 +137,35 @@ void platform_of1x_notify_flow_removed(const of1x_switch_t* sw,
 	cmm_process_of1x_flow_removed(sw, (uint8_t)reason, removed_flow_entry);
 
 }
-
-
+        
 void plaftorm_of1x_add_entry_hook(of1x_flow_entry_t* new_entry) {
         
         ROFL_DEBUG("[Pipeline-imp] plaftorm_of1x_add_entry_hook (new_entry: %p)\n", new_entry);
+        of1x_dump_flow_entry(new_entry);
+        
+        set_ez_flow_entry(new_entry);
 }
 
 void platform_of1x_modify_entry_hook(of1x_flow_entry_t* old_entry, of1x_flow_entry_t* mod, int reset_count) {
         
         ROFL_DEBUG("[Pipeline-imp] platform_of1x_modify_entry_hook (old_entry: %p, reset_count: %d)\n", old_entry, reset_count);
+        of1x_dump_flow_entry(old_entry);
+        of1x_dump_flow_entry(mod);
+        
+        set_ez_flow_entry(mod);
 }
 
 void platform_of1x_remove_entry_hook(of1x_flow_entry_t* entry) {
         
         ROFL_DEBUG("[Pipeline-imp] platform_of1x_remove_entry_hook (entry: %p)\n", entry);
+        of1x_dump_flow_entry(entry);
+        
+        del_ez_flow_entry(entry);
 }
 
 void platform_of1x_update_stats_hook(of1x_flow_entry_t* entry) {
         
         ROFL_DEBUG("[Pipeline-imp] platform_of1x_update_stats_hook (entry: %p)\n", entry);
+        of1x_dump_flow_entry(entry);
+      
 }

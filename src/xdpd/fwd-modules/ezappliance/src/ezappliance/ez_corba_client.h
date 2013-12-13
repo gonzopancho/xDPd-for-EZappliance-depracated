@@ -9,7 +9,6 @@
 
 #include "../idl/Proxy_Adapter.hh"
 
-
 Proxy_Adapter::EZport get_ez_ports();
 
 char* get_ez_port_name(uint32_t port_id);
@@ -19,6 +18,23 @@ Proxy_Adapter::MacAddress get_ez_port_mac(uint32_t port_id);
 void get_ez_port_features(uint32_t port_id, 
                           Proxy_Adapter::EZapiPort_Medium& medium, 
                           Proxy_Adapter::EZapiPort_Rate&   rate);
+
+
+void set_ez_struct(Proxy_Adapter::EZStruct_type struct_type, 
+                   uint32_t struct_num, 
+                   uint32_t k_length, 
+                   uint32_t r_length, 
+                   Proxy_Adapter::EZvalue key, 
+                   Proxy_Adapter::EZvalue result, 
+                   Proxy_Adapter::EZvalue mask);
+
+void del_ez_struct(Proxy_Adapter::EZStruct_type struct_type,
+                   uint32_t struct_num,
+                   uint32_t k_length,
+                   uint32_t r_length,
+                   Proxy_Adapter::EZvalue key,
+                   Proxy_Adapter::EZvalue result,
+                   Proxy_Adapter::EZvalue mask);
 
 #endif /* EZ_CORBA_CLIENT_H */
  
