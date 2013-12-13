@@ -281,14 +281,14 @@ _0RL_lcfn_40eea1302de063aa_30000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_40eea1302de063aa_20000000* tcd = (_0RL_cd_40eea1302de063aa_20000000*)cd;
   Proxy_Adapter::_impl_StructConf* impl = (Proxy_Adapter::_impl_StructConf*) svnt->_ptrToInterface(Proxy_Adapter::StructConf::_PD_repoId);
-  tcd->result = impl->setStruct(tcd->arg_0, tcd->arg_1, tcd->arg_2, tcd->arg_3, *tcd->arg_4, *tcd->arg_5, *tcd->arg_6);
+  tcd->result = impl->setStructEntry(tcd->arg_0, tcd->arg_1, tcd->arg_2, tcd->arg_3, *tcd->arg_4, *tcd->arg_5, *tcd->arg_6);
 
 
 }
 
-Proxy_Adapter::EZstatus Proxy_Adapter::_objref_StructConf::setStruct(::Proxy_Adapter::EZStruct_type struct_type, ::Proxy_Adapter::EZStr_Num struct_num, ::Proxy_Adapter::KeySize k_length, ::Proxy_Adapter::ResultSize r_length, const ::Proxy_Adapter::EZvalue& key, const ::Proxy_Adapter::EZvalue& result, const ::Proxy_Adapter::EZvalue& mask)
+Proxy_Adapter::EZstatus Proxy_Adapter::_objref_StructConf::setStructEntry(::Proxy_Adapter::EZStruct_type struct_type, ::Proxy_Adapter::EZStr_Num struct_num, ::Proxy_Adapter::KeySize k_length, ::Proxy_Adapter::ResultSize r_length, const ::Proxy_Adapter::EZvalue& key, const ::Proxy_Adapter::EZvalue& result, const ::Proxy_Adapter::EZvalue& mask)
 {
-  _0RL_cd_40eea1302de063aa_20000000 _call_desc(_0RL_lcfn_40eea1302de063aa_30000000, "setStruct", 10);
+  _0RL_cd_40eea1302de063aa_20000000 _call_desc(_0RL_lcfn_40eea1302de063aa_30000000, "setStructEntry", 15);
   _call_desc.arg_0 = struct_type;
   _call_desc.arg_1 = struct_num;
   _call_desc.arg_2 = k_length;
@@ -405,14 +405,14 @@ _0RL_lcfn_40eea1302de063aa_50000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_40eea1302de063aa_40000000* tcd = (_0RL_cd_40eea1302de063aa_40000000*)cd;
   Proxy_Adapter::_impl_StructConf* impl = (Proxy_Adapter::_impl_StructConf*) svnt->_ptrToInterface(Proxy_Adapter::StructConf::_PD_repoId);
-  tcd->result = impl->getStruct(tcd->arg_0, tcd->arg_1, tcd->arg_2, *tcd->arg_3, *tcd->arg_4, *tcd->arg_5, *tcd->arg_6, *tcd->arg_7);
+  tcd->result = impl->getStructEntry(tcd->arg_0, tcd->arg_1, tcd->arg_2, *tcd->arg_3, *tcd->arg_4, *tcd->arg_5, *tcd->arg_6, *tcd->arg_7);
 
 
 }
 
-Proxy_Adapter::EZstatus Proxy_Adapter::_objref_StructConf::getStruct(::Proxy_Adapter::EZStruct_type struct_type, ::Proxy_Adapter::EZStr_Num struct_num, ::Proxy_Adapter::uint32 index, ::Proxy_Adapter::KeySize& k_length, ::Proxy_Adapter::ResultSize& r_length, ::Proxy_Adapter::EZvalue& key, ::Proxy_Adapter::EZvalue& result, ::Proxy_Adapter::EZvalue& mask)
+Proxy_Adapter::EZstatus Proxy_Adapter::_objref_StructConf::getStructEntry(::Proxy_Adapter::EZStruct_type struct_type, ::Proxy_Adapter::EZStr_Num struct_num, ::Proxy_Adapter::uint32 index, ::Proxy_Adapter::KeySize& k_length, ::Proxy_Adapter::ResultSize& r_length, ::Proxy_Adapter::EZvalue& key, ::Proxy_Adapter::EZvalue& result, ::Proxy_Adapter::EZvalue& mask)
 {
-  _0RL_cd_40eea1302de063aa_40000000 _call_desc(_0RL_lcfn_40eea1302de063aa_50000000, "getStruct", 10);
+  _0RL_cd_40eea1302de063aa_40000000 _call_desc(_0RL_lcfn_40eea1302de063aa_50000000, "getStructEntry", 15);
   _call_desc.arg_0 = struct_type;
   _call_desc.arg_1 = struct_num;
   _call_desc.arg_2 = index;
@@ -640,14 +640,14 @@ _0RL_lcfn_40eea1302de063aa_b0000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_40eea1302de063aa_20000000* tcd = (_0RL_cd_40eea1302de063aa_20000000*)cd;
   Proxy_Adapter::_impl_StructConf* impl = (Proxy_Adapter::_impl_StructConf*) svnt->_ptrToInterface(Proxy_Adapter::StructConf::_PD_repoId);
-  tcd->result = impl->delStruct(tcd->arg_0, tcd->arg_1, tcd->arg_2, tcd->arg_3, *tcd->arg_4, *tcd->arg_5, *tcd->arg_6);
+  tcd->result = impl->delStructEntry(tcd->arg_0, tcd->arg_1, tcd->arg_2, tcd->arg_3, *tcd->arg_4, *tcd->arg_5, *tcd->arg_6);
 
 
 }
 
-Proxy_Adapter::EZstatus Proxy_Adapter::_objref_StructConf::delStruct(::Proxy_Adapter::EZStruct_type struct_type, ::Proxy_Adapter::EZStr_Num struct_num, ::Proxy_Adapter::KeySize k_length, ::Proxy_Adapter::ResultSize r_length, const ::Proxy_Adapter::EZvalue& key, const ::Proxy_Adapter::EZvalue& result, const ::Proxy_Adapter::EZvalue& mask)
+Proxy_Adapter::EZstatus Proxy_Adapter::_objref_StructConf::delStructEntry(::Proxy_Adapter::EZStruct_type struct_type, ::Proxy_Adapter::EZStr_Num struct_num, ::Proxy_Adapter::KeySize k_length, ::Proxy_Adapter::ResultSize r_length, const ::Proxy_Adapter::EZvalue& key, const ::Proxy_Adapter::EZvalue& result, const ::Proxy_Adapter::EZvalue& mask)
 {
-  _0RL_cd_40eea1302de063aa_20000000 _call_desc(_0RL_lcfn_40eea1302de063aa_b0000000, "delStruct", 10);
+  _0RL_cd_40eea1302de063aa_20000000 _call_desc(_0RL_lcfn_40eea1302de063aa_b0000000, "delStructEntry", 15);
   _call_desc.arg_0 = struct_type;
   _call_desc.arg_1 = struct_num;
   _call_desc.arg_2 = k_length;
@@ -776,17 +776,17 @@ Proxy_Adapter::_impl_StructConf::_dispatch(omniCallHandle& _handle)
     return 1;
   }
 
-  if( omni::strMatch(op, "setStruct") ) {
+  if( omni::strMatch(op, "setStructEntry") ) {
 
-    _0RL_cd_40eea1302de063aa_20000000 _call_desc(_0RL_lcfn_40eea1302de063aa_30000000, "setStruct", 10, 1);
+    _0RL_cd_40eea1302de063aa_20000000 _call_desc(_0RL_lcfn_40eea1302de063aa_30000000, "setStructEntry", 15, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;
   }
 
-  if( omni::strMatch(op, "getStruct") ) {
+  if( omni::strMatch(op, "getStructEntry") ) {
 
-    _0RL_cd_40eea1302de063aa_40000000 _call_desc(_0RL_lcfn_40eea1302de063aa_50000000, "getStruct", 10, 1);
+    _0RL_cd_40eea1302de063aa_40000000 _call_desc(_0RL_lcfn_40eea1302de063aa_50000000, "getStructEntry", 15, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;
@@ -816,9 +816,9 @@ Proxy_Adapter::_impl_StructConf::_dispatch(omniCallHandle& _handle)
     return 1;
   }
 
-  if( omni::strMatch(op, "delStruct") ) {
+  if( omni::strMatch(op, "delStructEntry") ) {
 
-    _0RL_cd_40eea1302de063aa_20000000 _call_desc(_0RL_lcfn_40eea1302de063aa_b0000000, "delStruct", 10, 1);
+    _0RL_cd_40eea1302de063aa_20000000 _call_desc(_0RL_lcfn_40eea1302de063aa_b0000000, "delStructEntry", 15, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;

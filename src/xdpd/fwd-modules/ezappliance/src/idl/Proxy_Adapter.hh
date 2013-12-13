@@ -502,12 +502,12 @@ _CORBA_MODULE_BEG
   {
   public:
     EZstatus testStructConf(::Proxy_Adapter::EZuint& testVal);
-    EZstatus setStruct(::Proxy_Adapter::EZStruct_type struct_type, ::Proxy_Adapter::EZStr_Num struct_num, ::Proxy_Adapter::KeySize k_length, ::Proxy_Adapter::ResultSize r_length, const ::Proxy_Adapter::EZvalue& key, const ::Proxy_Adapter::EZvalue& result, const ::Proxy_Adapter::EZvalue& mask);
-    EZstatus getStruct(::Proxy_Adapter::EZStruct_type struct_type, ::Proxy_Adapter::EZStr_Num struct_num, ::Proxy_Adapter::uint32 index, ::Proxy_Adapter::KeySize& k_length, ::Proxy_Adapter::ResultSize& r_length, ::Proxy_Adapter::EZvalue& key, ::Proxy_Adapter::EZvalue& result, ::Proxy_Adapter::EZvalue& mask);
+    EZstatus setStructEntry(::Proxy_Adapter::EZStruct_type struct_type, ::Proxy_Adapter::EZStr_Num struct_num, ::Proxy_Adapter::KeySize k_length, ::Proxy_Adapter::ResultSize r_length, const ::Proxy_Adapter::EZvalue& key, const ::Proxy_Adapter::EZvalue& result, const ::Proxy_Adapter::EZvalue& mask);
+    EZstatus getStructEntry(::Proxy_Adapter::EZStruct_type struct_type, ::Proxy_Adapter::EZStr_Num struct_num, ::Proxy_Adapter::uint32 index, ::Proxy_Adapter::KeySize& k_length, ::Proxy_Adapter::ResultSize& r_length, ::Proxy_Adapter::EZvalue& key, ::Proxy_Adapter::EZvalue& result, ::Proxy_Adapter::EZvalue& mask);
     EZstatus getStructResult(::Proxy_Adapter::EZStruct_type struct_type, ::Proxy_Adapter::EZStr_Num struct_num, ::Proxy_Adapter::KeySize k_length, const ::Proxy_Adapter::EZvalue& key, ::Proxy_Adapter::ResultSize r_length, ::Proxy_Adapter::EZvalue& result);
     EZstatus getStructLimit(::Proxy_Adapter::EZStruct_type struct_type, ::Proxy_Adapter::EZStr_Num struct_num, ::Proxy_Adapter::uint32& limit);
     EZstatus getStructLength(::Proxy_Adapter::EZStruct_type struct_type, ::Proxy_Adapter::EZStr_Num struct_num, ::Proxy_Adapter::uint32& length);
-    EZstatus delStruct(::Proxy_Adapter::EZStruct_type struct_type, ::Proxy_Adapter::EZStr_Num struct_num, ::Proxy_Adapter::KeySize k_length, ::Proxy_Adapter::ResultSize r_length, const ::Proxy_Adapter::EZvalue& key, const ::Proxy_Adapter::EZvalue& result, const ::Proxy_Adapter::EZvalue& mask);
+    EZstatus delStructEntry(::Proxy_Adapter::EZStruct_type struct_type, ::Proxy_Adapter::EZStr_Num struct_num, ::Proxy_Adapter::KeySize k_length, ::Proxy_Adapter::ResultSize r_length, const ::Proxy_Adapter::EZvalue& key, const ::Proxy_Adapter::EZvalue& result, const ::Proxy_Adapter::EZvalue& mask);
     EZstatus delStructAllEntries(::Proxy_Adapter::EZStruct_type struct_type, ::Proxy_Adapter::EZStr_Num struct_num);
 
     inline _objref_StructConf()  { _PR_setobj(0); }  // nil
@@ -543,12 +543,12 @@ _CORBA_MODULE_BEG
     virtual ~_impl_StructConf();
 
     virtual EZstatus testStructConf(::Proxy_Adapter::EZuint& testVal) = 0;
-    virtual EZstatus setStruct(::Proxy_Adapter::EZStruct_type struct_type, ::Proxy_Adapter::EZStr_Num struct_num, ::Proxy_Adapter::KeySize k_length, ::Proxy_Adapter::ResultSize r_length, const ::Proxy_Adapter::EZvalue& key, const ::Proxy_Adapter::EZvalue& result, const ::Proxy_Adapter::EZvalue& mask) = 0;
-    virtual EZstatus getStruct(::Proxy_Adapter::EZStruct_type struct_type, ::Proxy_Adapter::EZStr_Num struct_num, ::Proxy_Adapter::uint32 index, ::Proxy_Adapter::KeySize& k_length, ::Proxy_Adapter::ResultSize& r_length, ::Proxy_Adapter::EZvalue& key, ::Proxy_Adapter::EZvalue& result, ::Proxy_Adapter::EZvalue& mask) = 0;
+    virtual EZstatus setStructEntry(::Proxy_Adapter::EZStruct_type struct_type, ::Proxy_Adapter::EZStr_Num struct_num, ::Proxy_Adapter::KeySize k_length, ::Proxy_Adapter::ResultSize r_length, const ::Proxy_Adapter::EZvalue& key, const ::Proxy_Adapter::EZvalue& result, const ::Proxy_Adapter::EZvalue& mask) = 0;
+    virtual EZstatus getStructEntry(::Proxy_Adapter::EZStruct_type struct_type, ::Proxy_Adapter::EZStr_Num struct_num, ::Proxy_Adapter::uint32 index, ::Proxy_Adapter::KeySize& k_length, ::Proxy_Adapter::ResultSize& r_length, ::Proxy_Adapter::EZvalue& key, ::Proxy_Adapter::EZvalue& result, ::Proxy_Adapter::EZvalue& mask) = 0;
     virtual EZstatus getStructResult(::Proxy_Adapter::EZStruct_type struct_type, ::Proxy_Adapter::EZStr_Num struct_num, ::Proxy_Adapter::KeySize k_length, const ::Proxy_Adapter::EZvalue& key, ::Proxy_Adapter::ResultSize r_length, ::Proxy_Adapter::EZvalue& result) = 0;
     virtual EZstatus getStructLimit(::Proxy_Adapter::EZStruct_type struct_type, ::Proxy_Adapter::EZStr_Num struct_num, ::Proxy_Adapter::uint32& limit) = 0;
     virtual EZstatus getStructLength(::Proxy_Adapter::EZStruct_type struct_type, ::Proxy_Adapter::EZStr_Num struct_num, ::Proxy_Adapter::uint32& length) = 0;
-    virtual EZstatus delStruct(::Proxy_Adapter::EZStruct_type struct_type, ::Proxy_Adapter::EZStr_Num struct_num, ::Proxy_Adapter::KeySize k_length, ::Proxy_Adapter::ResultSize r_length, const ::Proxy_Adapter::EZvalue& key, const ::Proxy_Adapter::EZvalue& result, const ::Proxy_Adapter::EZvalue& mask) = 0;
+    virtual EZstatus delStructEntry(::Proxy_Adapter::EZStruct_type struct_type, ::Proxy_Adapter::EZStr_Num struct_num, ::Proxy_Adapter::KeySize k_length, ::Proxy_Adapter::ResultSize r_length, const ::Proxy_Adapter::EZvalue& key, const ::Proxy_Adapter::EZvalue& result, const ::Proxy_Adapter::EZvalue& mask) = 0;
     virtual EZstatus delStructAllEntries(::Proxy_Adapter::EZStruct_type struct_type, ::Proxy_Adapter::EZStr_Num struct_num) = 0;
     
   public:  // Really protected, workaround for xlC
