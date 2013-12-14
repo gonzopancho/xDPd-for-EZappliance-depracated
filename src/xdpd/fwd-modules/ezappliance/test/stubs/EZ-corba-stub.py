@@ -105,9 +105,9 @@ def show_flowtable_key(key, mask):
             return
         values = struct.unpack("BH6B6BHH", value[:KEY_LENGTH])
         logger.debug(" %s " % name + "-> reserved: 0x%x, priority: %d, src_mac: %x:%x:%x:%x:%x:%x, dst_mac: %x:%x:%x:%x:%x:%x, vlan_tag: 0x%x, ether_type: 0x%x" % values)
-        vlan_id = values[-2] & 0x0FFF
-        vlan_pcp = (values[-2] & 0xE000) >> 13
-        vlan_flag = (values[-2] & 0x1000) >> 12
+        vlan_id = values[14] & 0x0FFF
+        vlan_pcp = (values[14] & 0xE000) >> 13
+        vlan_flag = (values[14] & 0x1000) >> 12
         if name == "key":
             logger.debug("  %s:  vlan_id: %d, vlan_flag: %d, vlan_pcp: %d", name, vlan_id, vlan_flag, vlan_pcp)
         else:
