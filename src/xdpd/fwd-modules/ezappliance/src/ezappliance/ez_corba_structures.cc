@@ -1,4 +1,3 @@
-
 #include <assert.h>
 
 #include <rofl/common/utils/c_logger.h>
@@ -77,6 +76,7 @@ rofl_result_t set_ez_struct_key(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue
         while (curr_match != NULL) {
                 switch (curr_match->type) {
                         case OF1X_MATCH_IN_PORT:
+                                // EZ port numbering starts from 0, OF numbering starts from 1
                                 break;
                         case OF1X_MATCH_IN_PHY_PORT:
                                 break;
@@ -292,7 +292,7 @@ rofl_result_t set_ez_struct_key(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue
                                         result.actions = (uint8_t)(0x00 | 0x01 << 7);
                                 else {
                                         result.actions = (uint8_t)(0x00 | 0x01 << 6);
-                                        result.port_number = (uint8_t)action->field.u64;
+                                        result.port_number = (uint8_t)action->field.u64-1; // EZ port numbering starts from 0, OF numbering starts from 1
                                 }
                                 result_generated = ROFL_SUCCESS;
                                 break;
