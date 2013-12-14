@@ -116,7 +116,7 @@ datapacket_t* ez_packet_channel::read() {
         
         if (n == 3) {
                 //Parsing metedata header
-                input_port = packet_buffer[0];
+                input_port = packet_buffer[0] + 1; // EZ port numbering starts from 0, OF numbering starts from 1
                 frame_size = ntohs(((uint16_t*)(packet_buffer+1))[0]);
         }
         else {
@@ -165,7 +165,7 @@ rofl_result_t ez_packet_channel::write(datapacket_t* pkt, uint8_t output_port) {
         pkt_x86 = (datapacketx86*)pkt->platform_state;
 
         //Creating metedata header
-        packet_buffer[0] = output_port;
+        packet_buffer[0] = output_port-1; // EZ port numbering starts from 0, OF numbering starts from 1
         ((uint16_t*)(packet_buffer+1))[0] = htons(pkt_x86->get_buffer_length());
         memcpy(packet_buffer+3, pkt_x86->get_buffer(), pkt_x86->get_buffer_length());
 
