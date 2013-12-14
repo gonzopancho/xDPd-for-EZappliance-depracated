@@ -106,6 +106,8 @@ rofl_result_t set_ez_struct_key(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue
                                 key_generated = ROFL_SUCCESS;
                                 break;
                         case OF1X_MATCH_ETH_TYPE:
+                                key.ether_type = curr_match->value->value.u16;
+                                mask.ether_type = curr_match->value->mask.u16;
                                 break;
                         case OF1X_MATCH_VLAN_VID:
                                 ROFL_DEBUG("VLAN ID is %d with mask 0x%x\n", curr_match->value->value.u16, curr_match->value->mask.u16);

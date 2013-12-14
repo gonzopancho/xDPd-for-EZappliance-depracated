@@ -35,6 +35,7 @@ typedef struct EZFlowTableKey {
         uint8_t src_mac[6];
         uint8_t dst_mac[6];
         uint16_t vlan_tag;
+        uint16_t ether_type;
 } EZFlowTableKey_t; 
 
 typedef struct EZFlowTableResult {
