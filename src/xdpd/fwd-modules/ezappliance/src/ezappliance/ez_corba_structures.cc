@@ -5,6 +5,18 @@
 #include "ez_corba_client.h"
 
 
+static uint8_t set_bit_u8(uint8_t bit, uint8_t value=0) {
+        
+        assert(bit < 8);
+        return value | 1 << bit;
+}
+
+static uint16_t set_bit_u16(uint8_t bit, uint16_t value=0) {
+        
+        assert(bit < 16);
+        return value | 1 << bit;
+}
+
 static void set_mac(uint8_t* mac, uint64_t _mac) {
     
         memcpy(mac, &_mac, 6);
@@ -65,6 +77,9 @@ static void set_mac(uint8_t* mac, uint64_t _mac) {
 rofl_result_t set_ez_struct_key(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue& _key, Proxy_Adapter::EZvalue& _mask) {
         
         EZFlowTableKey_t key, mask;
+        memset(&key, 0, sizeof(key));
+        memset(&mask, 0, sizeof(mask));
+        
         rofl_result_t key_generated = ROFL_FAILURE;
         
         mask.reserved = 0xFF;
@@ -96,13 +111,13 @@ rofl_result_t set_ez_struct_key(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue
                                 ROFL_DEBUG("VLAN ID is %d with mask 0x%x\n", curr_match->value->value.u16, curr_match->value->mask.u16);
                                 key.vlan_tag |= curr_match->value->value.u16;
                                 mask.vlan_tag |= curr_match->value->mask.u16;
-                                mask.vlan_tag |= 0x1000; // set 13bit to matched in EZ
+                                mask.vlan_tag |= set_bit_u16(EZ_BIT_VLAN_TAG_FLAG);
                                 key_generated = ROFL_SUCCESS;
                                 break;
                         case OF1X_MATCH_VLAN_PCP:
                                 ROFL_DEBUG("VLAN PCP is %d with mask 0x%x\n", curr_match->value->value.u8, curr_match->value->mask.u8);
-                                key.vlan_tag |= curr_match->value->value.u8 << 13;
-                                mask.vlan_tag |= curr_match->value->mask.u8 << 13;
+                                key.vlan_tag |= curr_match->value->value.u8 << (EZ_BIT_VLAN_TAG_FLAG+1);
+                                mask.vlan_tag |= curr_match->value->mask.u8 << (EZ_BIT_VLAN_TAG_FLAG+1);
                                 key_generated = ROFL_SUCCESS;
                                 break;
                         default:
@@ -241,9 +256,10 @@ rofl_result_t set_ez_struct_key(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue
  rofl_result_t set_ez_struct_result(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue& _result) {
         
         EZFlowTableResult_t result;
+        memset(&result, 0, sizeof(result));
         rofl_result_t result_generated = ROFL_FAILURE;
         
-        result.control = (uint8_t)(0x00 | 0x01 << 8 | 0x01 << 7);
+        result.control = set_bit_u8(EZ_BIT_CONTROL_VALID) | set_bit_u8(EZ_BIT_CONTROL_MATCH);
         
         of1x_packet_action_t* action;
   
@@ -289,15 +305,15 @@ rofl_result_t set_ez_struct_key(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue
                                 break;
                         case OF1X_AT_OUTPUT:
                                 if (action->field.u64 == (uint64_t)OF1X_PORT_ALL)
-                                        result.actions = (uint8_t)(0x00 | 0x01 << 7);
+                                        result.actions = set_bit_u8(EZ_BIT_FORWARD_ALL_PORTS);
                                 else {
-                                        result.actions = (uint8_t)(0x00 | 0x01 << 6);
+                                        result.actions = set_bit_u8(EZ_BIT_FORWARD_SINGLE_PORT);
                                         result.port_number = (uint8_t)action->field.u64-1; // EZ port numbering starts from 0, OF numbering starts from 1
                                 }
                                 result_generated = ROFL_SUCCESS;
                                 break;
                         case OF1X_AT_NO_ACTION:
-                                result.actions = (uint8_t)(0x00 | 0x01 << 6); // set drop bit
+                                result.actions = set_bit_u8(EZ_BIT_DROP);
                                 result_generated = ROFL_SUCCESS;
                                 break;
                         default:

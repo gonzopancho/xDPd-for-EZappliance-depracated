@@ -16,13 +16,26 @@
 #define EZ_FLOWTABLE_KEY_SIZE 38
 #define EZ_FLOWTABLE_RESULT_SIZE 8
 
+#define EZ_BIT_VLAN_TAG_FLAG 12
+
+enum ez_bits_control {
+        EZ_BIT_CONTROL_VALID,
+        EZ_BIT_CONTROL_MATCH
+};
+
+enum ez_bits_actions {
+        EZ_BIT_FORWARD_ALL_PORTS,
+        EZ_BIT_FORWARD_SINGLE_PORT,
+        EZ_BIT_DROP
+};
+
 typedef struct EZFlowTableKey {
         uint8_t reserved;
         uint16_t priority;
         uint8_t src_mac[6];
         uint8_t dst_mac[6];
         uint16_t vlan_tag;
-} EZFlowTableKey_t;  
+} EZFlowTableKey_t; 
 
 typedef struct EZFlowTableResult {
         uint8_t control;
