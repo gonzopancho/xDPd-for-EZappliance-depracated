@@ -18,12 +18,12 @@ def test_DevMonitor():
 def test_StructConf():
     ref = corbaClient(Proxy_Adapter.StructConf, iorFile='/tmp/StructConf.ior')
     print "StructConf.getPortName result:", ref.testStructConf(1)
-    print "StructConf.setStruct result:", ref.setStruct(Proxy_Adapter.EzapiParse2, 1, 2, 3, "4", "5", "6")
-    print "StructConf.getStruct result:", ref.getStruct(Proxy_Adapter.EzapiParse2, 1, 2, 3, 4, "5", "6", "7")
+    print "StructConf.setStructEntry result:", ref.setStructEntry(Proxy_Adapter.EzapiParse2, 1, 2, 3, "4", "5", "6")
+    print "StructConf.getStructEntry result:", ref.getStructEntry(Proxy_Adapter.EzapiParse2, 1, 2, 3, 4, "5", "6", "7")
     print "StructConf.getStructResult result:", ref.getStructResult(Proxy_Adapter.EzapiParse2, 1, 2, "3", 4, "5")
     print "StructConf.getStructLimit result:", ref.getStructLimit(Proxy_Adapter.EzapiParse2, 1)
     print "StructConf.getStructLength result:", ref.getStructLength(Proxy_Adapter.EzapiParse2, 1)
-    print "StructConf.delStruct result:", ref.delStruct(Proxy_Adapter.EzapiParse2, 1, 2, 3, "4", "5", "6")
+    print "StructConf.delStructEntry result:", ref.delStructEntry(Proxy_Adapter.EzapiParse2, 1, 2, 3, "4", "5", "6")
     print "StructConf.delStructAllEntries result:", ref.delStructAllEntries(Proxy_Adapter.EzapiParse2, 1)
     
 
