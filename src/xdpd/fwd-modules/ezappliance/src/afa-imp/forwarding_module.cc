@@ -115,13 +115,12 @@ of_switch_t* fwd_module_create_switch(char* name, uint64_t dpid, of_version_t of
 	of_switch_t* sw;
 	
 	sw = (of_switch_t*)of1x_init_switch(name, of_version, dpid, num_of_tables, (enum of1x_matching_algorithm_available*) ma_list);
-
+	
 	//Add switch to the bank	
 	physical_switch_add_logical_switch(sw);
-        
         // Add switch (with pipeline) to EZ-packet-channel
-        set_lsw_for_ez_packet_channel(sw);
-	
+        
+	set_lsw_for_ez_packet_channel(sw);
 	return sw;
 }
 

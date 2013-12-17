@@ -7,6 +7,13 @@
 #include <rofl/common/utils/c_logger.h>
 #include "../config.h"
 
+
+#define EZ_STRUCT_IOR "/tmp/EZapi_struct.ior"
+#define EZ_MONITOR_IOR "tmp/EZapi_monitor.ior"
+
+//#define EZ_STRUCT_IOR "/tmp/StructConf.ior"
+//#define EZ_MONITOR_IOR "tmp/DevMonitor.ior"
+
 Proxy_Adapter::DevMonitor_var deviceMonitorProxy;
 Proxy_Adapter::StructConf_var structConfProxy;
 
@@ -83,7 +90,7 @@ static bool devMonitorConnect(bool force_new_connection=false) {
                 }
                 
                 std::string ior;
-                if (!corba_fetch_ior("/tmp/DevMonitor.ior", ior)) {
+                if (!corba_fetch_ior(EZ_MONITOR_IOR, ior)) {
                         ROFL_ERR("[CORBA] Cannot fetch DeviceMonitor IOR\n");
                         return false;
                 }
@@ -177,7 +184,7 @@ static bool structConfConnect(bool force_new_connection=false) {
                 }
                 
                 std::string ior;
-                if (!corba_fetch_ior("/tmp/StructConf.ior", ior)) {
+                if (!corba_fetch_ior(EZ_STRUCT_IOR, ior)) {
                         ROFL_ERR("[CORBA] Cannot fetch StructConf IOR\n");
                         return false;
                 }
