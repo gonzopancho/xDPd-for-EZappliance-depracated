@@ -29,6 +29,8 @@ enum ez_bits_actions {
         EZ_BIT_DROP
 };
 
+#pragma pack(push)
+#pragma pack(1)
 typedef struct EZFlowTableKey {
         uint8_t reserved;
         uint16_t priority;
@@ -37,13 +39,16 @@ typedef struct EZFlowTableKey {
         uint16_t vlan_tag;
         uint16_t ether_type;
 } EZFlowTableKey_t; 
+#pragma pack(pop)
 
+#pragma pack(push)
+#pragma pack(1)
 typedef struct EZFlowTableResult {
         uint8_t control;
         uint8_t actions;
         uint8_t port_number;
 } EZFlowTableResult_t; 
-
+#pragma pack(pop)
 
 rofl_result_t set_ez_struct_key(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue& _key, Proxy_Adapter::EZvalue& _mask);
 rofl_result_t set_ez_struct_result(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue& _result);

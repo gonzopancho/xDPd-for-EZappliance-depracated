@@ -9,10 +9,10 @@
 
 
 #define EZ_STRUCT_IOR "/tmp/EZapi_struct.ior"
-#define EZ_MONITOR_IOR "tmp/EZapi_monitor.ior"
+#define EZ_MONITOR_IOR "/tmp/EZapi_monitor.ior"
 
 //#define EZ_STRUCT_IOR "/tmp/StructConf.ior"
-//#define EZ_MONITOR_IOR "tmp/DevMonitor.ior"
+//#define EZ_MONITOR_IOR "/tmp/DevMonitor.ior"
 
 Proxy_Adapter::DevMonitor_var deviceMonitorProxy;
 Proxy_Adapter::StructConf_var structConfProxy;
@@ -81,89 +81,100 @@ static bool devMonitorConnect(bool force_new_connection=false) {
         if (!force_new_connection && !CORBA::is_nil(deviceMonitorProxy))
                 return true; 
         
+        ROFL_DEBUG("[EZ-CORBA] Connecting DeviceMonitor object\n");
         try {
                 CORBA::ORB_var orb;
                 corba_init(orb);
                 if (CORBA::is_nil(orb)) {
-                        ROFL_ERR("[CORBA] Cannot get ORB\n");
+                        ROFL_ERR("[EZ-CORBA] Cannot get ORB\n");
                         return false;
                 }
-                
+        
                 std::string ior;
                 if (!corba_fetch_ior(EZ_MONITOR_IOR, ior)) {
-                        ROFL_ERR("[CORBA] Cannot fetch DeviceMonitor IOR\n");
+                        ROFL_ERR("[EZ-CORBA] Cannot fetch DeviceMonitor IOR\n");
                         return false;
                 }
 
                 CORBA::Object_var obj;
                 obj = orb->string_to_object(ior.c_str());
+
                 if (CORBA::is_nil(obj)) {
-                        ROFL_ERR("[CORBA] Cannot get DeviceMonitor object\n");
+                        ROFL_ERR("[EZ-CORBA] Cannot get DeviceMonitor object\n");
                         return false;
                 }
 
                 deviceMonitorProxy = Proxy_Adapter::DevMonitor::_narrow(obj);
                 if (CORBA::is_nil(deviceMonitorProxy)) {
-                        ROFL_ERR("[CORBA] Cannot invoke on a nil DeviceMonitor object reference\n");
+                        ROFL_ERR("[EZ-CORBA] Cannot invoke on a nil DeviceMonitor object reference\n");
                         return false;
                 }
 
-                ROFL_DEBUG("[CORBA] Proxy_Adapter::DevMonitor object connected\n");
+                ROFL_DEBUG("[EZ-CORBA] Proxy_Adapter::DevMonitor object connected\n");
                 return true;
         } 
         catch (CORBA::UNKNOWN) {
-                ROFL_ERR("[CORBA] unknown exception in devMonitorConnect\n");
+                ROFL_ERR("[EZ-CORBA] unknown exception in devMonitorConnect\n");
         }
         return false;
 }
 
 Proxy_Adapter::EZport get_ez_ports() {
         
+        ROFL_DEBUG("[EZ-CORBA] Calling get_ez_ports method\n");
         Proxy_Adapter::EZport ports;
         try {
-                if (devMonitorConnect())
+                if (devMonitorConnect()) {
                         deviceMonitorProxy->getPorts(ports);
+                }
         } 
         catch (CORBA::UNKNOWN) {
-                ROFL_ERR("[CORBA] unknown exception in get_ez_ports");
+                ROFL_ERR("[EZ-CORBA] unknown exception in get_ez_ports\n");
         }
         return ports;
 }
 
 char* get_ez_port_name(uint32_t port_id) {
         
+        ROFL_DEBUG("[EZ-CORBA] Calling get_ez_port_name method\n");
         CORBA::String_var name;
         try {
                 if (devMonitorConnect())
                         deviceMonitorProxy->getPortName((Proxy_Adapter::EZuint)port_id, name);
         } 
         catch (CORBA::UNKNOWN) {
-                ROFL_ERR("[CORBA] unknown exception in get_ez_port_name");
+                ROFL_ERR("[EZ-CORBA] unknown exception in get_ez_port_name\n");
         }
+        ROFL_DEBUG("Getting port name %s\n", CORBA::string_dup(name));
         return CORBA::string_dup(name);
 }
 
 Proxy_Adapter::MacAddress get_ez_port_mac(uint32_t port_id) {
         
-        Proxy_Adapter::MacAddress_var mac;
+        ROFL_DEBUG("[EZ-CORBA] Calling get_ez_port_mac method\n");
+        CORBA::Octet ptr[6]; 
+        Proxy_Adapter::MacAddress mac(6, ptr);
+        
         try {
-                if (devMonitorConnect())
+                if (devMonitorConnect()) {
                         deviceMonitorProxy->getPortMac((Proxy_Adapter::EZuint)port_id, mac);
+                }
         } 
         catch (CORBA::UNKNOWN) {
-                ROFL_ERR("[CORBA] unknown exception in get_ez_port_mac");
+                ROFL_ERR("[EZ-CORBA] unknown exception in get_ez_port_mac\n");
         }
         return mac;
 }
 
 void get_ez_port_features(uint32_t port_id, Proxy_Adapter::EZapiPort_Medium& medium, Proxy_Adapter::EZapiPort_Rate& rate) {
         
+        ROFL_DEBUG("[EZ-CORBA] Calling get_ez_port_features method\n");
         try {
                 if (devMonitorConnect())
                         deviceMonitorProxy->getPortFeatures((Proxy_Adapter::EZuint)port_id, medium, rate);
         } 
         catch (CORBA::UNKNOWN) {
-                ROFL_ERR("[CORBA] unknown exception in get_ez_port_features");
+                ROFL_ERR("[EZ-CORBA] unknown exception in get_ez_port_features\n");
         }
 }
 
@@ -171,42 +182,44 @@ void get_ez_port_features(uint32_t port_id, Proxy_Adapter::EZapiPort_Medium& med
 
 static bool structConfConnect(bool force_new_connection=false) {
         
+        
         // check if corba object reference created
         if (!force_new_connection && !CORBA::is_nil(structConfProxy))
                 return true; 
         
+        ROFL_DEBUG("[EZ-CORBA] Connecting StructConf object\n");
         try {
                 CORBA::ORB_var orb;
                 corba_init(orb);
                 if (CORBA::is_nil(orb)) {
-                        ROFL_ERR("[CORBA] Cannot get ORB\n");
+                        ROFL_ERR("[EZ-CORBA] Cannot get ORB\n");
                         return false;
                 }
                 
                 std::string ior;
                 if (!corba_fetch_ior(EZ_STRUCT_IOR, ior)) {
-                        ROFL_ERR("[CORBA] Cannot fetch StructConf IOR\n");
+                        ROFL_ERR("[EZ-CORBA] Cannot fetch StructConf IOR\n");
                         return false;
                 }
 
                 CORBA::Object_var obj;
                 obj = orb->string_to_object(ior.c_str());
                 if (CORBA::is_nil(obj)) {
-                        ROFL_ERR("[CORBA] Cannot get StructConf object\n");
+                        ROFL_ERR("[EZ-CORBA] Cannot get StructConf object\n");
                         return false;
                 }
 
                 structConfProxy = Proxy_Adapter::StructConf::_narrow(obj);
                 if (CORBA::is_nil(structConfProxy)) {
-                        ROFL_ERR("[CORBA] Cannot invoke on a nil StructConf object reference\n");
+                        ROFL_ERR("[EZ-CORBA] Cannot invoke on a nil StructConf object reference\n");
                         return false;
                 }
 
-                ROFL_DEBUG("[CORBA] Proxy_Adapter::StructConf object connected\n");
+                ROFL_DEBUG("[EZ-CORBA] Proxy_Adapter::StructConf object connected\n");
                 return true;
         } 
         catch (CORBA::UNKNOWN) {
-                ROFL_ERR("[CORBA] unknown exception in structConfConnect\n");
+                ROFL_ERR("[EZ-CORBA] unknown exception in structConfConnect\n");
         }
         return false;
 }
@@ -219,12 +232,14 @@ void set_ez_struct(Proxy_Adapter::EZStruct_type struct_type,
                    Proxy_Adapter::EZvalue result,
                    Proxy_Adapter::EZvalue mask) {
                    
+        ROFL_DEBUG("[EZ-CORBA] Calling set_ez_struct method\n");
+        for (int i=0; i<38; i++) ROFL_DEBUG("[%d] 0x%x\n", i, key[i]);
         try {
                 if (structConfConnect())
                         structConfProxy->setStructEntry(struct_type, struct_num, k_length, r_length, key, result, mask);
         } 
         catch (CORBA::UNKNOWN) {
-                ROFL_ERR("[CORBA] unknown exception in set_ez_struct");
+                ROFL_ERR("[EZ-CORBA] unknown exception in set_ez_struct\n");
         }
 }
 
@@ -236,11 +251,12 @@ void del_ez_struct(Proxy_Adapter::EZStruct_type struct_type,
                    Proxy_Adapter::EZvalue result,
                    Proxy_Adapter::EZvalue mask) {
                    
+        ROFL_DEBUG("[EZ-CORBA] Calling del_ez_struct method\n");
         try {
                 if (structConfConnect())
                         structConfProxy->delStructEntry(struct_type, struct_num, k_length, r_length, key, result, mask);
         } 
         catch (CORBA::UNKNOWN) {
-                ROFL_ERR("[CORBA] unknown exception in del_ez_struct");
+                ROFL_ERR("[EZ-CORBA] unknown exception in del_ez_struct\n");
         }
 }

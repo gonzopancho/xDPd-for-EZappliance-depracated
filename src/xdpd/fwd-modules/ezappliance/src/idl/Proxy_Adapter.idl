@@ -173,7 +173,7 @@ module Proxy_Adapter
                                           out string             port_name);
                 
                 EZstatus getPortMac      (in EZuint              port_number,
-                                          out MacAddress         mac);
+                                          inout MacAddress       mac);
                 
                 EZstatus getPortFeatures (in EZuint              port_number,
                                           out EZapiPort_Medium   medium,

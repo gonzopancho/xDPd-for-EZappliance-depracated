@@ -1219,7 +1219,7 @@ Proxy_Adapter::EZstatus Proxy_Adapter::_objref_DevMonitor::getPortName(::Proxy_A
 
 }
 // Proxy call descriptor class. Mangled signature:
-//  _cunsigned_plong_i_cunsigned_plong_o_cProxy__Adapter_mMacAddress
+//  _cunsigned_plong_i_cunsigned_plong_n_cProxy__Adapter_mMacAddress
 class _0RL_cd_40eea1302de063aa_51000000
   : public omniCallDescriptor
 {
@@ -1240,34 +1240,38 @@ public:
   static const char* const _user_exns[];
 
   Proxy_Adapter::EZuint arg_0;
-  Proxy_Adapter::MacAddress_var arg_1;
+  Proxy_Adapter::MacAddress_var arg_1_;
+  Proxy_Adapter::MacAddress* arg_1;
   Proxy_Adapter::EZstatus result;
 };
 
 void _0RL_cd_40eea1302de063aa_51000000::marshalArguments(cdrStream& _n)
 {
   arg_0 >>= _n;
+  (const Proxy_Adapter::MacAddress&) *arg_1 >>= _n;
 
 }
 
 void _0RL_cd_40eea1302de063aa_51000000::unmarshalArguments(cdrStream& _n)
 {
   (Proxy_Adapter::EZuint&)arg_0 <<= _n;
+  arg_1_ = new Proxy_Adapter::MacAddress;
+  (Proxy_Adapter::MacAddress&)arg_1_ <<= _n;
+  arg_1 = &arg_1_.inout();
 
 }
 
 void _0RL_cd_40eea1302de063aa_51000000::marshalReturnedValues(cdrStream& _n)
 {
   result >>= _n;
-  (const Proxy_Adapter::MacAddress&) arg_1 >>= _n;
+  (const Proxy_Adapter::MacAddress&) *arg_1 >>= _n;
 
 }
 
 void _0RL_cd_40eea1302de063aa_51000000::unmarshalReturnedValues(cdrStream& _n)
 {
   (Proxy_Adapter::EZstatus&)result <<= _n;
-  arg_1 = new Proxy_Adapter::MacAddress;
-  (Proxy_Adapter::MacAddress&)arg_1 <<= _n;
+  (Proxy_Adapter::MacAddress&)*arg_1 <<= _n;
 
 }
 
@@ -1281,18 +1285,18 @@ _0RL_lcfn_40eea1302de063aa_61000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_40eea1302de063aa_51000000* tcd = (_0RL_cd_40eea1302de063aa_51000000*)cd;
   Proxy_Adapter::_impl_DevMonitor* impl = (Proxy_Adapter::_impl_DevMonitor*) svnt->_ptrToInterface(Proxy_Adapter::DevMonitor::_PD_repoId);
-  tcd->result = impl->getPortMac(tcd->arg_0, tcd->arg_1.out());
+  tcd->result = impl->getPortMac(tcd->arg_0, *tcd->arg_1);
 
 
 }
 
-Proxy_Adapter::EZstatus Proxy_Adapter::_objref_DevMonitor::getPortMac(::Proxy_Adapter::EZuint port_number, ::Proxy_Adapter::MacAddress_out mac)
+Proxy_Adapter::EZstatus Proxy_Adapter::_objref_DevMonitor::getPortMac(::Proxy_Adapter::EZuint port_number, ::Proxy_Adapter::MacAddress& mac)
 {
   _0RL_cd_40eea1302de063aa_51000000 _call_desc(_0RL_lcfn_40eea1302de063aa_61000000, "getPortMac", 11);
   _call_desc.arg_0 = port_number;
+  _call_desc.arg_1 = &(::Proxy_Adapter::MacAddress&) mac;
 
   _invoke(_call_desc);
-  mac = _call_desc.arg_1._retn();
   return _call_desc.result;
 
 

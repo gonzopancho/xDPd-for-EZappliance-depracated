@@ -81,10 +81,7 @@ rofl_result_t set_ez_struct_key(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue
         memset(&mask, 0, sizeof(mask));
         
         rofl_result_t key_generated = ROFL_FAILURE;
-        
-        mask.reserved = 0xFF;
         key.priority = (uint16_t)entry->priority;
-        mask.priority = 0xFFFF;
         
         of1x_match_t* curr_match = entry->matches.head;
         
@@ -137,8 +134,8 @@ rofl_result_t set_ez_struct_key(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue
         
         memcpy(_key.get_buffer(), &key, sizeof(key));
         memcpy(_mask.get_buffer(), &mask, sizeof(mask));
-        _key.length(sizeof(key));
-        _mask.length(sizeof(mask));
+        //_key.length(sizeof(key));
+        //_mask.length(sizeof(mask));
         return key_generated;
 }
 
@@ -330,14 +327,16 @@ rofl_result_t set_ez_struct_key(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue
                 }
         }
         memcpy(_result.get_buffer(), &result, sizeof(result));
-        _result.length(sizeof(result));
+        //_result.length(sizeof(result));
         return result_generated;
 }
 
 
 void set_ez_flow_entry(of1x_flow_entry_t* entry) {
-
-        Proxy_Adapter::EZvalue key(EZ_FLOWTABLE_KEY_SIZE), result(EZ_FLOWTABLE_RESULT_SIZE), mask(EZ_FLOWTABLE_KEY_SIZE); 
+        CORBA::Octet temp1[EZ_FLOWTABLE_KEY_SIZE], temp2[EZ_FLOWTABLE_RESULT_SIZE], temp3[EZ_FLOWTABLE_KEY_SIZE];
+        Proxy_Adapter::EZvalue key(EZ_FLOWTABLE_KEY_SIZE, EZ_FLOWTABLE_KEY_SIZE, temp1), 
+                               result(EZ_FLOWTABLE_RESULT_SIZE, EZ_FLOWTABLE_RESULT_SIZE, temp2),
+                               mask(EZ_FLOWTABLE_KEY_SIZE, EZ_FLOWTABLE_KEY_SIZE, temp3); 
         
         if (set_ez_struct_key(entry, key, mask) == ROFL_SUCCESS 
            && set_ez_struct_result(entry, result) == ROFL_SUCCESS) {
@@ -349,7 +348,10 @@ void set_ez_flow_entry(of1x_flow_entry_t* entry) {
 
 void del_ez_flow_entry(of1x_flow_entry_t* entry) {
 
-        Proxy_Adapter::EZvalue key(EZ_FLOWTABLE_KEY_SIZE), result(EZ_FLOWTABLE_RESULT_SIZE), mask(EZ_FLOWTABLE_KEY_SIZE); 
+        CORBA::Octet temp1[EZ_FLOWTABLE_KEY_SIZE], temp2[EZ_FLOWTABLE_RESULT_SIZE], temp3[EZ_FLOWTABLE_KEY_SIZE];
+        Proxy_Adapter::EZvalue key(EZ_FLOWTABLE_KEY_SIZE, EZ_FLOWTABLE_KEY_SIZE, temp1), 
+                               result(EZ_FLOWTABLE_RESULT_SIZE, EZ_FLOWTABLE_RESULT_SIZE, temp2),
+                               mask(EZ_FLOWTABLE_KEY_SIZE, EZ_FLOWTABLE_KEY_SIZE, temp3); 
         
         if (set_ez_struct_key(entry, key, mask) == ROFL_SUCCESS) {
            //&& set_ez_struct_result(entry, result) == ROFL_SUCCESS) {

@@ -626,7 +626,7 @@ _CORBA_MODULE_BEG
     EZstatus getPorts(::Proxy_Adapter::EZport& ports);
     EZstatus getPortStatus(::Proxy_Adapter::EZuint port_number, ::Proxy_Adapter::EZPortStatus& port_status);
     EZstatus getPortName(::Proxy_Adapter::EZuint port_number, ::CORBA::String_out port_name);
-    EZstatus getPortMac(::Proxy_Adapter::EZuint port_number, ::Proxy_Adapter::MacAddress_out mac);
+    EZstatus getPortMac(::Proxy_Adapter::EZuint port_number, ::Proxy_Adapter::MacAddress& mac);
     EZstatus getPortFeatures(::Proxy_Adapter::EZuint port_number, ::Proxy_Adapter::EZapiPort_Medium& medium, ::Proxy_Adapter::EZapiPort_Rate& rate);
 
     inline _objref_DevMonitor()  { _PR_setobj(0); }  // nil
@@ -665,7 +665,7 @@ _CORBA_MODULE_BEG
     virtual EZstatus getPorts(::Proxy_Adapter::EZport& ports) = 0;
     virtual EZstatus getPortStatus(::Proxy_Adapter::EZuint port_number, ::Proxy_Adapter::EZPortStatus& port_status) = 0;
     virtual EZstatus getPortName(::Proxy_Adapter::EZuint port_number, ::CORBA::String_out port_name) = 0;
-    virtual EZstatus getPortMac(::Proxy_Adapter::EZuint port_number, ::Proxy_Adapter::MacAddress_out mac) = 0;
+    virtual EZstatus getPortMac(::Proxy_Adapter::EZuint port_number, ::Proxy_Adapter::MacAddress& mac) = 0;
     virtual EZstatus getPortFeatures(::Proxy_Adapter::EZuint port_number, ::Proxy_Adapter::EZapiPort_Medium& medium, ::Proxy_Adapter::EZapiPort_Rate& rate) = 0;
     
   public:  // Really protected, workaround for xlC
