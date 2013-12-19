@@ -57,7 +57,7 @@ def exception_handler(f):
 
 ##############################################
 
-class DevMonitor (Proxy_Adapter__POA.DevMonitor):
+class EZapi_monitor (Proxy_Adapter__POA.DevMonitor):
         
     def __init__(self, data):
         pass
@@ -83,7 +83,7 @@ class DevMonitor (Proxy_Adapter__POA.DevMonitor):
         return 0, "eth%d" % port_number
         
     @exception_handler
-    def getPortMac(self, port_number):
+    def getPortMac(self, port_number, mac):
         logger.debug('DevMonitor.getPortMac(%d) called', port_number)
         return 0, "12345%d" % port_number
         
@@ -97,13 +97,14 @@ class DevMonitor (Proxy_Adapter__POA.DevMonitor):
 import struct
 
 def show_flowtable_key(key, mask):
-    KEY_LENGTH = 20
+    KEY_FORMAT = "=BH6B6BHH"
+    key_length = struct.calcsize(KEY_FORMAT)
     def show(value, name):
-        if len(value) < KEY_LENGTH:
+        if len(value) < key_length:
             logger.debug("-> Too short flow entry")
             logger.debug("-> %s length is %d", name, len(value))
             return
-        values = struct.unpack("BH6B6BHH", value[:KEY_LENGTH])
+        values = struct.unpack(KEY_FORMAT, value[:key_length])
         logger.debug(" %s " % name + "-> reserved: 0x%x, priority: %d, src_mac: %x:%x:%x:%x:%x:%x, dst_mac: %x:%x:%x:%x:%x:%x, vlan_tag: 0x%x, ether_type: 0x%x" % values)
         vlan_id = values[14] & 0x0FFF
         vlan_pcp = (values[14] & 0xE000) >> 13
@@ -116,16 +117,17 @@ def show_flowtable_key(key, mask):
     show(mask, "mask")
    
 def show_flowtable_result(result):
-    RESULT_LENGTH = 3
-    if len(result) < RESULT_LENGTH:
+    RESULT_FORMAT = "BBB"
+    result_length = struct.calcsize(RESULT_FORMAT)
+    if len(result) < result_length:
         logger.debug("-> Too short flow result")
         logger.debug("-> Result length is %d", len(result))
         return
-    values = struct.unpack("BBB", result[:RESULT_LENGTH])
+    values = struct.unpack(RESULT_FORMAT, result[:result_length])
     logger.debug(" result -> control: 0x%x, actions: 0x%x, port_number: %d" % values)
         
 
-class StructConf (Proxy_Adapter__POA.StructConf):
+class EZapi_struct (Proxy_Adapter__POA.StructConf):
         
     def __init__(self, data):
         pass
@@ -191,7 +193,7 @@ class CorbaServers(Thread):
             
     def run(self):
         """Called when server is starting"""
-        for servant in [DevMonitor, StructConf]:
+        for servant in [EZapi_monitor, EZapi_struct]:
                 server = CorbaServant(servant, None, '/tmp/')
                 server.start()       
 

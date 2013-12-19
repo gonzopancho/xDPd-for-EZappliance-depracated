@@ -224,6 +224,14 @@ static bool structConfConnect(bool force_new_connection=false) {
         return false;
 }
 
+static void show_EZvalue(Proxy_Adapter::EZvalue& value, const char* name) {
+        
+        ROFL_DEBUG("  -> %s is: ", name);
+        for (uint32_t i=0; i<value.length(); i++)
+                ROFL_DEBUG("%d:0x%x ", i, value[i]);
+        ROFL_DEBUG("\n");
+}
+
 void set_ez_struct(Proxy_Adapter::EZStruct_type struct_type,
                    uint32_t struct_num,
                    uint32_t k_length,
@@ -233,7 +241,11 @@ void set_ez_struct(Proxy_Adapter::EZStruct_type struct_type,
                    Proxy_Adapter::EZvalue mask) {
                    
         ROFL_DEBUG("[EZ-CORBA] Calling set_ez_struct method\n");
-        for (int i=0; i<38; i++) ROFL_DEBUG("[%d] 0x%x\n", i, key[i]);
+        
+        show_EZvalue(key, "key");
+        show_EZvalue(mask, "mask");
+        show_EZvalue(result, "result");
+        
         try {
                 if (structConfConnect())
                         structConfProxy->setStructEntry(struct_type, struct_num, k_length, r_length, key, result, mask);
@@ -252,6 +264,11 @@ void del_ez_struct(Proxy_Adapter::EZStruct_type struct_type,
                    Proxy_Adapter::EZvalue mask) {
                    
         ROFL_DEBUG("[EZ-CORBA] Calling del_ez_struct method\n");
+        
+        show_EZvalue(key, "key");
+        show_EZvalue(mask, "mask");
+        show_EZvalue(result, "result");
+        
         try {
                 if (structConfConnect())
                         structConfProxy->delStructEntry(struct_type, struct_num, k_length, r_length, key, result, mask);
