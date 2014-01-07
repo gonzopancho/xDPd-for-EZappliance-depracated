@@ -86,13 +86,22 @@ static port_features_t translate_rate_corba_to_of(Proxy_Adapter::EZapiPort_Rate 
         return PORT_FEATURE_1GB_FD;
 }
 
+static port_state_t translate_port_status_corba_to_of(bool port_status) {
+
+	if (port_status == false)
+	    return PORT_STATE_LINK_DOWN;
+        return PORT_STATE_LIVE;
+}
+
 
 static switch_port_t* fill_port(uint32_t port_id) {
 	
         //Init the port
         char* name = get_ez_port_name(port_id);
-        
-        switch_port_t* port = switch_port_init(name, true/*will be overriden afterwards*/, PORT_TYPE_PHYSICAL, PORT_STATE_LIVE);
+        bool port_status = get_ez_port_status(port_id);
+        port_state_t _port_status = translate_port_status_corba_to_of(port_status);
+
+        switch_port_t* port = switch_port_init(name, true/*will be overriden afterwards*/, PORT_TYPE_PHYSICAL, _port_status);
         if(!port)
                 return NULL;
 

@@ -28,8 +28,8 @@
 */
 
 // Address and port of EZappliance TCP server for exchanging network frames
-#define EZ_IP "127.0.0.1"
-#define EZ_PORT 8080
+#define EZ_IP "10.134.0.4"
+#define EZ_PORT 7777
 
 //Buffer storage(PKT_IN) max buffers
 #define IO_PKT_IN_STORAGE_MAX_BUF 512

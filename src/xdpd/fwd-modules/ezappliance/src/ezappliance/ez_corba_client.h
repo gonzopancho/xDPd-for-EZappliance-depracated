@@ -15,6 +15,8 @@ char* get_ez_port_name(uint32_t port_id);
 
 Proxy_Adapter::MacAddress get_ez_port_mac(uint32_t port_id);
 
+bool get_ez_port_status(uint32_t port_id);
+
 void get_ez_port_features(uint32_t port_id, 
                           Proxy_Adapter::EZapiPort_Medium& medium, 
                           Proxy_Adapter::EZapiPort_Rate&   rate);

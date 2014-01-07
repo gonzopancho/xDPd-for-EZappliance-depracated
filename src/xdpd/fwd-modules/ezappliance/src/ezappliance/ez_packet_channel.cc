@@ -168,13 +168,12 @@ rofl_result_t ez_packet_channel::write(datapacket_t* pkt, uint8_t output_port) {
         packet_buffer[0] = output_port-1; // EZ port numbering starts from 0, OF numbering starts from 1
         ((uint16_t*)(packet_buffer+1))[0] = htons(pkt_x86->get_buffer_length());
         memcpy(packet_buffer+3, pkt_x86->get_buffer(), pkt_x86->get_buffer_length());
-
+        
         //Send packet by TCP connection to EZ
-        if(::write(ez_packets_socket, packet_buffer, pkt_x86->get_buffer_length()) < 0) {
+        if(::write(ez_packets_socket, packet_buffer, pkt_x86->get_buffer_length()+3) < 0) {
                 ROFL_ERR("[EZ-packet-channel] ERROR writing to socket\n");
                 return ROFL_FAILURE;
-                
-        } 
+        }
         ROFL_DEBUG("Packet [%p] was sent to EZ for output port: %d \n", pkt, output_port);
         
         //Free buffer

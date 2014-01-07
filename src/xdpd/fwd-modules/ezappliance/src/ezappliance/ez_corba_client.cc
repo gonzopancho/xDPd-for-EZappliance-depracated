@@ -8,8 +8,8 @@
 #include "../config.h"
 
 
-#define EZ_STRUCT_IOR "/tmp/EZapi_struct.ior"
-#define EZ_MONITOR_IOR "/tmp/EZapi_monitor.ior"
+#define EZ_STRUCT_IOR "/tmp/ior/EZapi_struct.ior"
+#define EZ_MONITOR_IOR "/tmp/ior/EZapi_monitor.ior"
 
 //#define EZ_STRUCT_IOR "/tmp/StructConf.ior"
 //#define EZ_MONITOR_IOR "/tmp/DevMonitor.ior"
@@ -164,6 +164,21 @@ Proxy_Adapter::MacAddress get_ez_port_mac(uint32_t port_id) {
                 ROFL_ERR("[EZ-CORBA] unknown exception in get_ez_port_mac\n");
         }
         return mac;
+}
+
+bool get_ez_port_status(uint32_t port_id) {
+        
+        ROFL_DEBUG("[EZ-CORBA] Calling get_ez_port_status method\n");
+        bool port_status = false;
+        try {
+                if (devMonitorConnect())
+                        deviceMonitorProxy->getPortStatus((Proxy_Adapter::EZuint)port_id, port_status);
+                ROFL_DEBUG("[EZ-CORBA] port %d operational status is %d\n", port_id, port_status);
+        } 
+        catch (CORBA::UNKNOWN) {
+                ROFL_ERR("[EZ-CORBA] unknown exception in get_ez_port_status\n");
+        }
+        return port_status;
 }
 
 void get_ez_port_features(uint32_t port_id, Proxy_Adapter::EZapiPort_Medium& medium, Proxy_Adapter::EZapiPort_Rate& rate) {

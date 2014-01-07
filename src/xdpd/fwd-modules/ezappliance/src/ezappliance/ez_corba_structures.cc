@@ -105,23 +105,24 @@ rofl_result_t set_ez_struct_key(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue
                         case OF1X_MATCH_ETH_TYPE:
                                 key.ether_type = curr_match->value->value.u16;
                                 mask.ether_type = curr_match->value->mask.u16;
+                                key_generated = ROFL_SUCCESS;
                                 break;
                         case OF1X_MATCH_VLAN_VID:
                                 if ((curr_match->value->value.u16 & set_bit_u16(EZ_BIT_VLAN_TAG_FLAG)) == 0) { //handling the second use-case from OF1.3 Table 3 (page 45)
                                         mask.vlan_tag |= set_bit_u16(EZ_BIT_VLAN_TAG_FLAG);
                                 } 
                                 else { //handling the fourth use-case from OF1.3 Table 3 (page 45)
-                                        ROFL_DEBUG("VLAN flag is set (VLAN present)\n");
+                                        ROFL_DEBUG("Match: VLAN flag is set (VLAN present)\n");
                                         key.vlan_tag |= set_bit_u16(EZ_BIT_VLAN_TAG_FLAG);
                                         mask.vlan_tag |= set_bit_u16(EZ_BIT_VLAN_TAG_FLAG);
                                         key.vlan_tag |= curr_match->value->value.u16 & 0xFFF; //FIXME: this should not happen for the third use-case
                                         mask.vlan_tag |= curr_match->value->mask.u16 & 0xFFF; //FIXME: this should not happen for the third use-case
                                 }
-                                ROFL_DEBUG("VLAN ID is %d with mask 0x%x\n", curr_match->value->value.u16 & 0xFFF, curr_match->value->mask.u16 & 0xFFF);
+                                ROFL_DEBUG("Match: VLAN ID is %d with mask 0x%x\n", curr_match->value->value.u16 & 0xFFF, curr_match->value->mask.u16 & 0xFFF);
                                 key_generated = ROFL_SUCCESS;
                                 break;
                         case OF1X_MATCH_VLAN_PCP:
-                                ROFL_DEBUG("VLAN PCP is %d with mask 0x%x\n", curr_match->value->value.u8, curr_match->value->mask.u8);
+                                ROFL_DEBUG("Match: VLAN PCP is %d with mask 0x%x\n", curr_match->value->value.u8, curr_match->value->mask.u8);
                                 key.vlan_tag |= curr_match->value->value.u8 << (EZ_BIT_VLAN_TAG_FLAG+1);
                                 mask.vlan_tag |= curr_match->value->mask.u8 << (EZ_BIT_VLAN_TAG_FLAG+1);
                                 key_generated = ROFL_SUCCESS;
@@ -310,15 +311,19 @@ rofl_result_t set_ez_struct_key(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue
                         case OF1X_AT_SET_FIELD_UDP_DST:
                                 break;
                         case OF1X_AT_OUTPUT:
-                                if (action->field.u64 == (uint64_t)OF1X_PORT_ALL)
+                                if (action->field.u64 == (uint64_t)OF1X_PORT_ALL) {
                                         result.actions = set_bit_u8(EZ_BIT_FORWARD_ALL_PORTS);
+                                        ROFL_DEBUG("EZ action: forward to all ports\n");
+                                }
                                 else {
                                         result.actions = set_bit_u8(EZ_BIT_FORWARD_SINGLE_PORT);
                                         result.port_number = (uint8_t)action->field.u64-1; // EZ port numbering starts from 0, OF numbering starts from 1
+                                        ROFL_DEBUG("EZ action: forward to port %d\n", result.port_number);
                                 }
                                 result_generated = ROFL_SUCCESS;
                                 break;
                         case OF1X_AT_NO_ACTION:
+                                ROFL_DEBUG("EZ action: drop\n");
                                 result.actions = set_bit_u8(EZ_BIT_DROP);
                                 result_generated = ROFL_SUCCESS;
                                 break;
