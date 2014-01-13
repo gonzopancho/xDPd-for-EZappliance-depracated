@@ -70,7 +70,7 @@ class EZapi_monitor (Proxy_Adapter__POA.DevMonitor):
     @exception_handler
     def getPorts(self, ports):
         logger.debug('DevMonitor.getPorts(%s) called', ports)
-        return 0, [0,1,2,3]
+        return 0, [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
      
     @exception_handler
     def getPortStatus(self, port_number):
@@ -85,7 +85,7 @@ class EZapi_monitor (Proxy_Adapter__POA.DevMonitor):
     @exception_handler
     def getPortMac(self, port_number, mac):
         logger.debug('DevMonitor.getPortMac(%d) called', port_number)
-        return 0, "12345%d" % port_number
+        return 0, "12345%d" % (port_number%10)
         
     @exception_handler
     def getPortFeatures(self, port_number):
@@ -194,7 +194,7 @@ class CorbaServers(Thread):
     def run(self):
         """Called when server is starting"""
         for servant in [EZapi_monitor, EZapi_struct]:
-                server = CorbaServant(servant, None, '/tmp/')
+                server = CorbaServant(servant, None, '/tmp/ior')
                 server.start()       
 
 ##############################################

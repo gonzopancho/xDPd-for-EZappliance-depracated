@@ -69,6 +69,7 @@ afa_result_t fwd_module_of1x_set_port_no_flood_config(uint64_t dpid, unsigned in
 	if(!port)
 		return AFA_FAILURE;
 	
+        ROFL_DEBUG("flood set success\n");
 	return AFA_SUCCESS;
 }
 

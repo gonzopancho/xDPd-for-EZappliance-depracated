@@ -34,19 +34,33 @@ using namespace xdpd::gnu_linux;
 *
 */
 
-rofl_result_t update_port_status(char * name) {
+
+static port_state_t translate_port_state_corba_to_of(bool status) {
+
+       if (status == true)
+               return PORT_STATE_LIVE;
+       else
+               return PORT_STATE_LINK_DOWN;
+}
+
+rofl_result_t update_port_status(char * name, port_state_t new_port_status) {
  
 	switch_port_t *port;
 	
 	//Update all ports
-	if(update_physical_ports() != ROFL_SUCCESS){
-		ROFL_ERR("Update physical ports failed \n");
-		assert(0);
-	}
+	//if(update_physical_ports() != ROFL_SUCCESS){
+	//	ROFL_ERR("Update physical ports failed \n");
+	//	assert(0);
+	//}
 
 	port = fwd_module_get_port_by_name(name);
 	if(!port)
-		return ROFL_SUCCESS; //Port delete
+		return ROFL_SUCCESS; //Port deleted
+  
+        if (port->state == new_port_status)
+                return ROFL_SUCCESS; //Port status not changed
+
+        port->state = new_port_status;
 
 	//port_status message needs to be created if the port id attached to switch
 	if(port->attached_sw != NULL){
@@ -54,6 +68,21 @@ rofl_result_t update_port_status(char * name) {
 	}
 	
 	return ROFL_SUCCESS;
+}
+
+void update_ports_statuses() {
+
+        Proxy_Adapter::EZport ports = get_ez_ports();
+        char* port_name;
+        bool port_status;
+        
+        for (uint32_t port_id=0; port_id<ports.length(); port_id++) {
+                
+                port_name = get_ez_port_name(port_id);
+                port_status = get_ez_port_status(port_id);
+                update_port_status(port_name,
+                                   translate_port_state_corba_to_of(port_status));
+        }
 }
 
 static port_features_t translate_medium_corba_to_of(Proxy_Adapter::EZapiPort_Medium medium) {
@@ -86,20 +115,13 @@ static port_features_t translate_rate_corba_to_of(Proxy_Adapter::EZapiPort_Rate 
         return PORT_FEATURE_1GB_FD;
 }
 
-static port_state_t translate_port_status_corba_to_of(bool port_status) {
-
-	if (port_status == false)
-	    return PORT_STATE_LINK_DOWN;
-        return PORT_STATE_LIVE;
-}
-
 
 static switch_port_t* fill_port(uint32_t port_id) {
 	
         //Init the port
         char* name = get_ez_port_name(port_id);
         bool port_status = get_ez_port_status(port_id);
-        port_state_t _port_status = translate_port_status_corba_to_of(port_status);
+        port_state_t _port_status = translate_port_state_corba_to_of(port_status);
 
         switch_port_t* port = switch_port_init(name, true/*will be overriden afterwards*/, PORT_TYPE_PHYSICAL, _port_status);
         if(!port)

@@ -122,6 +122,20 @@ int process_timeouts()
     return ROFL_SUCCESS;
 }
 
+static void check_ports_statuses()
+{
+    struct timeval now;
+    static struct timeval last_time_checked={0,0};
+    gettimeofday(&now,NULL);
+    
+    if(get_time_difference_ms(&now, &last_time_checked) >= 60000) {
+        
+        last_time_checked = now;
+        //update_ports_statuses(); // TODO: uncomment
+    }
+
+}
+
 /**
  * @name x86_background_tasks_thread
  * @brief contents the infinite loop checking for ports and timeouts
@@ -159,7 +173,7 @@ void* x86_background_tasks_routine(void* param)
         
         //Throttle
         nfds = epoll_wait(efd, event_list, MAX_EPOLL_EVENTS, LSW_TIMER_SLOT_MS/*timeout needs TBD somewhere else*/);
-
+        
 
         if(nfds==-1){
             //ROFL_DEBUG("Epoll Failed\n");
@@ -185,6 +199,8 @@ void* x86_background_tasks_routine(void* param)
         
         //check timers expiration 
         process_timeouts();
+     
+        check_ports_statuses();
     }
 
     //Cleanup packet-in

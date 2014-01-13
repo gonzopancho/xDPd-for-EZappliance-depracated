@@ -33,8 +33,9 @@ rofl_result_t discover_physical_ports(void);
 /*
  * @name update_port_status
  */
-rofl_result_t update_port_status(char * name);
-	
+rofl_result_t update_port_status(char * name, port_state_t port_status);
+void update_ports_statuses();
+ 	
 /**
  * Update physical port list 
  */

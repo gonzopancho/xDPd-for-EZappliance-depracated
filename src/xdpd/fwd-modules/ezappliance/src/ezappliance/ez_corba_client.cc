@@ -149,17 +149,17 @@ char* get_ez_port_name(uint32_t port_id) {
         return CORBA::string_dup(name);
 }
 
-Proxy_Adapter::MacAddress get_ez_port_mac(uint32_t port_id) {
-        
+Proxy_Adapter::MacAddress  get_ez_port_mac(uint32_t port_id) {
+
         ROFL_DEBUG("[EZ-CORBA] Calling get_ez_port_mac method\n");
-        CORBA::Octet ptr[6]; 
+        CORBA::Octet ptr[6];
         Proxy_Adapter::MacAddress mac(6, ptr);
         
         try {
                 if (devMonitorConnect()) {
                         deviceMonitorProxy->getPortMac((Proxy_Adapter::EZuint)port_id, mac);
                 }
-        } 
+        }
         catch (CORBA::UNKNOWN) {
                 ROFL_ERR("[EZ-CORBA] unknown exception in get_ez_port_mac\n");
         }
