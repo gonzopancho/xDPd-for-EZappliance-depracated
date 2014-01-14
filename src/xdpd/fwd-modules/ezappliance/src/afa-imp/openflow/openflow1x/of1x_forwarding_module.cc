@@ -49,6 +49,9 @@ afa_result_t fwd_module_of1x_set_port_drop_received_config(uint64_t dpid, unsign
         if(!port)
                 return AFA_FAILURE;
 
+	port->drop_received = drop_received;
+	// TODO: send config to NP-3
+
 	return AFA_SUCCESS;
 }
 
@@ -68,8 +71,10 @@ afa_result_t fwd_module_of1x_set_port_no_flood_config(uint64_t dpid, unsigned in
 
 	if(!port)
 		return AFA_FAILURE;
-	
-        ROFL_DEBUG("flood set success\n");
+
+	port->no_flood = no_flood;
+	// TODO: send config to NP-3
+
 	return AFA_SUCCESS;
 }
 
@@ -90,6 +95,9 @@ afa_result_t fwd_module_of1x_set_port_forward_config(uint64_t dpid, unsigned int
 	if(!port)
 		return AFA_FAILURE;
 
+	port->forward_packets = forward;
+	// TODO: send config to NP-3
+
 	return AFA_SUCCESS;
 }
 /**
@@ -108,6 +116,9 @@ afa_result_t fwd_module_of1x_set_port_generate_packet_in_config(uint64_t dpid, u
 
 	if(!port)
                 return AFA_FAILURE;
+
+	port->of_generate_packet_in = generate_packet_in;
+	// TODO: send config to NP-3
 	
 	return AFA_SUCCESS;
 }
@@ -129,6 +140,8 @@ afa_result_t fwd_module_of1x_set_port_advertise_config(uint64_t dpid, unsigned i
 	if(!port)
 		return AFA_FAILURE;
 
+	port->advertised = (port_features_t)advertise;
+	// TODO: send config to NP-3
 	
 	return AFA_SUCCESS;
 }

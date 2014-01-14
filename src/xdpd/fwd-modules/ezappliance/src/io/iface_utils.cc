@@ -45,29 +45,28 @@ static port_state_t translate_port_state_corba_to_of(bool status) {
 
 rofl_result_t update_port_status(char * name, port_state_t new_port_status) {
  
-	switch_port_t *port;
-	
-	//Update all ports
-	//if(update_physical_ports() != ROFL_SUCCESS){
-	//	ROFL_ERR("Update physical ports failed \n");
-	//	assert(0);
-	//}
+         switch_port_t *port;
 
-	port = fwd_module_get_port_by_name(name);
-	if(!port)
-		return ROFL_SUCCESS; //Port deleted
+        //Update all ports
+        //if(update_physical_ports() != ROFL_SUCCESS){
+        //      ROFL_ERR("Update physical ports failed \n");
+        //      assert(0);
+        //}
+
+        port = fwd_module_get_port_by_name(name);
+        if(!port)
+                return ROFL_SUCCESS; //Port deleted
   
         if (port->state == new_port_status)
                 return ROFL_SUCCESS; //Port status not changed
 
         port->state = new_port_status;
 
-	//port_status message needs to be created if the port id attached to switch
-	if(port->attached_sw != NULL){
-		cmm_notify_port_status_changed(port);
-	}
-	
-	return ROFL_SUCCESS;
+        //port_status message needs to be created if the port id attached to switch
+        if(port->attached_sw != NULL){
+                cmm_notify_port_status_changed(port);
+        }
+        return ROFL_SUCCESS;
 }
 
 void update_ports_statuses() {
