@@ -84,6 +84,49 @@ afa_result_t openflow12_switch::notify_port_status_changed(switch_port_t* port){
 
 
 /*
+<<<<<<< HEAD
+* Driver HAL calls. Demultiplexing to the appropiate openflow12_switch instance.
+*/ 
+
+afa_result_t cmm_process_of12_packet_in(const of12_switch_t* sw,
+					uint8_t table_id,
+					uint8_t reason,
+					uint32_t in_port,
+					uint32_t buffer_id,
+					uint8_t* pkt_buffer,
+					uint32_t buf_len,
+					uint16_t total_len,
+					of12_packet_matches_t matches)
+{
+	openflow12_switch* dp=NULL;
+	
+	if (!sw) {
+		fprintf(stderr," WRONG of12_switch_t* sw  \n");
+		return AFA_FAILURE;
+		}
+ 	
+	try{
+		dp = dynamic_cast<openflow12_switch*> (switch_manager::find_by_dpid(sw->dpid));
+        }catch (const std::bad_cast& e){
+		fprintf(stderr," WRONG sw->dpid 1  \n");
+		return AFA_FAILURE;	
+        }
+	
+	if(!dp) {
+		fprintf(stderr," WRONG sw->dpid !dp \n");
+		return AFA_FAILURE;
+
+		}
+
+	return dp->process_packet_in(table_id,
+					reason,
+					in_port,
+					buffer_id,
+					pkt_buffer,
+					buf_len,
+					total_len,
+					matches);
+=======
 * Connecting and disconnecting from a controller entity
 */
 void openflow12_switch::rpc_connect_to_ctl(caddress const& controller_addr){
@@ -92,6 +135,7 @@ void openflow12_switch::rpc_connect_to_ctl(caddress const& controller_addr){
 
 void openflow12_switch::rpc_disconnect_from_ctl(caddress const& controller_addr){
 	return endpoint->rpc_disconnect_from_ctl(controller_addr);
+>>>>>>> 81344d1e893ef62e6c866e5b5ef2bcfc1b7285a4
 }
 
 

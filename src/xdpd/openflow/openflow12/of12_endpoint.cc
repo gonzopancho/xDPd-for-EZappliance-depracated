@@ -715,6 +715,7 @@ of12_endpoint::process_packet_in(
 		cofmatch match;
 		of12_translation_utils::of12_map_reverse_packet_matches(&matches, match);
 
+		fprintf(stderr, " try to send_packet_in_message(..) "	);	
 
 		send_packet_in_message(
 				NULL,
@@ -730,10 +731,12 @@ of12_endpoint::process_packet_in(
 		return AFA_SUCCESS;
 
 	} catch (eRofBaseNotConnected& e) {
+		fprintf(stderr, " send_packet_in_message(..) FAIL BASE NOT CONNECTED "	);
 
 		return AFA_FAILURE;
 
 	} catch (...) {
+		fprintf(stderr, " send_packet_in_message(..) FAIL2 "	);
 
 	}
 
@@ -971,6 +974,7 @@ of12_endpoint::flow_mod_modify(
 	if(AFA_SUCCESS != fwd_module_of1x_process_flow_mod_modify(sw->dpid,
 								pack->get_table_id(),
 								entry,
+								pack->get_buffer_id(),
 								strictness,
 								pack->get_flags() & OFPFF_RESET_COUNTS)){
 		WRITELOG(CDATAPATH, ERROR, "Error modiying flowmod\n");
@@ -1008,7 +1012,6 @@ of12_endpoint::flow_mod_delete(
 	if(AFA_SUCCESS != fwd_module_of1x_process_flow_mod_delete(sw->dpid,
 								pack->get_table_id(),
 								entry,
-								pack->get_buffer_id(),
 								pack->get_out_port(),
 								pack->get_out_group(),
 								strictness)) {
