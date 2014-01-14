@@ -84,8 +84,14 @@ rofl_result_t set_ez_struct_key(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue
         key.priority = (uint16_t)entry->priority;
         
         of1x_match_t* curr_match = entry->matches.head;
-        
+
+        if (!curr_match) {
+                ROFL_ERR("No matches present in flowmod\n");
+                return ROFL_FAILURE;
+        }
+
         while (curr_match != NULL) {
+                ROFL_DEBUG("Match type is %d\n", curr_match->type);
                 switch (curr_match->type) {
                         case OF1X_MATCH_IN_PORT:
                                 // EZ port numbering starts from 0, OF numbering starts from 1
@@ -93,16 +99,19 @@ rofl_result_t set_ez_struct_key(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue
                         case OF1X_MATCH_IN_PHY_PORT:
                                 break;
                         case OF1X_MATCH_ETH_DST:
+                                ROFL_DEBUG("Match: eth dst is present\n");
                                 set_mac(key.dst_mac, curr_match->value->value.u64);
                                 set_mac(mask.dst_mac, curr_match->value->mask.u64); 
                                 key_generated = ROFL_SUCCESS;
                                 break;
                         case OF1X_MATCH_ETH_SRC:
+                                ROFL_DEBUG("Match: eth src is present\n");
                                 set_mac(key.src_mac, curr_match->value->value.u64);
                                 set_mac(mask.src_mac, curr_match->value->mask.u64); 
                                 key_generated = ROFL_SUCCESS;
                                 break;
                         case OF1X_MATCH_ETH_TYPE:
+                                ROFL_DEBUG("Match: eth type is %d\n", curr_match->value->value.u16);
                                 key.ether_type = curr_match->value->value.u16;
                                 mask.ether_type = curr_match->value->mask.u16;
                                 key_generated = ROFL_SUCCESS;
@@ -135,8 +144,6 @@ rofl_result_t set_ez_struct_key(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue
         
         memcpy(_key.get_buffer(), &key, sizeof(key));
         memcpy(_mask.get_buffer(), &mask, sizeof(mask));
-        //_key.length(sizeof(key));
-        //_mask.length(sizeof(mask));
         return key_generated;
 }
 
@@ -277,7 +284,7 @@ rofl_result_t set_ez_struct_key(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue
         action = entry->inst_grp.instructions[OF1X_IT_APPLY_ACTIONS-1].apply_actions->head;
         
         if(!action){
-                assert(0);
+                ROFL_ERR("No actions for the match present in flowmod\n");
                 return ROFL_FAILURE;
         }
 
