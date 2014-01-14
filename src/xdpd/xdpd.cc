@@ -51,10 +51,10 @@ int main(int argc, char** argv){
 
 
 	//Check for root privileges 
-	if(geteuid() != 0){
-		ROFL_ERR("ERROR: Root permissions are required to run %s\n",argv[0]);	
-		exit(EXIT_FAILURE);	
-	}
+	//if(geteuid() != 0){
+	//	ROFL_ERR("ERROR: Root permissions are required to run %s\n",argv[0]);	
+	//	exit(EXIT_FAILURE);	
+	//}
 
 	//Capture control+C
 	signal(SIGINT, interrupt_handler);
