@@ -54,6 +54,7 @@ rofl_result_t set_ez_struct_key(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue
 rofl_result_t set_ez_struct_result(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue& _result);
 void set_ez_flow_entry(of1x_flow_entry_t* entry);
 void del_ez_flow_entry(of1x_flow_entry_t* entry);
+void show_ez_flow_entries();
 
 #endif /* EZ_CORBA_STRUCTURES_H */
  

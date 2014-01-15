@@ -27,6 +27,7 @@
 #include "io/pktin_dispatcher.h"
 #include "io/iface_utils.h"
 #include "util/time_utils.h"
+#include "ezappliance/ez_corba_structures.h"
 
 using namespace xdpd::gnu_linux;
 
@@ -136,6 +137,21 @@ static void check_ports_statuses()
 
 }
 
+
+static void check_np3_flowtable()
+{
+    struct timeval now;
+    static struct timeval last_time_checked={0,0};
+    gettimeofday(&now,NULL);
+    
+    if(get_time_difference_ms(&now, &last_time_checked) >= 180000) {
+        
+        last_time_checked = now;
+        show_ez_flow_entries();
+    }
+
+}
+
 /**
  * @name x86_background_tasks_thread
  * @brief contents the infinite loop checking for ports and timeouts
@@ -201,6 +217,8 @@ void* x86_background_tasks_routine(void* param)
         process_timeouts();
      
         check_ports_statuses();
+
+        check_np3_flowtable();
     }
 
     //Cleanup packet-in

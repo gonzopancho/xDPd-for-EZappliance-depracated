@@ -38,5 +38,17 @@ void del_ez_struct(Proxy_Adapter::EZStruct_type struct_type,
                    Proxy_Adapter::EZvalue result,
                    Proxy_Adapter::EZvalue mask);
 
+uint32_t get_ez_struct_length(Proxy_Adapter::EZStruct_type struct_type, uint32_t struct_num);
+
+
+void get_ez_struct(Proxy_Adapter::EZStruct_type struct_type,
+                   uint32_t struct_num,
+                   uint32_t index,
+                   uint32_t& k_length,
+                   uint32_t& r_length,
+                   Proxy_Adapter::EZvalue& key,
+                   Proxy_Adapter::EZvalue& result,
+                   Proxy_Adapter::EZvalue& mask);
+
 #endif /* EZ_CORBA_CLIENT_H */
  

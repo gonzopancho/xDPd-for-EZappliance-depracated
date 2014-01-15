@@ -91,13 +91,13 @@ rofl_result_t set_ez_struct_key(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue
         //}
 
         while (curr_match != NULL) {
-                ROFL_DEBUG("Match type is %d\n", curr_match->type);
+                ROFL_DEBUG_VERBOSE("Match type is %d\n", curr_match->type);
                 switch (curr_match->type) {
-                        case OF1X_MATCH_IN_PORT:
-                                // EZ port numbering starts from 0, OF numbering starts from 1
-                                break;
-                        case OF1X_MATCH_IN_PHY_PORT:
-                                break;
+                        //case OF1X_MATCH_IN_PORT:
+                        //        // EZ port numbering starts from 0, OF numbering starts from 1
+                        //        break;
+                        //case OF1X_MATCH_IN_PHY_PORT:
+                        //        break;
                         case OF1X_MATCH_ETH_DST:
                                 ROFL_DEBUG("Match: eth dst is present\n");
                                 set_mac(key.dst_mac, curr_match->value->value.u64);
@@ -137,7 +137,8 @@ rofl_result_t set_ez_struct_key(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue
                                 key_generated = ROFL_SUCCESS;
                                 break;
                         default:
-                                break;
+                                ROFL_INFO("Skipping hardware flowmod installation. Some matches are not supported by the EZappliance NP-3 implementation\n");
+                                return ROFL_FAILURE;
                 };
                 curr_match = curr_match->next;
         }
@@ -345,6 +346,7 @@ rofl_result_t set_ez_struct_key(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue
 
 
 void set_ez_flow_entry(of1x_flow_entry_t* entry) {
+        
         CORBA::Octet temp1[EZ_FLOWTABLE_KEY_SIZE], temp2[EZ_FLOWTABLE_RESULT_SIZE], temp3[EZ_FLOWTABLE_KEY_SIZE];
         Proxy_Adapter::EZvalue key(EZ_FLOWTABLE_KEY_SIZE, EZ_FLOWTABLE_KEY_SIZE, temp1), 
                                result(EZ_FLOWTABLE_RESULT_SIZE, EZ_FLOWTABLE_RESULT_SIZE, temp2),
@@ -352,8 +354,9 @@ void set_ez_flow_entry(of1x_flow_entry_t* entry) {
         
         if (set_ez_struct_key(entry, key, mask) == ROFL_SUCCESS 
            && set_ez_struct_result(entry, result) == ROFL_SUCCESS) {
-        
-                set_ez_struct(Proxy_Adapter::EzapiSearch1, EZ_FLOWTABLE_STRUCTURE_NUM, EZ_FLOWTABLE_KEY_SIZE, EZ_FLOWTABLE_RESULT_SIZE, key, result, mask);
+
+                set_ez_struct(Proxy_Adapter::EzapiSearch1, EZ_FLOWTABLE_STRUCTURE_NUM, 
+                              EZ_FLOWTABLE_KEY_SIZE, EZ_FLOWTABLE_RESULT_SIZE, key, result, mask);
         }
 }
 
@@ -365,10 +368,26 @@ void del_ez_flow_entry(of1x_flow_entry_t* entry) {
                                result(EZ_FLOWTABLE_RESULT_SIZE, EZ_FLOWTABLE_RESULT_SIZE, temp2),
                                mask(EZ_FLOWTABLE_KEY_SIZE, EZ_FLOWTABLE_KEY_SIZE, temp3); 
         
-        if (set_ez_struct_key(entry, key, mask) == ROFL_SUCCESS) {
-           //&& set_ez_struct_result(entry, result) == ROFL_SUCCESS) {
-        
-                del_ez_struct(Proxy_Adapter::EzapiSearch1, EZ_FLOWTABLE_STRUCTURE_NUM, EZ_FLOWTABLE_KEY_SIZE, EZ_FLOWTABLE_RESULT_SIZE, key, result, mask);
-        }
+        if (set_ez_struct_key(entry, key, mask) == ROFL_SUCCESS)
+                del_ez_struct(Proxy_Adapter::EzapiSearch1, EZ_FLOWTABLE_STRUCTURE_NUM, 
+                              EZ_FLOWTABLE_KEY_SIZE, EZ_FLOWTABLE_RESULT_SIZE, key, result, mask);
 }
        
+
+
+void show_ez_flow_entries() {
+        
+        CORBA::Octet temp1[EZ_FLOWTABLE_KEY_SIZE], temp2[EZ_FLOWTABLE_RESULT_SIZE], temp3[EZ_FLOWTABLE_KEY_SIZE];
+        Proxy_Adapter::EZvalue key(EZ_FLOWTABLE_KEY_SIZE, EZ_FLOWTABLE_KEY_SIZE, temp1), 
+                               result(EZ_FLOWTABLE_RESULT_SIZE, EZ_FLOWTABLE_RESULT_SIZE, temp2),
+                               mask(EZ_FLOWTABLE_KEY_SIZE, EZ_FLOWTABLE_KEY_SIZE, temp3);
+        uint32_t k_length, r_length; 
+        
+        uint32_t length = get_ez_struct_length(Proxy_Adapter::EzapiSearch1, EZ_FLOWTABLE_STRUCTURE_NUM);
+       
+        for (uint32_t index=0; index<length; index++) {
+              get_ez_struct(Proxy_Adapter::EzapiSearch1, EZ_FLOWTABLE_STRUCTURE_NUM, index, 
+                            k_length, r_length, key, result, mask);
+        }
+
+}

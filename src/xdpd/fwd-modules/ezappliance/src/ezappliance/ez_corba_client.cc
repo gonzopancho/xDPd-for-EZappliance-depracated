@@ -292,3 +292,44 @@ void del_ez_struct(Proxy_Adapter::EZStruct_type struct_type,
                 ROFL_ERR("[EZ-CORBA] unknown exception in del_ez_struct\n");
         }
 }
+
+uint32_t get_ez_struct_length(Proxy_Adapter::EZStruct_type struct_type, uint32_t struct_num) {
+
+        ROFL_DEBUG("[EZ-CORBA] Calling get_ez_struct_length method\n");
+        
+        uint32_t length;
+        try {
+                if (structConfConnect())
+                        structConfProxy->getStructLength(struct_type, struct_num, length);
+        } 
+        catch (CORBA::UNKNOWN) {
+                ROFL_ERR("[EZ-CORBA] unknown exception in get_ez_struct_length\n");
+        }
+        ROFL_DEBUG("\n\n[CORBA] There is %d entries in NP-3 flow table\n\n\n", length);
+        return length;
+}
+
+void get_ez_struct(Proxy_Adapter::EZStruct_type struct_type,
+                   uint32_t struct_num,
+                   uint32_t index,
+                   uint32_t& k_length,
+                   uint32_t& r_length,
+                   Proxy_Adapter::EZvalue& key,
+                   Proxy_Adapter::EZvalue& result,
+                   Proxy_Adapter::EZvalue& mask) {
+                   
+        ROFL_DEBUG("[EZ-CORBA] Calling get_ez_struct method\n");
+        
+        try {
+                if (structConfConnect())
+                        structConfProxy->getStructEntry(struct_type, struct_num, index, k_length, r_length, key, result, mask);
+        } 
+        catch (CORBA::UNKNOWN) {
+                ROFL_ERR("[EZ-CORBA] unknown exception in get_ez_struct\n");
+        }
+
+        show_EZvalue(key, "key");
+        show_EZvalue(mask, "mask");
+        show_EZvalue(result, "result");
+        
+}
