@@ -80,15 +80,15 @@ rofl_result_t set_ez_struct_key(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue
         memset(&key, 0, sizeof(key));
         memset(&mask, 0, sizeof(mask));
         
-        rofl_result_t key_generated = ROFL_FAILURE;
+        rofl_result_t key_generated = ROFL_SUCCESS;
         key.priority = (uint16_t)entry->priority;
         
         of1x_match_t* curr_match = entry->matches.head;
 
-        if (!curr_match) {
-                ROFL_ERR("No matches present in flowmod\n");
-                return ROFL_FAILURE;
-        }
+        //if (!curr_match) {
+        //        ROFL_ERR("No matches present in flowmod\n");
+        //       return ROFL_FAILURE;
+        //}
 
         while (curr_match != NULL) {
                 ROFL_DEBUG("Match type is %d\n", curr_match->type);
@@ -284,8 +284,9 @@ rofl_result_t set_ez_struct_key(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue
         action = entry->inst_grp.instructions[OF1X_IT_APPLY_ACTIONS-1].apply_actions->head;
         
         if(!action){
-                ROFL_ERR("No actions for the match present in flowmod\n");
-                return ROFL_FAILURE;
+                ROFL_DEBUG("EZ action: action list empty\n");
+                result.actions = set_bit_u8(EZ_BIT_DROP);
+                result_generated = ROFL_SUCCESS;
         }
 
         //Loop over apply actions only
@@ -339,7 +340,6 @@ rofl_result_t set_ez_struct_key(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue
                 }
         }
         memcpy(_result.get_buffer(), &result, sizeof(result));
-        //_result.length(sizeof(result));
         return result_generated;
 }
 
