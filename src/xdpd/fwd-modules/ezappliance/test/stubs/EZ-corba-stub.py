@@ -97,7 +97,7 @@ class EZapi_monitor (Proxy_Adapter__POA.DevMonitor):
 import struct
 
 def show_flowtable_key(key, mask):
-    KEY_FORMAT = "=BH6B6BHH"
+    KEY_FORMAT = "=BH6B6BHHIIBHH"
     key_length = struct.calcsize(KEY_FORMAT)
     def show(value, name):
         if len(value) < key_length:
@@ -105,7 +105,7 @@ def show_flowtable_key(key, mask):
             logger.debug("-> %s length is %d", name, len(value))
             return
         values = struct.unpack(KEY_FORMAT, value[:key_length])
-        logger.debug(" %s " % name + "-> reserved: 0x%x, priority: %d, src_mac: %x:%x:%x:%x:%x:%x, dst_mac: %x:%x:%x:%x:%x:%x, vlan_tag: 0x%x, ether_type: 0x%x" % values)
+        logger.debug(" %s " % name + "-> reserved: 0x%x, priority: %d, src_mac: %x:%x:%x:%x:%x:%x, dst_mac: %x:%x:%x:%x:%x:%x, vlan_tag: 0x%x, ether_type: 0x%x, ipv4_src: 0x%x, ipv4_dst: 0x%x, ip_proto: %d, src_port: %d, dst_port: %d" % values)
         vlan_id = values[14] & 0x0FFF
         vlan_pcp = (values[14] & 0xE000) >> 13
         vlan_flag = (values[14] & 0x1000) >> 12
@@ -165,7 +165,7 @@ class EZapi_struct (Proxy_Adapter__POA.StructConf):
     @exception_handler
     def getStructLength(self, struct_type, struct_num):
         logger.debug('StructConf.getStructLength called (struct_type: %s, struct_num: %d)', struct_type, struct_num)
-        return 0, 10
+        return 0, 0
  
     @exception_handler
     def delStructEntry(self, struct_type, struct_num, k_length, r_length, key, result, mask):

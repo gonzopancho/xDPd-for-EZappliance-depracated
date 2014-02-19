@@ -38,6 +38,11 @@ typedef struct EZFlowTableKey {
         uint8_t dst_mac[6];
         uint16_t vlan_tag;
         uint16_t ether_type;
+        uint32_t src_ipv4;
+        uint32_t dst_ipv4;
+        uint8_t ip_protocol;
+        uint16_t tp_src_port;
+        uint16_t tp_dst_port;
 } EZFlowTableKey_t; 
 #pragma pack(pop)
 

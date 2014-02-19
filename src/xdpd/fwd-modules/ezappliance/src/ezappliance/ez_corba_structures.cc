@@ -26,32 +26,17 @@ static void set_mac(uint8_t* mac, uint64_t _mac) {
 //         OF1X_MATCH_IN_PHY_PORT,         /* Switch physical input port. */
 //         
 //         OF1X_MATCH_METADATA,            /* Metadata passed between tables. */
-// 
-//         OF1X_MATCH_ETH_DST,             /* Ethernet destination address. */     //required
-//         OF1X_MATCH_ETH_SRC,             /* Ethernet source address. */          //required
-//         OF1X_MATCH_ETH_TYPE,            /* Ethernet frame type. */              //required
-//         OF1X_MATCH_VLAN_VID,            /* VLAN id. */
-//         OF1X_MATCH_VLAN_PCP,            /* VLAN priority. */
 //         
 //         OF1X_MATCH_MPLS_LABEL,          /* MPLS label. */
 //         OF1X_MATCH_MPLS_TC,             /* MPLS TC. */
 //         OF1X_MATCH_MPLS_BOS,            /* MPLS BoS flag. */
 // 
 //         OF1X_MATCH_ARP_OP,              /* ARP opcode. */
-//         OF1X_MATCH_ARP_SPA,             /* ARP source IPv4 address. */
-//         OF1X_MATCH_ARP_TPA,             /* ARP target IPv4 address. */
 //         OF1X_MATCH_ARP_SHA,             /* ARP source hardware address. */
 //         OF1X_MATCH_ARP_THA,             /* ARP target hardware address. */
-// 
-//         OF1X_MATCH_NW_PROTO,            /* Network layer Ip proto/arp code. OF10 ONLY */        //required
-//         OF1X_MATCH_NW_SRC,              /* Network layer source address. OF10 ONLY */           //required
-//         OF1X_MATCH_NW_DST,              /* Network layer destination address. OF10 ONLY */      //required
 //         
 //         OF1X_MATCH_IP_DSCP,             /* IP DSCP (6 bits in ToS field). */
 //         OF1X_MATCH_IP_ECN,              /* IP ECN (2 bits in ToS field). */
-//         OF1X_MATCH_IP_PROTO,            /* IP protocol. */                      //required
-//         OF1X_MATCH_IPV4_SRC,            /* IPv4 source address. */              //required
-//         OF1X_MATCH_IPV4_DST,            /* IPv4 destination address. */         //required
 // 
 //         OF1X_MATCH_IPV6_SRC,            /* IPv6 source address. */              //required
 //         OF1X_MATCH_IPV6_DST,            /* IPv6 destination address. */         //required
@@ -63,12 +48,6 @@ static void set_mac(uint8_t* mac, uint64_t _mac) {
 //         OF1X_MATCH_IPV6_ND_TLL,         /* Target link-layer for ND. */
 //         OF1X_MATCH_IPV6_EXTHDR,         /* Extension header */
 // 
-//         OF1X_MATCH_TP_SRC,              /* TCP/UDP source port. OF10 ONLY */    //required
-//         OF1X_MATCH_TP_DST,              /* TCP/UDP dest port. OF10 ONLY */      //required
-//         OF1X_MATCH_TCP_SRC,             /* TCP source port. */                  //required
-//         OF1X_MATCH_TCP_DST,             /* TCP destination port. */             //required
-//         OF1X_MATCH_UDP_SRC,             /* UDP source port. */                  //required
-//         OF1X_MATCH_UDP_DST,             /* UDP destination port. */             //required
 //         OF1X_MATCH_SCTP_SRC,            /* SCTP source port. */
 //         OF1X_MATCH_SCTP_DST,            /* SCTP destination port. */
 //         OF1X_MATCH_ICMPV4_TYPE,         /* ICMP type. */
@@ -132,10 +111,49 @@ rofl_result_t set_ez_struct_key(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue
                                 break;
                         case OF1X_MATCH_VLAN_PCP:
                                 ROFL_DEBUG("Match: VLAN PCP is %d with mask 0x%x\n", curr_match->value->value.u8, curr_match->value->mask.u8);
-                                key.vlan_tag |= curr_match->value->value.u8 << (EZ_BIT_VLAN_TAG_FLAG+1);
-                                mask.vlan_tag |= curr_match->value->mask.u8 << (EZ_BIT_VLAN_TAG_FLAG+1);
+                                key.vlan_tag = curr_match->value->value.u8 << (EZ_BIT_VLAN_TAG_FLAG+1);
+                                mask.vlan_tag = curr_match->value->mask.u8 << (EZ_BIT_VLAN_TAG_FLAG+1);
                                 key_generated = ROFL_SUCCESS;
                                 break;
+                         case OF1X_MATCH_IP_PROTO:
+                         case OF1X_MATCH_NW_PROTO:
+                                ROFL_DEBUG("Match: IP protocol is %d with mask 0x%x\n", curr_match->value->value.u8, curr_match->value->mask.u8);
+                                key.ip_protocol = curr_match->value->value.u8;
+                                mask.ip_protocol = curr_match->value->mask.u8;
+                                key_generated = ROFL_SUCCESS;
+                                break;  
+                         case OF1X_MATCH_IPV4_SRC:
+                         case OF1X_MATCH_NW_SRC:
+                         case OF1X_MATCH_ARP_SPA:
+                                ROFL_DEBUG("Match: IPv4 source address is %d with mask 0x%x\n", curr_match->value->value.u32, curr_match->value->mask.u32);
+                                key.src_ipv4 = curr_match->value->value.u32;
+                                mask.src_ipv4 = curr_match->value->mask.u32;
+                                key_generated = ROFL_SUCCESS;
+                                break;  
+                         case OF1X_MATCH_IPV4_DST:
+                         case OF1X_MATCH_NW_DST:
+                         case OF1X_MATCH_ARP_TPA:
+                                ROFL_DEBUG("Match: IPv4 destination address is %d with mask 0x%x\n", curr_match->value->value.u32, curr_match->value->mask.u32);
+                                key.dst_ipv4 = curr_match->value->value.u32;
+                                mask.dst_ipv4 = curr_match->value->mask.u32;
+                                key_generated = ROFL_SUCCESS;
+                                break;     
+                         case OF1X_MATCH_TP_SRC:
+                         case OF1X_MATCH_TCP_SRC:
+                         case OF1X_MATCH_UDP_SRC:
+                                ROFL_DEBUG("Match: TCP/UDP source port is %d with mask 0x%x\n", curr_match->value->value.u16, curr_match->value->mask.u16);
+                                key.tp_src_port = curr_match->value->value.u16;
+                                mask.tp_src_port = curr_match->value->mask.u16;
+                                key_generated = ROFL_SUCCESS;
+                                break;     
+                         case OF1X_MATCH_TP_DST:
+                         case OF1X_MATCH_TCP_DST:
+                         case OF1X_MATCH_UDP_DST:
+                                ROFL_DEBUG("Match: TCP/UDP destination port is %d with mask 0x%x\n", curr_match->value->value.u16, curr_match->value->mask.u16);
+                                key.tp_dst_port = curr_match->value->value.u16;
+                                mask.tp_dst_port = curr_match->value->mask.u16;
+                                key_generated = ROFL_SUCCESS;
+                                break;                                                 
                         default:
                                 ROFL_INFO("Skipping hardware flowmod installation. Some matches are not supported by the EZappliance NP-3 implementation\n");
                                 return ROFL_FAILURE;
