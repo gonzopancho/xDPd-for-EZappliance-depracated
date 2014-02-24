@@ -38,6 +38,7 @@ static void set_mac(uint8_t* mac, uint64_t _mac) {
 //         OF1X_MATCH_IP_DSCP,             /* IP DSCP (6 bits in ToS field). */
 //         OF1X_MATCH_IP_ECN,              /* IP ECN (2 bits in ToS field). */
 // 
+//         OF1X_MATCH_NW_PROTO,            /* OF-1.0 only */
 //         OF1X_MATCH_IPV6_SRC,            /* IPv6 source address. */              //required
 //         OF1X_MATCH_IPV6_DST,            /* IPv6 destination address. */         //required
 //         OF1X_MATCH_IPV6_FLABEL,         /* IPv6 Flow Label */
@@ -115,8 +116,11 @@ rofl_result_t set_ez_struct_key(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue
                                 mask.vlan_tag = curr_match->value->mask.u8 << (EZ_BIT_VLAN_TAG_FLAG+1);
                                 key_generated = ROFL_SUCCESS;
                                 break;
-                         case OF1X_MATCH_IP_PROTO:
                          case OF1X_MATCH_NW_PROTO:
+                                ROFL_DEBUG("MATCH_NW_PROTO %d is not supported. This field is ignored - cause not failure in flowmod acceptance\n");
+                                key_generated = ROFL_SUCCESS;
+                                break;
+                         case OF1X_MATCH_IP_PROTO:
                                 ROFL_DEBUG("Match: IP protocol is %d with mask 0x%x\n", curr_match->value->value.u8, curr_match->value->mask.u8);
                                 key.ip_protocol = curr_match->value->value.u8;
                                 mask.ip_protocol = curr_match->value->mask.u8;
