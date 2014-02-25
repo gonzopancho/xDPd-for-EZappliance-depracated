@@ -57,9 +57,11 @@ typedef struct EZFlowTableResult {
 
 rofl_result_t set_ez_struct_key(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue& _key, Proxy_Adapter::EZvalue& _mask);
 rofl_result_t set_ez_struct_result(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue& _result);
+rofl_result_t check_if_match_list_empty(of1x_flow_entry_t* entry);
 void set_ez_flow_entry(of1x_flow_entry_t* entry);
 void del_ez_flow_entry(of1x_flow_entry_t* entry);
 void show_ez_flow_entries();
+void del_all_ez_flow_entries();
 
 #endif /* EZ_CORBA_STRUCTURES_H */
  

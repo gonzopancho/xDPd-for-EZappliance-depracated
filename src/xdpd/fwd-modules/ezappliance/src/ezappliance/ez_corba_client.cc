@@ -293,6 +293,20 @@ void del_ez_struct(Proxy_Adapter::EZStruct_type struct_type,
         }
 }
 
+void del_all_ez_struct_entries(Proxy_Adapter::EZStruct_type struct_type,
+                               uint32_t struct_num) {
+                   
+        ROFL_DEBUG("[EZ-CORBA] Calling del_all_ez_struct_entries method\n");
+        
+        try {
+                if (structConfConnect())
+                        structConfProxy->delStructAllEntries(struct_type, struct_num);
+        } 
+        catch (CORBA::UNKNOWN) {
+                ROFL_ERR("[EZ-CORBA] unknown exception in del_all_ez_struct_entries\n");
+        }
+}
+
 uint32_t get_ez_struct_length(Proxy_Adapter::EZStruct_type struct_type, uint32_t struct_num) {
 
         ROFL_DEBUG("[EZ-CORBA] Calling get_ez_struct_length method\n");

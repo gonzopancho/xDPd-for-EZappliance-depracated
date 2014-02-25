@@ -10,8 +10,18 @@ The content of this folder is the implementation of the EZappliance (AFA-complia
 ## Usage
 
 <pre>
-cd build
+./autogen.sh
+cd ./build
 ../configure -enable-ezappliance
 make
 </pre>
 
+## Running
+
+<pre>
+cd ./build/src/xdpd
+./xdpd -c <i>config.cfg</i>
+</pre>
+
+## More info about xDPd:
+https://www.codebasin.net/redmine/projects/xdpd/wiki

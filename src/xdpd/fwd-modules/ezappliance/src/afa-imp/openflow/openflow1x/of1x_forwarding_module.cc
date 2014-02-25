@@ -9,6 +9,7 @@
 #include "../../../io/datapacket_storage.h"
 #include "../../../io/datapacketx86.h"
 #include "../../../ls_internal_state.h"
+#include "../../../ezappliance/ez_corba_structures.h"
 
 using namespace xdpd::gnu_linux;
 
@@ -439,6 +440,10 @@ afa_result_t fwd_module_of1x_process_flow_mod_delete(uint64_t dpid, uint8_t tabl
 		if(of1x_remove_flow_entry_table(lsw->pipeline, table_id, flow_entry, strictness, out_port, out_group) != ROFL_SUCCESS)
 			return AFA_FAILURE;
 	}
+
+        if(check_if_match_list_empty(flow_entry) == ROFL_SUCCESS)
+		del_all_ez_flow_entries();
+
 	return AFA_SUCCESS;
 } 
 

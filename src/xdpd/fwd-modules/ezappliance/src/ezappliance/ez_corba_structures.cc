@@ -116,10 +116,15 @@ rofl_result_t set_ez_struct_key(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue
                                 mask.vlan_tag = curr_match->value->mask.u8 << (EZ_BIT_VLAN_TAG_FLAG+1);
                                 key_generated = ROFL_SUCCESS;
                                 break;
-                         case OF1X_MATCH_NW_PROTO:
-                                ROFL_DEBUG("MATCH_NW_PROTO %d is not supported. This field is ignored - cause not failure in flowmod acceptance\n");
+                         //case OF1X_MATCH_NW_PROTO:
+                         //     ROFL_DEBUG("MATCH_NW_PROTO is not supported. This field is ignored - cause not failure in flowmod acceptance\n");
+                         //     key_generated = ROFL_SUCCESS;
+                         //     break;
+                         case OF1X_MATCH_IP_DSCP:
+                                ROFL_DEBUG("MATCH_IP_DSCP is not supported. This field is ignored - cause not failure in flowmod acceptance\n");
                                 key_generated = ROFL_SUCCESS;
                                 break;
+                         case OF1X_MATCH_NW_PROTO:  //problematich in case of ARP match
                          case OF1X_MATCH_IP_PROTO:
                                 ROFL_DEBUG("Match: IP protocol is %d with mask 0x%x\n", curr_match->value->value.u8, curr_match->value->mask.u8);
                                 key.ip_protocol = curr_match->value->value.u8;
@@ -168,6 +173,90 @@ rofl_result_t set_ez_struct_key(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue
         memcpy(_key.get_buffer(), &key, sizeof(key));
         memcpy(_mask.get_buffer(), &mask, sizeof(mask));
         return key_generated;
+}
+
+rofl_result_t check_if_match_list_empty(of1x_flow_entry_t* entry) {
+        
+        of1x_match_t* curr_match = entry->matches.head;
+
+        if (!curr_match) {
+                ROFL_DEBUG("No matches present in flowmod\n");
+                return ROFL_SUCCESS;
+        }
+        ROFL_DEBUG("Some match entries present in flowmod\n");
+        
+        while (curr_match) {
+                //ROFL_DEBUG("Match type is %d\n", curr_match->type);
+                if(curr_match->value->type == UTERN8_T && curr_match->value->value.u8 != 0)
+			return ROFL_FAILURE;
+                if(curr_match->value->type == UTERN16_T && curr_match->value->value.u16 != 0)
+			return ROFL_FAILURE;
+                if(curr_match->value->type == UTERN32_T && curr_match->value->value.u32 != 0)
+			return ROFL_FAILURE;
+                /*
+                switch (curr_match->type) {
+                        case OF1X_MATCH_ETH_TYPE:
+                                //ROFL_DEBUG("Match: eth type is %d\n", curr_match->value->value.u16);
+                                if(curr_match->value->value.u16 != 0)
+                            	    return ROFL_FAILURE;
+                                break;
+                        case OF1X_MATCH_VLAN_VID:
+                                //ROFL_DEBUG("Match: VLAN ID is %d with mask 0x%x\n", curr_match->value->value.u16 & 0xFFF, curr_match->value->mask.u16 & 0xFFF);
+                                if(curr_match->value->value.u16 != 0)
+                            	    return ROFL_FAILURE;
+                                break;
+                        case OF1X_MATCH_VLAN_PCP:
+                                //ROFL_DEBUG("Match: VLAN PCP is %d with mask 0x%x\n", curr_match->value->value.u8, curr_match->value->mask.u8);
+                                if(curr_match->value->value.u8 != 0)
+                            	    return ROFL_FAILURE;
+                                break;
+                         case OF1X_MATCH_IP_DSCP:
+                                //ROFL_DEBUG("MATCH_IP_DSCP is not supported. This field is ignored - cause not failure in flowmod acceptance\n");
+                                if(curr_match->value->value.u8 != 0)
+                            	    return ROFL_FAILURE;
+                                break;
+                         case OF1X_MATCH_NW_PROTO:  //problematich in case of ARP match
+                         case OF1X_MATCH_IP_PROTO:
+                                //ROFL_DEBUG("Match: IP protocol is %d with mask 0x%x\n", curr_match->value->value.u8, curr_match->value->mask.u8);
+                                if(curr_match->value->value.u8 != 0)
+                            	    return ROFL_FAILURE;
+                                break;  
+                         case OF1X_MATCH_IPV4_SRC:
+                         case OF1X_MATCH_NW_SRC:
+                         case OF1X_MATCH_ARP_SPA:
+                                //ROFL_DEBUG("Match: IPv4 source address is %d with mask 0x%x\n", curr_match->value->value.u32, curr_match->value->mask.u32);
+                                if(curr_match->value->value.u32 != 0)
+                            	    return ROFL_FAILURE;
+                                break;  
+                         case OF1X_MATCH_IPV4_DST:
+                         case OF1X_MATCH_NW_DST:
+                         case OF1X_MATCH_ARP_TPA:
+                                //ROFL_DEBUG("Match: IPv4 destination address is %d with mask 0x%x\n", curr_match->value->value.u32, curr_match->value->mask.u32);
+                                if(curr_match->value->value.u32 != 0)
+                            	    return ROFL_FAILURE;
+                                break;     
+                         case OF1X_MATCH_TP_SRC:
+                         case OF1X_MATCH_TCP_SRC:
+                         case OF1X_MATCH_UDP_SRC:
+                                //ROFL_DEBUG("Match: TCP/UDP source port is %d with mask 0x%x\n", curr_match->value->value.u16, curr_match->value->mask.u16);
+                                if(curr_match->value->value.u16 != 0)
+                            	    return ROFL_FAILURE;
+                                break;     
+                         case OF1X_MATCH_TP_DST:
+                         case OF1X_MATCH_TCP_DST:
+                         case OF1X_MATCH_UDP_DST:
+                                //ROFL_DEBUG("Match: TCP/UDP destination port is %d with mask 0x%x\n", curr_match->value->value.u16, curr_match->value->mask.u16);
+                                if(curr_match->value->value.u16 != 0)
+                            	    return ROFL_FAILURE;
+                                break;                                                 
+                        default:
+                                return ROFL_FAILURE;
+                }; 
+                */
+                curr_match = curr_match->next;
+        }
+
+        return ROFL_SUCCESS;
 }
 
 //         //No action. This MUST always exist and the value MUST be 0     
@@ -290,7 +379,7 @@ rofl_result_t set_ez_struct_key(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue
 // 
 //         OF1X_AT_OUTPUT,                         /* Output to switch port. */
 
- rofl_result_t set_ez_struct_result(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue& _result) {
+rofl_result_t set_ez_struct_result(of1x_flow_entry_t* entry, Proxy_Adapter::EZvalue& _result) {
         
         EZFlowTableResult_t result;
         memset(&result, 0, sizeof(result));
@@ -411,5 +500,11 @@ void show_ez_flow_entries() {
               get_ez_struct(Proxy_Adapter::EzapiSearch1, EZ_FLOWTABLE_STRUCTURE_NUM, index, 
                             k_length, r_length, key, result, mask);
         }
+
+}
+
+void del_all_ez_flow_entries() {
+        ROFL_DEBUG("Deleting all flow entries in EZ\n");
+        del_all_ez_struct_entries(Proxy_Adapter::EzapiSearch1, EZ_FLOWTABLE_STRUCTURE_NUM);
 
 }
