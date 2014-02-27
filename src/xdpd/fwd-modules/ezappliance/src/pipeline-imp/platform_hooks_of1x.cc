@@ -160,7 +160,7 @@ void platform_of1x_remove_entry_hook(of1x_flow_entry_t* entry) {
         ROFL_DEBUG("[Pipeline-imp] platform_of1x_remove_entry_hook (entry: %p)\n", entry);
         of1x_dump_flow_entry(entry);
         
-        del_ez_flow_entry(entry);
+        //del_ez_flow_entry(entry);  // TEMPORARY
 }
 
 void platform_of1x_update_stats_hook(of1x_flow_entry_t* entry) {

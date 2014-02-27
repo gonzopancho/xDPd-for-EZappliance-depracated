@@ -7,13 +7,6 @@
 #include <rofl/common/utils/c_logger.h>
 #include "../config.h"
 
-
-#define EZ_STRUCT_IOR "/tmp/ior/EZapi_struct.ior"
-#define EZ_MONITOR_IOR "/tmp/ior/EZapi_monitor.ior"
-
-//#define EZ_STRUCT_IOR "/tmp/StructConf.ior"
-//#define EZ_MONITOR_IOR "/tmp/DevMonitor.ior"
-
 Proxy_Adapter::DevMonitor_var deviceMonitorProxy;
 Proxy_Adapter::StructConf_var structConfProxy;
 

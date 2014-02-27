@@ -31,6 +31,9 @@
 #define EZ_IP "10.134.0.4"
 #define EZ_PORT 7777
 
+#define EZ_STRUCT_IOR "/tmp/ior/EZapi_struct.ior"
+#define EZ_MONITOR_IOR "/tmp/ior/EZapi_monitor.ior"
+
 //Buffer storage(PKT_IN) max buffers
 #define IO_PKT_IN_STORAGE_MAX_BUF 512
 //Buffer storage(PKT_IN) expiration time (seconds)

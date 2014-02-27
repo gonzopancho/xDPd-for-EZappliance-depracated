@@ -308,7 +308,9 @@ afa_result_t fwd_module_of1x_process_packet_out(uint64_t dpid, uint32_t buffer_i
 
 afa_result_t fwd_module_of1x_process_flow_mod_add(uint64_t dpid, uint8_t table_id, of1x_flow_entry_t* flow_entry, uint32_t buffer_id, bool check_overlap, bool reset_counts){
 
-        ROFL_DEBUG("[AFA] fwd_module_of1x_process_flow_mod_add (dpid: %d, table_id: %d, buffer_id: %d, check_overlap: %d, reset_counts: %d)\n", dpid, table_id, buffer_id, check_overlap, reset_counts);
+    ROFL_DEBUG("[AFA] fwd_module_of1x_process_flow_mod_add (dpid: %d, table_id: %d, buffer_id: %d, check_overlap: %d, reset_counts: %d)\n", dpid, table_id, buffer_id, check_overlap, reset_counts);
+    of1x_dump_flow_entry(flow_entry);
+    
 	of1x_switch_t* lsw;
 	rofl_of1x_fm_result_t result;
 
@@ -365,7 +367,9 @@ afa_result_t fwd_module_of1x_process_flow_mod_add(uint64_t dpid, uint8_t table_i
  */
 afa_result_t fwd_module_of1x_process_flow_mod_modify(uint64_t dpid, uint8_t table_id, of1x_flow_entry_t* flow_entry, uint32_t buffer_id, of1x_flow_removal_strictness_t strictness, bool reset_counts){
 
-        ROFL_DEBUG("[AFA] fwd_module_of1x_process_flow_mod_modify (dpid: %d, table_id: %d, reset_counts: %d)\n", dpid, table_id, reset_counts);
+    ROFL_DEBUG("[AFA] fwd_module_of1x_process_flow_mod_modify (dpid: %d, table_id: %d, reset_counts: %d)\n", dpid, table_id, reset_counts);
+    of1x_dump_flow_entry(flow_entry);
+    
 	of1x_switch_t* lsw;
 
 	//Recover port	
@@ -413,7 +417,9 @@ afa_result_t fwd_module_of1x_process_flow_mod_modify(uint64_t dpid, uint8_t tabl
  */
 afa_result_t fwd_module_of1x_process_flow_mod_delete(uint64_t dpid, uint8_t table_id, of1x_flow_entry_t* flow_entry, uint32_t out_port, uint32_t out_group, of1x_flow_removal_strictness_t strictness){
 
-        ROFL_DEBUG("[AFA] fwd_module_of1x_process_flow_mod_delete (dpid: %d, table_id: %d, out_port: %d, out_group: %d)\n", dpid, table_id, out_port, out_group);
+    ROFL_DEBUG("[AFA] fwd_module_of1x_process_flow_mod_delete (dpid: %d, table_id: %d, out_port: %d, out_group: %d)\n", dpid, table_id, out_port, out_group);
+    of1x_dump_flow_entry(flow_entry);
+    
 	of1x_switch_t* lsw;
 	unsigned int i;
 
@@ -428,7 +434,9 @@ afa_result_t fwd_module_of1x_process_flow_mod_delete(uint64_t dpid, uint8_t tabl
 	if(table_id >= lsw->pipeline->num_of_tables && table_id != OF1X_FLOW_TABLE_ALL)
 		return AFA_FAILURE;
 
-
+    
+    del_ez_flow_entry(flow_entry);  // TEMPORARY
+    
 	if(table_id == OF1X_FLOW_TABLE_ALL){
 		//Single table
 		for(i = 0; i<lsw->pipeline->num_of_tables; i++){
@@ -442,7 +450,7 @@ afa_result_t fwd_module_of1x_process_flow_mod_delete(uint64_t dpid, uint8_t tabl
 	}
 
         if(check_if_match_list_empty(flow_entry) == ROFL_SUCCESS)
-		del_all_ez_flow_entries();
+            del_all_ez_flow_entries();
 
 	return AFA_SUCCESS;
 } 
