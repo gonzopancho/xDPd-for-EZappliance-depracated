@@ -302,7 +302,7 @@ void del_all_ez_struct_entries(Proxy_Adapter::EZStruct_type struct_type,
 
 uint32_t get_ez_struct_length(Proxy_Adapter::EZStruct_type struct_type, uint32_t struct_num) {
 
-        ROFL_DEBUG("[EZ-CORBA] Calling get_ez_struct_length method\n");
+        ROFL_DEBUG("[EZ-CORBA] Calling get_ez_struct_length method (struct type: %d, struct id: %d \n", struct_type, struct_num);
         
         uint32_t length;
         try {
