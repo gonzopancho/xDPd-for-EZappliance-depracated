@@ -1,1 +1,1 @@
- scp alien@10.134.0.20:/home/alien/HAL/EZproxy/iors/* /tmp/ior 
+ scp alien@10.138.0.70:/home/alien/HAL/EZproxy/iors/* /tmp/ior 

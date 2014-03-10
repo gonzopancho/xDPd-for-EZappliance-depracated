@@ -302,13 +302,17 @@ void del_all_ez_struct_entries(Proxy_Adapter::EZStruct_type struct_type,
 
 uint32_t get_ez_struct_length(Proxy_Adapter::EZStruct_type struct_type, uint32_t struct_num) {
 
-        ROFL_DEBUG("[EZ-CORBA] Calling get_ez_struct_length method (struct type: %d, struct id: %d \n", struct_type, struct_num);
+        ROFL_DEBUG("[EZ-CORBA] Calling get_ez_struct_length method (struct type: %d, struct id: %d) \n", struct_type, struct_num);
         
         uint32_t length;
         try {
                 if (structConfConnect())
                         structConfProxy->getStructLength(struct_type, struct_num, length);
         } 
+        catch (CORBA::TRANSIENT) {
+                ROFL_ERR("[EZ-CORBA] TRANSIENT exception in get_ez_struct_length\n");
+                return 0;
+        }
         catch (CORBA::UNKNOWN) {
                 ROFL_ERR("[EZ-CORBA] unknown exception in get_ez_struct_length\n");
         }
